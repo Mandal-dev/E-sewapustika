@@ -473,7 +473,7 @@ class PoliceUsersController extends Controller
 
             Log::info('Police update success', ['id' => $id]);
 
-            return redirect()->route('police.index')->with('success', 'Police record updated successfully!');
+            return redirect()->route('police.list.index')->with('success', 'Police record updated successfully!');
         } catch (Exception $e) {
             Log::error('Police update exception', [
                 'message' => $e->getMessage(),
