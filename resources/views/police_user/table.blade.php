@@ -1,12 +1,4 @@
-<br>
-
-
-
-    <!-- 🔹 Buttons + Search Bar Row -->
-
-
-
-    <div class="table-responsive" style="max-height:400px;overflow-y:auto;padding:10px;">
+ <div class="table-responsive" style="max-height:400px;overflow-y:auto;padding:10px;">
         <table class="table table-bordered align-middle my-rounded-table">
             <thead class="table-light">
                 <tr>

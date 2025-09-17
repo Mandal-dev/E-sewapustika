@@ -149,7 +149,7 @@ Route::middleware(['setlang'])->group(function () {
 
     Route::get('/get-salary/bylave-and-grade', [SalaryIncrementController::class, 'getSalary'])->name('get.salary');
     //logout
-    Route::get('/logout', [LoginUserController::class, 'logout'])->name('logout');
+    Route::post('/logout', [LoginUserController::class, 'logout'])->name('logout');
 });
 
 

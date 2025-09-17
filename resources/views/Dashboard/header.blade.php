@@ -11,6 +11,9 @@
     <!-- FontAwesome for extra icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/new_dashboard.css') }}">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -91,10 +94,9 @@
         <header>
             <button id="menuBtn"><span class="dashboard-text material-icons">menu</span> Dashboard</button>
 
-
-
             <!-- Right: Icons -->
             <div style="display: flex; align-items: center; padding-right: 48px; gap: 16px;">
+                <!-- Language Selector -->
                 <div class="lang-dropdown">
                     <div style="display:flex; align-items:center; gap:6px; cursor:pointer; position:relative;"
                         class="lang-toggle" onclick="toggleLanguageForm()">
@@ -124,24 +126,20 @@
                         <div data-lang="en" data-label="English">English</div>
                     </div>
                 </div>
-                <!-- Logout -->
 
                 <!-- Logout Icon -->
                 <img src="{{ asset('img/logOutIcon.jpeg') }}" alt="Logout"
                     style="width:24px; height:24px; cursor:pointer;"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    onclick="confirmLogout(event)">
 
                 <!-- Hidden Logout Form -->
-                <form id="logout-form" action="{{ route('logout') }}" class="d-none">
-
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
                 </form>
-
             </div>
         </header>
 
         <main style="padding:1rem;">
-
-
             @yield('data')
         </main>
     </div>
@@ -190,9 +188,8 @@
                 const arrow = header.querySelector('.arrow');
 
                 submenu.classList.toggle('open');
-                header.classList.toggle('open-header'); // 👈 use a new class
+                header.classList.toggle('open-header');
 
-                // Toggle arrow direction
                 if (arrow.classList.contains('fa-chevron-down')) {
                     arrow.classList.remove('fa-chevron-down');
                     arrow.classList.add('fa-chevron-up');
@@ -201,7 +198,6 @@
                     arrow.classList.add('fa-chevron-down');
                 }
 
-                // Close other menus
                 document.querySelectorAll('.nav-group-header').forEach(other => {
                     if (other !== header) {
                         other.classList.remove('open-header');
@@ -216,16 +212,13 @@
             });
         });
 
-
         // Highlight active link
         document.querySelectorAll('.nav a, .submenu a, .nav-submenu a').forEach(link => {
             link.addEventListener('click', () => {
-                document.querySelectorAll(' .submenu a, .nav-submenu a').forEach(l => l.classList
-                    .remove('active'));
+                document.querySelectorAll('.submenu a, .nav-submenu a').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
             });
         });
-
 
         const langDropdown = document.querySelector('.lang-dropdown');
         const selectedLangSpan = document.querySelector('.selected-lang');
@@ -235,50 +228,50 @@
             langDropdown.classList.toggle('show');
         });
 
-        // Change language
         langMenu.querySelectorAll('div').forEach(item => {
             item.addEventListener('click', () => {
                 const langCode = item.dataset.lang;
                 const langLabel = item.dataset.label;
 
-                // Update the selected text
                 selectedLangSpan.textContent = langLabel;
-
-                // Hide dropdown
                 langDropdown.classList.remove('show');
 
-                // Hide the selected language from dropdown, show the other
                 langMenu.querySelectorAll('div').forEach(div => {
-                    if (div.dataset.lang === langCode) {
-                        div.style.display = 'none';
-                    } else {
-                        div.style.display = 'block';
-                    }
+                    div.style.display = div.dataset.lang === langCode ? 'none' : 'block';
                 });
-
-                console.log("Language changed to:", langCode);
             });
         });
 
-        // Initialize so current language is hidden in menu
         (function initLang() {
             const current = selectedLangSpan.textContent.trim();
             langMenu.querySelectorAll('div').forEach(div => {
-                if (div.dataset.label === current) {
-                    div.style.display = 'none';
-                } else {
-                    div.style.display = 'block';
-                }
+                div.style.display = div.dataset.label === current ? 'none' : 'block';
             });
         })();
 
-        // Close dropdown if clicked outside
         window.addEventListener('click', e => {
             if (!e.target.closest('.lang-dropdown')) {
                 langDropdown.classList.remove('show');
             }
         });
+
+        // SweetAlert2 Logout Confirmation
+        function confirmLogout(event) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Logout?',
+                text: "Are you sure you want to log out?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, logout'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        }
     </script>
 </body>
-
 </html>
