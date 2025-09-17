@@ -35,7 +35,7 @@
 
             .page-header button {
                 background: WHITE;
-                 border: 2px solid #4649a1;
+                 border: 2px solid #14649a !important;
                 border:2px solid #b1b1b1;
                 padding: 0.5rem 1rem;
                 border-radius: 38px;
@@ -45,8 +45,8 @@
             }
 
         .page-header button:hover {
-            background: #4649a1;
-              border: 2px solid #4649a1; /* same thickness, just change color */
+            background: #14649a !important;
+              border: 2px solid #14649a !important; /* same thickness, just change color */
              color: white;
         }
 
@@ -185,7 +185,7 @@
         }
 
         .search-section button:hover {
-            background: #4649a1;
+            background: #14649a !important;
             color:white;
 
         }
@@ -282,23 +282,35 @@
     border: 1px solid #b0b0b0 !important;
 }
 
-.section-btn1, .section-btn2 {
+.section-btn1,
+.section-btn2 {
+    display: inline-flex;           /* ✅ keeps icon + text aligned */
+    align-items: center;
+    justify-content: center;
+    gap: 6px;                       /* space between icon & text */
+    text-decoration: none;          /* remove underline */
     background: white;
-    border: 0.1px solid #b1b1b1 !important;
+    border: 1px solid #b1b1b1 !important;
     border-radius: 30px;
-    padding: 3px 10px;
+    padding: 6px 12px;
     font-size: 14px;
     height: 36px;
-    line-height: 1.2;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
+    color: black;
 }
 
-.section-btn1:hover, .section-btn2:hover {
-    background: #4649a1;
+.section-btn1:hover,
+.section-btn2:hover {
+    background: #14649a !important;
     color: white;
-    border: 2px solid #4649a1;
+    border: 2px solid #14649a !important;
+}
+
+.section-btn1 i,
+.section-btn2 i {
+    font-size: 16px;
 }
 
 .section-btn1 {
@@ -357,6 +369,21 @@
 .gapp {
     gap: 13px;
 }
+
+.add-officer-btn {
+    padding-right: 20px;   /* 👈 adjust value as needed */
+    text-decoration: underline;
+    text-decoration-color: #14649a !important;
+
+}
+
+.add-officer-btn i {
+    font-size: 20px;
+    color: #14649a !important;
+
+}
+
+
 /* search bar */
 .search-container {
     position: relative;
@@ -366,8 +393,9 @@
 
 .search-container input {
     width: 100%;
+    height: 40px;
     padding: 12px 45px 12px 16px;
-    border: 2px solid #ccc;
+    border: 1px solid #14649a !important;
     border-radius: 30px;
     font-size: 16px;
     outline: none;
@@ -438,10 +466,10 @@
     }
 
 .card  {
-    border: 1px solid b1b1b1;
+    border: 1px solid #b1b1b1;
 }
 .card1 {
-    border: 1px solid D9D9D9 !important;
+    border: 1px solid #D9D9D9 !important;
 }
 
 

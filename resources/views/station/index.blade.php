@@ -14,21 +14,6 @@
     <!-- App Content -->
     <div class="app-content" style="margin: 0; padding: 1rem;">
 
-        <!-- Header -->
-        {{-- <div class="page-header d-flex align-items-center gap-2 mb-3"
-            style="background: #fff; padding: 1rem 1.5rem; border-radius: 8px; justify-content: space-between;">
-            <div class="breadcrumb d-flex align-items-center gap-2 mb-0">
-                <i class="fas fa-home text-primary"></i>
-                <span class="current">सर्व पोलीस ठाणे</span>
-                <span>मुख्य पृष्ठ</span>
-            </div>
-            <span style="text-align: center;">
-                <button onclick="openModal('{{ route('stations.create') }}')" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> पोलीस ठाणे जोडा
-                </button>
-            </span>
-        </div> --}}
-
         <!-- ✅ Flash Messages -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -42,50 +27,32 @@
         @endif
 
         <!-- 🔍 Search Section -->
-        {{-- <div class="card p-4 mb-3">
-            <div class="search-container">
-    <input type="text" id="searchInput" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक">
-    <i class="fas fa-search search-icon"></i>
-</div>
-        </div> --}}
-
-        <!-- ✅ Station Table -->
         <div class="card p-4 mb-3">
             <div class="gapp d-flex">
-
-
-
                 <div class="search-container">
                     <input type="text" id="searchInput" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक">
                     <i class="fas fa-search search-icon"></i>
                 </div>
             </div>
 
+            <!-- Header -->
             <div class="page-header d-flex align-items-center gap-2 mb-3"
                 style="background: #fff; padding: 1rem 1.5rem; border-radius: 8px; justify-content: space-between;">
                 <div class="breadcrumb d-flex align-items-center gap-2 mb-0">
-                    {{-- <i class="fas fa-home text-primary"></i> --}}
                     <span><b>Station</b></span>
-                    {{-- <span>मुख्य पृष्ठ</span> --}}
                 </div>
-               <span style="text-align: center;">
-    <a onclick="openModal('{{ route('stations.create') }}')" class="btn-txt"
-       style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-decoration: none;">
-        <i class="fas fa-plus-circle" style="font-size:20px; color:#133367;"></i>
-        <span style="text-decoration: underline; color: inherit;">Add Station</span>
-    </a>
-</span>
-
+                <span style="text-align: center;">
+                    <a onclick="openModal('{{ route('stations.create') }}')" class="btn-txt"
+                        style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-decoration: none;">
+                        <i class="fas fa-plus-circle" style="font-size:20px; color:#133367;"></i>
+                        <span style="text-decoration: underline; color: inherit;">Add Station</span>
+                    </a>
+                </span>
             </div>
 
+            <!-- ✅ Station Table -->
             <div class="table-section p-3 mb-3 card1"
                 style="background: #fff; border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
-                {{-- <h5 class="mb-2 fw-semibold">Station</h5> --}}
-                {{-- <p class="text-muted mb-3">एकूण नोंदी: {{ $stations->count() }}</p> --}}
-                {{-- --------------------- --}}
-
-                {{-- --------------------- --}}
-
 
                 <table class="table table-bordered align-middle my-rounded-table">
                     <thead class="table-light">
@@ -99,7 +66,8 @@
                             <th class="my-cell">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <!-- ✅ Added ID here -->
+                    <tbody id="stationTable">
                         @forelse ($stations as $key => $station)
                             <tr>
                                 <td class="my-cell1">{{ $key + 1 }}</td>
@@ -108,8 +76,7 @@
                                 <td class="my-cell">{{ $station->city_name ?? 'N/A' }}</td>
                                 <td class="my-cell">{{ $station->station_name ?? 'N/A' }}</td>
                                 <td class="my-cell">
-                                    <span
-                                        class="{{ $station->status == 'Active' ? 'text-success fw-bold' : 'text-danger' }}">
+                                    <span class="{{ $station->status == 'Active' ? 'text-success fw-bold' : 'text-danger' }}">
                                         @if ($station->status == 'Active')
                                             <span class="status-dot"></span> {{ $station->status }}
                                         @else
@@ -121,20 +88,6 @@
                                     <button class="cus-btn">
                                         <i class="fas fa-edit"></i> संपादन
                                     </button>
-                                    <style>
-                                        .cus-btn {
-                                            background: #4db1d3;
-                                            color: white;
-                                            border: none;
-                                            padding: 5px 10px;
-                                            border-radius: 11px;
-                                            cursor: pointer;
-                                        }
-
-                                        .cus-btn i {
-                                            margin-right: 5px;
-                                        }
-                                    </style>
                                 </td>
                             </tr>
                         @empty
@@ -150,11 +103,9 @@
 
     <!-- Modal -->
     <div class="modal fade" id="sewaPustikaModal" tabindex="-1" aria-hidden="true">
-
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-
             <div class="modal-content">
-                <div class="modal-header" style ="background: #FFE0b3;">
+                <div class="modal-header" style="background: #FFE0b3;">
                     <h5 class="modal-title fw-bold">ठाणे जोडा</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -165,8 +116,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
     </div>
 
     <!-- Scripts -->
@@ -182,10 +131,9 @@
                 $.ajax({
                     url: "{{ route('stations.search') }}",
                     method: "GET",
-                    data: {
-                        search: query
-                    },
+                    data: { search: query },
                     success: function(response) {
+                        // Replace only tbody content
                         $('#stationTable').html($(response).find('#stationTable').html());
                     },
                     error: function(xhr) {
@@ -226,4 +174,19 @@
             });
         }
     </script>
+
+    <!-- Inline CSS -->
+    <style>
+        .cus-btn {
+            background: #4db1d3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 11px;
+            cursor: pointer;
+        }
+        .cus-btn i {
+            margin-right: 5px;
+        }
+    </style>
 @endsection
