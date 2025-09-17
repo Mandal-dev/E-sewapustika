@@ -156,6 +156,7 @@ Route::middleware(['setlang'])->group(function () {
 Route::get('/', [LoginUserController::class, 'showLoginPage'])->name('login.page');
 Route::post('/login', [LoginUserController::class, 'login'])->name('login.user');
 
+Route::get('/otp', [LoginUserController::class, 'showOtpPage'])->name('otp.page'); // added
 Route::post('/verify-otp', [LoginUserController::class, 'verifyOtp'])->name('login.verifyOtp');
 
 Route::post('/set-language', function (\Illuminate\Http\Request $request) {

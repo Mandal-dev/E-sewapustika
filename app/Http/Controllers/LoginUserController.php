@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Session;
 
 class LoginUserController extends Controller
 {
+    // ===============================
     // Show login page
+    // ===============================
     public function showLoginPage()
     {
         // If user session exists → redirect to dashboard
@@ -16,14 +18,16 @@ class LoginUserController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return view('login.loginform'); // your Blade file
+        return view('login.loginform'); // login form blade
     }
 
-    // Handle login
+    // ===============================
+    // Handle login (send OTP)
+    // ===============================
     public function login(Request $request)
     {
         $request->validate([
-            'mobile' => 'required|digits:10', // adjust digits as needed
+            'mobile' => 'required|digits:10', // adjust if needed
         ]);
 
         $mobile = $request->input('mobile');
@@ -33,13 +37,15 @@ class LoginUserController extends Controller
             ->first();
 
         if ($user) {
+            // Generate OTP
             $otp = rand(100000, 999999);
             Session::put('otp', $otp);
             Session::put('otp_mobile', $mobile);
 
-            // Here you can integrate SMS sending if needed
+            // (Integrate SMS sending here if required)
 
-            return view('login.otpform')->with('success', 'OTP sent to your mobile.');
+            // ✅ redirect to OTP page route instead of returning view directly
+            return redirect()->route('otp.page')->with('success', 'OTP sent to your mobile.');
         }
 
         return back()->withErrors([
@@ -47,10 +53,26 @@ class LoginUserController extends Controller
         ]);
     }
 
+    // ===============================
+    // Show OTP form page
+    // ===============================
+    public function showOtpPage()
+    {
+        // If no OTP session, force re-login
+        if (!Session::has('otp_mobile')) {
+            return redirect()->route('login.page')
+                ->withErrors(['mobile' => 'Session expired. Please login again.']);
+        }
+
+        return view('login.otpform'); // otp form blade
+    }
+
+    // ===============================
     // Verify OTP
+    // ===============================
     public function verifyOtp(Request $request)
     {
-        // If otp[] (array) exists → combine into string
+        // If otp[] array exists (like input boxes), merge into one string
         if (is_array($request->otp)) {
             $otp = implode('', $request->otp);
             $request->merge(['otp' => $otp]);
@@ -94,10 +116,14 @@ class LoginUserController extends Controller
                 ->withErrors(['otp' => 'User not found or inactive.']);
         }
 
-        return back()->withErrors(['otp' => 'Invalid OTP.']);
+        // ✅ Wrong OTP → redirect to OTP page
+        return redirect()->route('otp.page')
+            ->withErrors(['otp' => 'Invalid OTP.']);
     }
 
+    // ===============================
     // Logout function
+    // ===============================
     public function logout()
     {
         Session::forget('user'); // Clear user session
