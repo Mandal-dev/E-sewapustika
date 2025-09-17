@@ -82,7 +82,7 @@ public function index()
         // paginate
         $polices = $query->orderBy('t4.id', 'desc')->paginate($perPage);
 
-        return view('punishments.index', compact('polices'));
+        return view('Punishments.index', compact('polices'));
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
     }
@@ -114,7 +114,7 @@ public function index()
             ->orderBy('t4.id', 'desc')
             ->first();
 
-        return view('punishments.edit', compact('police'));
+        return view('Punishments.edit', compact('police'));
     }
 
 

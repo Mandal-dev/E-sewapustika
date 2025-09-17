@@ -279,6 +279,34 @@
 
 .table-section{
     box-shadow: none !important;
+    border: 1px solid #b0b0b0 !important;
+}
+
+.section-btn1, .section-btn2 {
+    background: white;
+    border: 0.1px solid #b1b1b1 !important;
+    border-radius: 30px;
+    padding: 3px 10px;
+    font-size: 14px;
+    height: 36px;
+    line-height: 1.2;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.section-btn1:hover, .section-btn2:hover {
+    background: #4649a1;
+    color: white;
+    border: 2px solid #4649a1;
+}
+
+.section-btn1 {
+    width: 150px;  /* reduced from 160px */
+}
+
+.section-btn2 {
+    width: 160px;  /* reduced from 186px */
 }
 
 .grp-btn {
@@ -333,17 +361,28 @@
 .search-container {
     position: relative;
     width: 350px;
-    margin-left: 273px;
+    margin-left: auto;
 }
 
 .search-container input {
     width: 100%;
-    padding: 12px 40px 12px 45px; /* space for logo */
+    padding: 12px 45px 12px 16px;
     border: 2px solid #ccc;
     border-radius: 30px;
     font-size: 16px;
     outline: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* move icon to the right inside input */
+.search-container .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;  /* 👈 icon goes to the right */
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #666;
+    pointer-events: none;
 }
 
 .search-container img {
