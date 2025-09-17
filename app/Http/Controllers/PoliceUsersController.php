@@ -272,6 +272,8 @@ class PoliceUsersController extends Controller
 
         return response()->download($temp_file, $fileName)->deleteFileAfterSend(true);
     }
+
+
     public function import(Request $request)
     {
         // Get logged-in user
@@ -296,6 +298,7 @@ class PoliceUsersController extends Controller
 
         $successCount = 0;
         $failures = [];
+        $insertData = [];
 
         foreach ($rows as $index => $row) {
             $rowNumber = $index + 2;
@@ -306,6 +309,8 @@ class PoliceUsersController extends Controller
             $designation  = trim($row[3] ?? '');
             $email        = trim($row[4] ?? '');
             $mobile       = trim($row[5] ?? '');
+            $countryName  = trim($row[6] ?? '');
+            $stateName    = trim($row[7] ?? '');
             $districtName = trim($row[8] ?? '');
             $stationName  = trim($row[9] ?? '');
 
@@ -314,6 +319,7 @@ class PoliceUsersController extends Controller
                 continue;
             }
 
+            // Check missing required fields
             $missingFields = [];
             if (!$name) $missingFields[] = 'Name';
             if (!$gender) $missingFields[] = 'Gender';
@@ -322,57 +328,101 @@ class PoliceUsersController extends Controller
             if (!$mobile) $missingFields[] = 'Mobile';
             if (!$districtName) $missingFields[] = 'District';
             if (!$stationName) $missingFields[] = 'Police Station';
+            if (!$countryName) $missingFields[] = 'Country';
+            if (!$stateName) $missingFields[] = 'State';
 
             if (!empty($missingFields)) {
                 $failures[] = "Row $rowNumber: Missing required field(s): " . implode(', ', $missingFields) . ".";
                 continue;
             }
 
-            $district = DB::table('districts')->where('district_name', $districtName)->first();
-            if (!$district) {
-                $failures[] = "Row $rowNumber: District '$districtName' not found.";
+            // Validate email & mobile format
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $failures[] = "Row $rowNumber: Invalid email format '$email'.";
                 continue;
             }
 
+            if (!preg_match('/^\d{10}$/', $mobile)) {
+                $failures[] = "Row $rowNumber: Mobile number '$mobile' must be 10 digits.";
+                continue;
+            }
+
+            // Get country
+            $country = DB::table('countries')->where('country_name', $countryName)->first();
+            if (!$country) {
+                $failures[] = "Row $rowNumber: Country '$countryName' not found.";
+                continue;
+            }
+
+            // Get state
+            $state = DB::table('states')->where('state_name', $stateName)->first();
+            if (!$state) {
+                $failures[] = "Row $rowNumber: State '$stateName' not found.";
+                continue;
+            }
+
+            // Get district
+            $district = DB::table('districts')
+                ->where('district_name', $districtName)
+                ->where('state_id', $state->id)
+                ->first();
+
+            if (!$district) {
+                $failures[] = "Row $rowNumber: District '$districtName' not found in state '$stateName'.";
+                continue;
+            }
+
+            // Get police station
             $station = DB::table('police_stations')
                 ->where('name', $stationName)
                 ->where('district_id', $district->id)
                 ->first();
+
             if (!$station) {
                 $failures[] = "Row $rowNumber: Police Station '$stationName' does not belong to District '$districtName'.";
                 continue;
             }
 
+            // Check email uniqueness
             if (DB::table('police_users')->where('email', $email)->exists()) {
                 $failures[] = "Row $rowNumber: Email '$email' is already registered.";
                 continue;
             }
 
-            try {
-                DB::table('police_users')->insert([
-                    'country_id'        => 1,
-                    'state_id'          => $district->state_id ?? null,
-                    'district_id'       => $district->id,
-                    'police_station_id' => $station->id,
-                    'police_name'       => $name,
-                    'email'             => $email,
-                    'mobile'            => $mobile,
-                    'designation_type'  => 'Police',
-                    'post'              => $designation,
-                    'gender'            => $gender,
-                    'buckle_number'     => 0,
-                    'is_active'         => 1,
-                    'is_delete'         => 0,
-                    'created_at'        => now(),
-                    'updated_at'        => now(),
-                ]);
-                $successCount++;
-            } catch (\Exception $e) {
-                $failures[] = "Row $rowNumber: Could not save user due to invalid data.";
-            }
+            // Map designation
+            $designationRow = DB::table('mst_police_designations')->where('designation_name', $designation)->first();
+            $designation_id = $designationRow ? $designationRow->id : null;
+
+            // Prepare data for batch insert
+            $insertData[] = [
+                'country_id'        => $country->id,
+                'state_id'          => $state->id,
+                'district_id'       => $district->id,
+                'police_station_id' => $station->id,
+                'designation_id'    => $designation_id,
+                'police_name'       => $name,
+                'email'             => $email,
+                'mobile'            => $mobile,
+                'designation_type'  => 'Police',
+                'post'              => $designation,
+                'gender'            => $gender,
+                'buckle_number'     => 0,
+                'is_active'         => 1,
+                'is_delete'         => 0,
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ];
+
+            $successCount++;
+        }
+
+        // Insert all valid rows at once
+        if (!empty($insertData)) {
+            DB::table('police_users')->insert($insertData);
         }
 
         $message = "$successCount users imported successfully.";
+
         if (!empty($failures)) {
             $message .= " However, some rows failed:<br>" . implode("<br>", $failures);
             return back()->with('error', $message);
@@ -380,39 +430,6 @@ class PoliceUsersController extends Controller
 
         return back()->with('success', $message);
     }
-
-    public function edit($id)
-    {
-        $police = DB::table('police_users AS u')
-            ->leftJoin('states AS st', 'st.id', '=', 'u.state_id')
-            ->leftJoin('districts AS d', 'd.id', '=', 'u.district_id')
-            ->leftJoin('cities AS c', 'c.id', '=', 'u.city_id')
-            ->leftJoin('police_stations AS ps', 'ps.id', '=', 'u.police_station_id')
-            ->leftJoin('mst_police_designations AS des', 'des.id', '=', 'u.designation_id')
-            ->leftJoin('mst_religions AS religi', 'religi.id', '=', 'u.religion')
-
-            ->where('u.id', $id)
-            ->select('u.*', 'st.state_name', 'religi.name', 'd.district_name', 'c.city_name', 'ps.name AS station_name', 'des.designation_name')
-            ->first();
-
-        if (!$police) {
-            return redirect()->back()->with('error', 'Police record not found.');
-        }
-
-        $countries = DB::table('countries')
-            ->where('status', 'Active')
-            ->where('id', $police->country_id)
-            ->get();
-        $states       = DB::table('states')->where('status', 'Active')->where('id', $police->state_id)->get();
-        $districts    = DB::table('districts')->where('status', 'Active')->where('id', $police->district_id)->get();
-        $cities       = DB::table('cities')->where('status', 'Active')->where('district_id', $police->district_id)->get();
-        $stations     = DB::table('police_stations')->where('status', 'Active')->where('district_id', $police->district_id)->get();
-        $designations = DB::table('mst_police_designations')->where('status', 'Active')->get();
-        $religions    = DB::table('mst_religions')->get();
-
-        return view('police_user.edit', compact('police', 'countries', 'states', 'districts', 'cities', 'stations', 'designations', 'religions'));
-    }
-
 
     public function update(Request $request, $id)
     {
