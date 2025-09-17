@@ -455,7 +455,7 @@ class PoliceUsersController extends Controller
                 'buckle_number'     => $request->buckle_number,
                 'district_id'       => $request->district_id,
                 'state_id'          => $request->state_id,
-                'city_id'           => $request->city_id,
+                'city_id'           => 9,
                 'police_station_id' => $request->station_id,
                 'designation_id'    => $request->designation_id,
                 'designation_type'  => $request->designation_type,
