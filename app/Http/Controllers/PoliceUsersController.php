@@ -276,101 +276,80 @@ class PoliceUsersController extends Controller
     {
         // Get logged-in user
         $user = Session::get('user');
-        if (!$user) {
-            return redirect('/login');
-        }
+        if (!$user) return redirect('/login');
 
-        // Role check
+        // Role check: Police users cannot upload
         if ($user['designation_type'] === 'Police') {
-            return back()->with('error', 'Access denied. You are not allowed to upload CSV files.');
+            return back()->with('error', 'Access denied. You are not allowed to upload Excel files.');
         }
-
-        // Validate CSV
 
         $request->validate([
-            'file' => 'required|mimes:csv,txt|max:102400', // max in KB → 100 MB = 100*1024 KB
+            'file' => 'required|mimes:xlsx,xls'
         ]);
 
+        $file = $request->file('file');
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
 
-        $filePath = $request->file('file')->getRealPath();
+        unset($rows[0]); // skip header row
+
         $successCount = 0;
-        $batchSize = 500; // insert in batches
-        $batchData = [];
+        $failures = [];
 
-        // Log file for errors
-        $logFile = storage_path('logs/csv_import_errors.log');
-        file_put_contents($logFile, ""); // clear old log
+        foreach ($rows as $index => $row) {
+            $rowNumber = $index + 2;
 
-        if (($handle = fopen($filePath, 'r')) !== false) {
-            $rowIndex = 0;
+            $title        = trim($row[0] ?? '');
+            $name         = trim($row[1] ?? '');
+            $gender       = trim($row[2] ?? '');
+            $designation  = trim($row[3] ?? '');
+            $email        = trim($row[4] ?? '');
+            $mobile       = trim($row[5] ?? '');
+            $districtName = trim($row[8] ?? '');
+            $stationName  = trim($row[9] ?? '');
 
-            while (($data = fgetcsv($handle, 0, ",")) !== false) {
-                $rowIndex++;
+            // Skip completely empty rows
+            if (!$title && !$name && !$gender && !$designation && !$email && !$mobile && !$districtName && !$stationName) {
+                continue;
+            }
 
-                // Skip header
-                if ($rowIndex == 1) continue;
+            $missingFields = [];
+            if (!$name) $missingFields[] = 'Name';
+            if (!$gender) $missingFields[] = 'Gender';
+            if (!$designation) $missingFields[] = 'Designation';
+            if (!$email) $missingFields[] = 'Email';
+            if (!$mobile) $missingFields[] = 'Mobile';
+            if (!$districtName) $missingFields[] = 'District';
+            if (!$stationName) $missingFields[] = 'Police Station';
 
-                $title        = trim($data[0] ?? '');
-                $name         = trim($data[1] ?? '');
-                $gender       = ucfirst(strtolower(trim($data[2] ?? '')));
-                $designation  = trim($data[3] ?? '');
-                $email        = trim($data[4] ?? '');
-                $mobile       = trim($data[5] ?? '');
-                $districtName = trim($data[8] ?? '');
-                $stationName  = trim($data[9] ?? '');
-                $buckleNumber = trim($data[11] ?? null);
+            if (!empty($missingFields)) {
+                $failures[] = "Row $rowNumber: Missing required field(s): " . implode(', ', $missingFields) . ".";
+                continue;
+            }
 
-                // Skip empty row
-                if (!$name && !$gender && !$designation && !$email && !$mobile && !$districtName && !$stationName) {
-                    continue;
-                }
+            $district = DB::table('districts')->where('district_name', $districtName)->first();
+            if (!$district) {
+                $failures[] = "Row $rowNumber: District '$districtName' not found.";
+                continue;
+            }
 
-                // Required fields check
-                $missingFields = [];
-                if (!$name) $missingFields[] = 'Name';
-                if (!$gender) $missingFields[] = 'Gender';
-                if (!$designation) $missingFields[] = 'Designation';
-                if (!$email) $missingFields[] = 'Email';
-                if (!$mobile) $missingFields[] = 'Mobile';
-                if (!$districtName) $missingFields[] = 'District';
-                if (!$stationName) $missingFields[] = 'Police Station';
+            $station = DB::table('police_stations')
+                ->where('name', $stationName)
+                ->where('district_id', $district->id)
+                ->first();
+            if (!$station) {
+                $failures[] = "Row $rowNumber: Police Station '$stationName' does not belong to District '$districtName'.";
+                continue;
+            }
 
-                if (!empty($missingFields)) {
-                    file_put_contents($logFile, "Row $rowIndex: Missing fields - " . implode(', ', $missingFields) . "\n", FILE_APPEND);
-                    continue;
-                }
+            if (DB::table('police_users')->where('email', $email)->exists()) {
+                $failures[] = "Row $rowNumber: Email '$email' is already registered.";
+                continue;
+            }
 
-                // Normalize gender
-                if ($gender == 'M') $gender = 'Male';
-                elseif ($gender == 'F') $gender = 'Female';
-                elseif (!in_array($gender, ['Male', 'Female', 'Other'])) $gender = 'Other';
-
-                // District and station check
-                $district = DB::table('districts')->where('district_name', $districtName)->first();
-                $station  = $district ? DB::table('police_stations')->where('district_id', $district->id)->where('name', $stationName)->first() : null;
-
-                if (!$district || !$station) {
-                    file_put_contents($logFile, "Row $rowIndex: Invalid district or station\n", FILE_APPEND);
-                    continue;
-                }
-
-                // Email/mobile uniqueness
-                if (DB::table('police_users')->where('email', $email)->exists()) {
-                    file_put_contents($logFile, "Row $rowIndex: Email '$email' already exists\n", FILE_APPEND);
-                    continue;
-                }
-
-                if (DB::table('police_users')->where('mobile', $mobile)->exists()) {
-                    file_put_contents($logFile, "Row $rowIndex: Mobile '$mobile' already exists\n", FILE_APPEND);
-                    continue;
-                }
-
-                // Optional: map designation to designation_id
-                $designationRow = DB::table('designations')->where('name', $designation)->first();
-                $designationId = $designationRow->id ?? null;
-
-                // Prepare batch
-                $batchData[] = [
+            try {
+                DB::table('police_users')->insert([
                     'country_id'        => 1,
                     'state_id'          => $district->state_id ?? null,
                     'district_id'       => $district->id,
@@ -378,50 +357,27 @@ class PoliceUsersController extends Controller
                     'police_name'       => $name,
                     'email'             => $email,
                     'mobile'            => $mobile,
-                    'designation_id'    => $designationId,
                     'designation_type'  => 'Police',
                     'post'              => $designation,
                     'gender'            => $gender,
-                    'buckle_number'     => $buckleNumber,
+                    'buckle_number'     => 0,
                     'is_active'         => 1,
                     'is_delete'         => 0,
                     'created_at'        => now(),
                     'updated_at'        => now(),
-                ];
-
-                // Insert in batch
-                if (count($batchData) >= $batchSize) {
-                    try {
-                        DB::table('police_users')->insert($batchData);
-                        $successCount += count($batchData);
-                        $batchData = [];
-                    } catch (\Exception $e) {
-                        foreach ($batchData as $bIndex => $row) {
-                            file_put_contents($logFile, "Row $rowIndex (batch): " . $e->getMessage() . "\n", FILE_APPEND);
-                        }
-                        $batchData = [];
-                    }
-                }
+                ]);
+                $successCount++;
+            } catch (\Exception $e) {
+                $failures[] = "Row $rowNumber: Could not save user due to invalid data.";
             }
-
-            // Insert remaining rows
-            if (!empty($batchData)) {
-                try {
-                    DB::table('police_users')->insert($batchData);
-                    $successCount += count($batchData);
-                } catch (\Exception $e) {
-                    foreach ($batchData as $row) {
-                        file_put_contents($logFile, "Row $rowIndex (batch): " . $e->getMessage() . "\n", FILE_APPEND);
-                    }
-                }
-            }
-
-            fclose($handle);
-        } else {
-            return back()->with('error', 'Could not open the CSV file.');
         }
 
-        $message = "$successCount users imported successfully. Check log file for errors: storage/logs/csv_import_errors.log";
+        $message = "$successCount users imported successfully.";
+        if (!empty($failures)) {
+            $message .= " However, some rows failed:<br>" . implode("<br>", $failures);
+            return back()->with('error', $message);
+        }
+
         return back()->with('success', $message);
     }
 
