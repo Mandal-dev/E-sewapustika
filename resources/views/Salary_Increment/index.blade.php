@@ -95,18 +95,24 @@
                                         <span class="text-muted">नाही</span>
                                     @endif
                                 </td>
-                                <td>
-                                    @if ($designation === 'Head_Person')
-                                        <button class="btn btn-sm btn-warning"
-                                            onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
-                                            <i class="fas fa-edit"></i> वेतनवाढ जोडा
-                                        </button>
-                                    @endif
 
-                                    <a href="{{ route('police_profile.index', $police->police_user_id) }}"
-                                        class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                                     <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <!-- Edit Icon -->
+                                        <button class="btn btn-primary btn-sm"
+                                            onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')"
+                                            title="Edit" style="padding: 6px 10px; border-radius: 50%;">
+                                           <i class="fas fa-plus"></i>
+</i>
+                                        </button>
+
+                                        <!-- View Icon -->
+                                        <a href="{{ route('police_profile.index', $police->police_user_id) }}"
+                                            class="btn btn-info btn-sm" title="View"
+                                            style="padding: 6px 10px; border-radius: 50%;">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

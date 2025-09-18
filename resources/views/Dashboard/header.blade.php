@@ -21,10 +21,21 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <h1>Maharashtra<br>Police</h1>
-            <p>Admin System</p>
-        </div>
+             <div class="dash-img">
+                <a href="#"><i class="fa-solid fa-user logo-icon"></i></a>
+                <div class="profile-pic">
+                    <img src="{{ asset('img/police image.png') }}" alt="Profile Picture">
+                </div>
+                <a href="#"><i class="fa-solid fa-gear logo-icon"></i></a>
+            </div><br>
 
+            <h1>{{ Session::get('user.name', 'Maharashtra') }}</h1>
+            <p>
+                {{ Session::get('user.designation_type', 'Police') }}
+                &nbsp;
+                {{ Session::get('user.district_name', 'Admin System') }}
+            </p>
+        </div>
         <nav class="nav">
             <a href="{{ route('dashboard') }}" class="active">
                 <span class="db material-icons" style="color:white">grid_view</span> Dashboard

@@ -123,15 +123,16 @@
                        STATUS BADGES
                     --------------------------------*/
         .status {
-            color: green;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    font-weight: 500;
+    display: flex;              /* keep label + value in same row */
+    align-items: center;        /* vertically center */
+    gap: 6px;                   /* space between Status: and Active */
+}
+
+
 
         .status-dot {
-            width: 10px;
+            width: 8px;
             height: 10px;
             background: green;
             border-radius: 50%;
@@ -221,6 +222,19 @@
             animation: fadeIn 0.3s ease;
         }
 
+       .modal-footer{
+         background-color: white !important;
+       }
+
+
+
+        .modal-body {
+    background-color: transparent !important; /* allow background image to show */
+}
+        .modal-header{
+            background-color: #e9f5ff;
+        }
+
         .custom-modal .modal-header {
             background: var(--primary);
             color: #fff;
@@ -246,6 +260,104 @@
             padding: 2rem;
             text-align: center;
         }
+
+
+
+
+
+     /* ADD officer Form */
+
+     .two-col-form input,
+.two-col-form select {
+    padding: 8px 12px;
+    border: 1px solid #b0b0b0;
+    border-radius: 11px !important;   /* 👈 updated */
+    font-size: 14px;
+    width: 100%;
+}
+
+
+.two-col-form input,
+.two-col-form select,
+.two-col-form textarea {
+    padding: 8px 12px;
+    border: 1px solid #b0b0b0;
+    border-radius: 11px !important ;   /* 👈 same rounded corners */
+    font-size: 14px;
+    width: 100%;
+}
+
+
+.two-col-form .form-group label {
+    margin: 0;
+    width: 120px;             /* fixed width so labels align neatly */
+    text-align: left;
+    font-weight: 400 !important;        /* align label text to the left */
+}
+
+
+
+
+
+
+/* Highlight specific fields */
+.two-col-form .form-group select {
+    border-radius: 11px;
+    border: 1px solid #b0b0b0;
+}
+
+/* Gender, Religion, Education, Caste, Language form-groups */
+
+.two-col-form select[name="gender"],
+.two-col-form select[name="religion"],
+.two-col-form input[name="education"],
+.two-col-form select[name="caste"],
+.two-col-form input[name="language"] {
+    background-color: #e9f5ff !important;
+    border-radius: 11px;
+}
+
+
+        /* Light green submit button */
+.custom-success {
+    background-color: #27b001 !important; /* light green */
+    border: 1px solid #5cb85c !important;
+    color: white !important;
+    border-radius: 11px !important;
+    padding: 6px 12px;        /* smaller button */
+    width: 120px;
+    height: 38px;             /* fixed width */
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+
+.custom-cancel {
+    background-color: #fff !important;
+    border: 1px solid #b1b1b1 !important;
+    color: #000 !important;
+    border-radius: 11px !important;
+    padding: 6px 16px;
+     width: 120px;
+    height: 38px;           /* same width as submit */
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+
+/* White cancel button */
+.custom-cancel {
+    background-color: #fff !important;
+    border: 1px solid #b1b1b1 !important;
+    color: #000 !important;
+}
+
+.custom-cancel:hover {
+    background-color: #f5f5f5 !important; /* light grey on hover */
+}
+
 
         @keyframes fadeIn {
             from {
@@ -473,4 +585,105 @@
 }
 
 
-/* Or you can also increase row height with line-height */
+
+
+
+/* Mobile Responsive Table -> Cards */
+
+
+@media (max-width: 768px) {
+  table.my-rounded-table {
+    display: none; /* hide the table layout */
+  }
+
+  .officer-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    gap: 30px;
+  }
+
+  .officer-card .left-col {
+    flex: 1;
+  }
+
+  .officer-card .left-col p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .officer-card .left-col p.name {
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .officer-card .right-col {
+    text-align: right;
+    flex: 1;
+  }
+
+  .officer-card .right-col p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .officer-card .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: #14649a;
+    color: #fff;
+    font-size: 13px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    height: 20px;
+    width: 70px;
+    text-decoration: none;
+  }
+
+  .officer-card .action-btn i {
+    font-size: 14px;
+  }
+}
+
+
+
+/* Mobile Responsive Table -> for .index */
+
+
+@media (max-width: 768px) {
+    /* Stack vertically instead of side by side */
+    .d-flex.justify-content-between {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+
+    /* Keep buttons side by side */
+    .d-flex.justify-content-between .d-flex.gap-2 {
+        flex-direction: row !important;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    /* Search bar full width below buttons */
+    .search-container {
+        width: 100% !important;
+    }
+
+    .search-container input {
+        width: 100% !important;
+    }
+}

@@ -14,7 +14,7 @@ class PayMatrixImportController extends Controller
 public function import(Request $request)
 {
     $user = Session::get('user');
-    if (!$user) return redirect('/login');
+    if (!$user) return redirect('/');
 
     $request->validate([
         'file' => 'required|mimes:csv,txt'

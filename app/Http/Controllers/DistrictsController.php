@@ -16,7 +16,7 @@ class DistrictsController extends Controller
         $user = Session::get('user');
 
         if (!$user) {
-            return redirect()->route('login')->with('error', 'Unauthenticated');
+            return redirect()->route('login.page')->with('error', 'Unauthenticated');
         }
 
         $userId = $user['id'];

@@ -18,7 +18,7 @@ class PoliceStationsController extends Controller
             $user = Session::get('user');
 
             if (!$user) {
-                return redirect('/login');
+                return redirect('/');
             }
 
             $userId = $user['id'];

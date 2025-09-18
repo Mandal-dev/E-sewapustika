@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
@@ -26,7 +24,7 @@ class PoliceUsersController extends Controller
 
         try {
             $user = Session::get('user');
-            if (!$user) return redirect('/login');
+            if (!$user) return redirect('/');
 
             $userId = $user['id'];
             $stations     = collect();

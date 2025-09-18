@@ -16,7 +16,7 @@ public function index()
 {
     try {
         $user = Session::get('user');
-        if (!$user) return redirect('/login');
+        if (!$user) return redirect('/');
 
         // Get latest salary increment per police_id
         $latestIncrement = DB::table('salary_increments')
@@ -374,5 +374,6 @@ public function getSalary(Request $request)
 
     return response()->json(['salary' => $salary]);
 }
+
 
 }
