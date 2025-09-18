@@ -235,7 +235,9 @@ class PoliceUsersController extends Controller
                 'u.police_name',
                 'u.buckle_number',
                 'u.designation_type',
-                's.name AS station_name'
+                's.name AS station_name',
+                'u.post',
+                 'u.mobile'
             )
                 ->orderBy('u.police_name')
                 ->get();

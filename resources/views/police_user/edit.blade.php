@@ -155,7 +155,7 @@
                 <label class="form-label fw-semibold">Designation Type</label>
                 <select name="designation_type" class="form-select" required>
                     <option value="">-- पद निवडा --</option>
-                    <option value="Head_person" {{ old('designation_type', $police->designation_type ?? '') == 'Head_person' ? 'selected' : '' }}>SP</option>
+                    <option value="Head_person" {{ old('designation_type', $police->designation_type ?? '') == 'Head_Person' ? 'selected' : '' }}>SP</option>
                     <option value="Station_Head" {{ old('designation_type', $police->designation_type ?? '') == 'Station_Head' ? 'selected' : '' }}>Station Head</option>
                     <option value="Police" {{ old('designation_type', $police->designation_type ?? '') == 'Police' ? 'selected' : '' }}>Police</option>
                 </select>
