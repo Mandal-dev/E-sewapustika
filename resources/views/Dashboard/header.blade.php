@@ -8,7 +8,7 @@
 
     <!-- Google Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- FontAwesome for extra icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/new_dashboard.css') }}">
 
@@ -26,7 +26,6 @@
         </div>
 
         <nav class="nav">
-            <!-- Dashboard -->
             <a href="{{ route('dashboard') }}" class="active">
                 <span class="db material-icons" style="color:white">grid_view</span> Dashboard
             </a>
@@ -35,7 +34,6 @@
                 $designation = Session::get('user.designation_type');
             @endphp
 
-            <!-- Manage Masters (Only Admin / Head_Person) -->
             @if (in_array($designation, ['Admin', 'Head_Person']))
                 <div class="nav-group">
                     <div class="nav-group-header">
@@ -62,7 +60,6 @@
                 </div>
             @endif
 
-            <!-- Police Information -->
             <div class="nav-group">
                 <div class="nav-group-header">
                     <i class="fas fa-clipboard-list"></i>
@@ -108,7 +105,6 @@
                             {{ app()->getLocale() == 'mr' ? 'मराठी' : 'English' }}
                         </span>
 
-                        <!-- Hidden Language Form -->
                         <form id="languageForm" method="POST" action="{{ url('set-language') }}"
                             style="display:none; position:absolute; top:30px; right:0; background:#fff; padding:6px; border:1px solid #ccc; border-radius:6px; z-index:1000;">
                             @csrf
@@ -132,7 +128,6 @@
                     style="width:24px; height:24px; cursor:pointer;"
                     onclick="confirmLogout(event)">
 
-                <!-- Hidden Logout Form -->
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                     @csrf
                 </form>
@@ -146,132 +141,140 @@
 
     <!-- JS -->
     <script>
-        const menuBtn = document.getElementById('menuBtn');
-        const sidebar = document.getElementById('sidebar');
-        const backdrop = document.getElementById('backdrop');
-        const mainContent = document.getElementById('mainContent');
+        (function () {
+            // Check if already initialized
+            if (window.sidebarInitialized) return;
+            window.sidebarInitialized = true;
 
-        // Toggle Sidebar
-        function toggleSidebar() {
-            if (window.innerWidth >= 768) {
-                sidebar.classList.toggle('hidden-sidebar');
-                mainContent.style.marginLeft = sidebar.classList.contains('hidden-sidebar') ? '0' : '16rem';
-            } else {
-                sidebar.classList.toggle('open');
-                backdrop.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
-            }
-        }
+            const menuBtn = document.getElementById('menuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+            const mainContent = document.getElementById('mainContent');
 
-        // Init Sidebar
-        function initSidebar() {
-            if (window.innerWidth >= 768) {
-                sidebar.classList.remove('hidden-sidebar');
-                sidebar.classList.add('open');
-                mainContent.style.marginLeft = '16rem';
-                backdrop.style.display = 'none';
-            } else {
-                sidebar.classList.remove('open', 'hidden-sidebar');
-                mainContent.style.marginLeft = '0';
-                backdrop.style.display = 'none';
-            }
-        }
+            if (!menuBtn || !sidebar || !backdrop || !mainContent) return;
 
-        menuBtn.addEventListener('click', toggleSidebar);
-        backdrop.addEventListener('click', toggleSidebar);
-        window.addEventListener('resize', initSidebar);
-        document.addEventListener('DOMContentLoaded', initSidebar);
-
-        // Submenu toggle
-        document.querySelectorAll('.nav-group-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const submenu = header.nextElementSibling;
-                const arrow = header.querySelector('.arrow');
-
-                submenu.classList.toggle('open');
-                header.classList.toggle('open-header');
-
-                if (arrow.classList.contains('fa-chevron-down')) {
-                    arrow.classList.remove('fa-chevron-down');
-                    arrow.classList.add('fa-chevron-up');
+            // Toggle Sidebar
+            function toggleSidebar() {
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.toggle('hidden-sidebar');
+                    mainContent.style.marginLeft = sidebar.classList.contains('hidden-sidebar') ? '0' : '16rem';
                 } else {
-                    arrow.classList.remove('fa-chevron-up');
-                    arrow.classList.add('fa-chevron-down');
+                    sidebar.classList.toggle('open');
+                    backdrop.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
                 }
+            }
 
-                document.querySelectorAll('.nav-group-header').forEach(other => {
-                    if (other !== header) {
-                        other.classList.remove('open-header');
-                        other.nextElementSibling.classList.remove('open');
-                        const otherArrow = other.querySelector('.arrow');
-                        if (otherArrow) {
-                            otherArrow.classList.remove('fa-chevron-up');
-                            otherArrow.classList.add('fa-chevron-down');
+            // Init Sidebar
+            function initSidebar() {
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.remove('hidden-sidebar');
+                    sidebar.classList.add('open');
+                    mainContent.style.marginLeft = '16rem';
+                    backdrop.style.display = 'none';
+                } else {
+                    sidebar.classList.remove('open', 'hidden-sidebar');
+                    mainContent.style.marginLeft = '0';
+                    backdrop.style.display = 'none';
+                }
+            }
+
+            menuBtn.addEventListener('click', toggleSidebar);
+            backdrop.addEventListener('click', toggleSidebar);
+            window.addEventListener('resize', initSidebar);
+            document.addEventListener('DOMContentLoaded', initSidebar);
+
+            // Submenu toggle
+            document.querySelectorAll('.nav-group-header').forEach(header => {
+                header.addEventListener('click', () => {
+                    const submenu = header.nextElementSibling;
+                    const arrow = header.querySelector('.arrow');
+
+                    submenu.classList.toggle('open');
+                    header.classList.toggle('open-header');
+
+                    if (arrow) {
+                        arrow.classList.toggle('fa-chevron-down');
+                        arrow.classList.toggle('fa-chevron-up');
+                    }
+
+                    // Close other submenus
+                    document.querySelectorAll('.nav-group-header').forEach(other => {
+                        if (other !== header) {
+                            other.classList.remove('open-header');
+                            if (other.nextElementSibling) other.nextElementSibling.classList.remove('open');
+                            const otherArrow = other.querySelector('.arrow');
+                            if (otherArrow) {
+                                otherArrow.classList.remove('fa-chevron-up');
+                                otherArrow.classList.add('fa-chevron-down');
+                            }
                         }
+                    });
+                });
+            });
+
+            // Highlight active link
+            document.querySelectorAll('.nav a, .submenu a, .nav-submenu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    document.querySelectorAll('.submenu a, .nav-submenu a').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
+
+            // Language dropdown
+            const langDropdown = document.querySelector('.lang-dropdown');
+            const selectedLangSpan = document.querySelector('.selected-lang');
+            const langMenu = document.querySelector('.lang-menu');
+
+            if (langDropdown && langMenu && selectedLangSpan) {
+                document.querySelector('.lang-toggle').addEventListener('click', () => {
+                    langDropdown.classList.toggle('show');
+                });
+
+                langMenu.querySelectorAll('div').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const langCode = item.dataset.lang;
+                        const langLabel = item.dataset.label;
+
+                        selectedLangSpan.textContent = langLabel;
+                        langDropdown.classList.remove('show');
+
+                        langMenu.querySelectorAll('div').forEach(div => {
+                            div.style.display = div.dataset.lang === langCode ? 'none' : 'block';
+                        });
+                    });
+                });
+
+                // Initialize
+                const current = selectedLangSpan.textContent.trim();
+                langMenu.querySelectorAll('div').forEach(div => {
+                    div.style.display = div.dataset.label === current ? 'none' : 'block';
+                });
+
+                window.addEventListener('click', e => {
+                    if (!e.target.closest('.lang-dropdown')) {
+                        langDropdown.classList.remove('show');
                     }
                 });
-            });
-        });
-
-        // Highlight active link
-        document.querySelectorAll('.nav a, .submenu a, .nav-submenu a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelectorAll('.submenu a, .nav-submenu a').forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
-        });
-
-        const langDropdown = document.querySelector('.lang-dropdown');
-        const selectedLangSpan = document.querySelector('.selected-lang');
-        const langMenu = document.querySelector('.lang-menu');
-
-        document.querySelector('.lang-toggle').addEventListener('click', () => {
-            langDropdown.classList.toggle('show');
-        });
-
-        langMenu.querySelectorAll('div').forEach(item => {
-            item.addEventListener('click', () => {
-                const langCode = item.dataset.lang;
-                const langLabel = item.dataset.label;
-
-                selectedLangSpan.textContent = langLabel;
-                langDropdown.classList.remove('show');
-
-                langMenu.querySelectorAll('div').forEach(div => {
-                    div.style.display = div.dataset.lang === langCode ? 'none' : 'block';
-                });
-            });
-        });
-
-        (function initLang() {
-            const current = selectedLangSpan.textContent.trim();
-            langMenu.querySelectorAll('div').forEach(div => {
-                div.style.display = div.dataset.label === current ? 'none' : 'block';
-            });
-        })();
-
-        window.addEventListener('click', e => {
-            if (!e.target.closest('.lang-dropdown')) {
-                langDropdown.classList.remove('show');
             }
-        });
 
-        // SweetAlert2 Logout Confirmation
-        function confirmLogout(event) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Logout?',
-                text: "Are you sure you want to log out?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, logout'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        }
+            // Logout confirmation
+            window.confirmLogout = function (event) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Logout?',
+                    text: "Are you sure you want to log out?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, logout'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('logout-form').submit();
+                    }
+                });
+            };
+        })();
     </script>
 </body>
 </html>

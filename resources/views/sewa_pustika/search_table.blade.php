@@ -7,8 +7,10 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Sr. No</th>
-                                <th>Station Name</th>
+                                <th>Department</th>
+                                <th>Post</th>
                                 <th>Police Name</th>
+                                <th>Mobile no</th>
                                 <th>Buckle No.</th>
                                 <th>Sewa Pustika</th>
                                 <th>Action</th>
@@ -19,7 +21,10 @@
                             <tr>
                                 <td>{{ $polices->firstItem() + $index }}</td>
                                 <td>{{ $police->police_station_name }}</td>
+                                <td>{{ $police->post }}</td>
                                 <td>{{ $police->police_name }}</td>
+                                <td>{{ $police->mobile }}</td>
+
                                 <td>{{ $police->buckle_number }}</td>
                                 <td>
                                     @if ($police->sewapusticapath)
@@ -31,15 +36,24 @@
                                         <span class="text-muted">नाही</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning"
-                                        onclick="openModal('{{ route('sewa_pustika.addshow', $police->police_user_id) }}')">
-                                        <i class="fas fa-edit"></i> पुस्तिका जोडा
-                                    </button>
-                                    <a href="{{ route('police_profile.index', $police->police_user_id) }}"
-                                        class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+
+
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <!-- Edit Icon -->
+                                        <button class="btn btn-primary btn-sm"
+                                            onclick="openModal('{{ route('sewa_pustika.addshow', $police->police_user_id) }}')"
+                                            title="Edit" style="padding: 6px 10px; border-radius: 50%;">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        <!-- View Icon -->
+                                        <a href="{{ route('police_profile.index', $police->police_user_id) }}"
+                                            class="btn btn-info btn-sm" title="View"
+                                            style="padding: 6px 10px; border-radius: 50%;">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

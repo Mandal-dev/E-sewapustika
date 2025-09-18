@@ -61,18 +61,26 @@
 
 <!-- Scripts -->
 <script>
+$(document).ready(function() {
+    const spinnerHtml = `
+        <div class="p-5 text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">लोड होत आहे...</span>
+            </div>
+        </div>
+    `;
+
+    // Auto-hide alerts
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 4000);
+
+    // Open modal and load content via AJAX
     function openModal(url) {
         const modalElement = document.getElementById('sewaPustikaModal');
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
-
-        $('#sewaPustikaModalBody').html(`
-            <div class="p-5 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">लोड होत आहे...</span>
-                </div>
-            </div>
-        `);
+        $('#sewaPustikaModalBody').html(spinnerHtml);
 
         $.ajax({
             url: url,
@@ -90,65 +98,65 @@
         });
     }
 
-    $(document).ready(function() {
-        // Auto-hide alerts
-        setTimeout(function() {
-            $('.alert').fadeOut('slow');
-        }, 4000);
+    // Debounce function to limit AJAX calls on typing
+    function debounce(func, delay) {
+        let timeout;
+        return function() {
+            const context = this;
+            const args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), delay);
+        };
+    }
 
-        // Debounce function to limit AJAX calls on typing
-        function debounce(func, delay) {
-            let timeout;
-            return function() {
-                const context = this;
-                const args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), delay);
-            };
-        }
+    // AJAX search function
+    function performSearch() {
+        let keyword = $('#searchKeyword').val();
+        let designation = $('#searchDesignation').val();
 
-        // AJAX search function
-        function performSearch() {
-            let keyword = $('#searchKeyword').val();
-            let designation = $('#searchDesignation').val();
+        $.ajax({
+            url: "{{ route('sevapustika.search') }}",
+            type: "GET",
+            data: { keyword: keyword, designation: designation },
+            success: function(response) {
+                $('#policeTable').html(response);
+            },
+            error: function() {
+                alert("डेटा लोड करण्यात अडचण आली");
+            }
+        });
+    }
 
-            $.ajax({
-                url: "{{ route('sevapustika.search') }}",
-                type: "GET",
-                data: { keyword: keyword, designation: designation },
-                success: function(response) {
-                    $('#policeTable').html(response);
-                },
-                error: function() {
-                    alert("डेटा लोड करण्यात अडचण आली");
-                }
-            });
-        }
+    // Trigger search on typing (with debounce)
+    $('#searchKeyword').on('input', debounce(performSearch, 500));
 
-        // Trigger search on typing (with debounce)
-        $('#searchKeyword').on('input', debounce(performSearch, 500));
+    // Trigger search on designation change
+    $('#searchDesignation').change(performSearch);
 
-        // Trigger search on designation change
-        $('#searchDesignation').change(performSearch);
+    // Trigger search on search button click
+    $('#searchButton').click(performSearch);
 
-        // Trigger search on search button click
-        $('#searchButton').click(performSearch);
+    // Handle pagination clicks via AJAX
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        let url = $(this).attr('href');
+        let keyword = $('#searchKeyword').val();
+        let designation = $('#searchDesignation').val();
 
-        // Handle pagination clicks via AJAX
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault();
-            let url = $(this).attr('href');
-            let keyword = $('#searchKeyword').val();
-            let designation = $('#searchDesignation').val();
-
-            $.ajax({
-                url: url,
-                data: { keyword: keyword, designation: designation },
-                success: function(response) {
-                    $('#policeTable').html(response);
-                }
-            });
+        $.ajax({
+            url: url,
+            data: { keyword: keyword, designation: designation },
+            success: function(response) {
+                $('#policeTable').html(response);
+            }
         });
     });
+
+    // Delegated event for modal edit buttons
+    $(document).on('click', '.menuBtn', function() {
+        let url = $(this).data('url');
+        openModal(url);
+    });
+});
 </script>
 @endsection
