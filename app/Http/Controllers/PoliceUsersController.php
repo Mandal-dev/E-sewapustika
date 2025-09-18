@@ -44,7 +44,7 @@ class PoliceUsersController extends Controller
                     ->where('u.police_station_id', $myStationId)
                     ->where('u.is_delete', 'No')
 
-                    ->select('u.id', 'u.name', 'u.buckle_number', 'u.designation_type', 's.name AS station_name')
+                    ->select('u.id', 'u.name', 'u.buckle_number', 'u.designation_type', 's.name AS station_name','u.post', 'u.mobile')
                     ->orderBy('u.name')
                     ->get();
             } elseif ($user['designation_type'] === 'Head_Person') {
@@ -56,7 +56,7 @@ class PoliceUsersController extends Controller
                     ->where('u.district_id', $user['district_id'])
                     ->where('u.is_delete', 'No')
 
-                    ->select('u.id', 'u.police_name', 'u.buckle_number', 'u.designation_type', 's.name AS station_name')
+                    ->select('u.id', 'u.police_name', 'u.buckle_number', 'u.designation_type', 's.name AS station_name','u.post', 'u.mobile')
                     ->orderBy('u.police_name')
                     ->get();
             } elseif ($user['designation_type'] === 'Admin') {
@@ -68,7 +68,7 @@ class PoliceUsersController extends Controller
                     ->join('police_stations AS s', 's.id', '=', 'u.police_station_id')
                     ->where('u.is_delete', 'No')
 
-                    ->select('u.id', 'u.police_name', 'u.buckle_number', 'u.designation_type', 's.name AS station_name')
+                    ->select('u.id', 'u.police_name', 'u.buckle_number', 'u.designation_type', 's.name AS station_name','u.post', 'u.mobile')
                     ->orderBy('u.police_name')
                     ->get();
             }

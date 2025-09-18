@@ -119,7 +119,7 @@
                 <label class="form-label fw-semibold">Designation Type</label>
                 <select name="designation_type" class="form-select">
                     <option value="">-- पद निवडा --</option>
-                    <option value="Head_person">SP</option>
+                    <option value="Head_Person">SP</option>
                     <option value="Station_Head">Station Head</option>
                     <option value="Police">Police</option>
                 </select>

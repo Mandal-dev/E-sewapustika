@@ -11,20 +11,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <div class="app-content" style="margin: 0; padding: 1rem;">
-
-    <!-- Header -->
-    <div class="page-header d-flex justify-content-between align-items-center mb-2"
-         style="background: #fff; padding: 1rem 1.5rem; border-radius: 8px;">
-        <div class="breadcrumb d-flex align-items-center gap-2 mb-0">
-            <i class="fas fa-home text-primary"></i>
-            <span class="current fw-bold text-dark">सेवा पुस्तिका </span>
-            <span class="side-menu-text text-muted">मुख्य पृष्ठ</span>
-        </div>
-        <button class="btn btn-primary" onclick="openModal('{{ route('police.create') }}')">
-            <i class="fas fa-plus"></i> सेवा पुस्तिका जोडा
-        </button>
-    </div>
-
     <!-- Flash Messages -->
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">

@@ -5,6 +5,7 @@
                     <th>क्रमांक</th>
                     <th>नाव</th>
                     <th>बकल क्रमांक</th>
+                        <th>
                     <th>पद</th>
                     <th>ठाणे</th>
                     <th>क्रिया</th> <!-- ✅ New column for actions -->
@@ -17,7 +18,7 @@
                         <td>{{ $key + 1 }}</td>
                         <td>{{ $police->police_name ?? 'N/A' }}</td>
                         <td>{{ $police->buckle_number ?? 'N/A' }}</td>
-                        <td>{{ $police->designation_type ?? 'N/A' }}</td>
+                        <td>{{ $police->post'N/A' }}</td>
                         <td>{{ $police->station_name ?? 'N/A' }}</td>
                         <td>
                             <button class="cus-btn btn btn-primary"

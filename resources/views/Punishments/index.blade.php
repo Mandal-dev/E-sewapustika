@@ -12,22 +12,12 @@
 
     <!-- App Content -->
     <div class="app-content" style="margin: 0; padding: 1rem;">
-         @php
-                $designation = Session::get('user.designation_type');
-            @endphp
+        @php
+            $designation = Session::get('user.designation_type');
+        @endphp
 
         <!-- Header -->
-        <div class="page-header d-flex justify-content-between align-items-center mb-2"
-            style="background: #fff; padding: 1rem 1.5rem; border-radius: 8px;">
-            <div class="breadcrumb d-flex align-items-center gap-2 mb-0">
-                <i class="fas fa-home text-primary"></i>
-                <span class="current fw-bold text-dark">शिक्षा </span>
-                <span class="side-menu-text text-muted">मुख्य पृष्ठ</span>
-            </div>
-            <button class="btn btn-primary" onclick="openModal('{{ route('police.create') }}')">
-                <i class="fas fa-plus"></i>शिक्षा जोडा
-            </button>
-        </div>
+
 
         <!-- ✅ Flash Messages -->
         @if (session('success'))
@@ -59,12 +49,13 @@
 
         <!-- Table Section -->
         <div class="table-section p-3" style="background: #fff; border-radius: 8px;">
-            <h5 class="mb-2 fw-semibold">शिक्षा जोडा यादी</h5>
-            <p class="text-muted mb-3">एकूण नोंदी</p>
+            <h5 class="mb-2 fw-semibold">शिक्षा यादी</h5>
 
-            <div class="table-responsive ps-2" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-bordered">
-                    <thead>
+
+            <div class="table-responsive" style="max-height:400px;overflow-y:auto;padding:10px;">
+                <table class="table table-bordered align-middle my-rounded-table">
+                    <thead class="table-light">
+
                         <tr>
                             <th>क्रमांक</th>
                             <th>अधिकाऱ्याचे नाव</th>
@@ -100,11 +91,12 @@
                                     @endif
                                 </td>
 
-                                <td>@if (in_array($designation, ['Head_Person']))
-                                    <button class="btn btn-sm btn-warning"
-                                        onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
-                                        <i class="fas fa-edit"></i> शिक्षा जोडा
-                                    </button>
+                                <td>
+                                    @if (in_array($designation, ['Head_Person']))
+                                        <button class="btn btn-sm btn-warning"
+                                            onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
+                                            <i class="fas fa-edit"></i> शिक्षा जोडा
+                                        </button>
                                     @endif
                                     <a href="{{ route('police_profile.index', $police->police_user_id) }}"
                                         class="btn btn-sm btn-info">

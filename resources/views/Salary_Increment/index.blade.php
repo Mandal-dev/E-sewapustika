@@ -12,17 +12,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <div class="app-content" style="margin: 0; padding: 1rem;">
+    <div class="app-content">
 
-        <!-- Header -->
-        <div class="page-header d-flex justify-content-between align-items-center mb-2"
-            style="background: #fff; padding: 1rem 1.5rem; border-radius: 8px;">
-            <div class="breadcrumb d-flex align-items-center gap-2 mb-0">
-                <i class="fas fa-home text-primary"></i>
-                <span class="current fw-bold text-dark">वेतनवाढ</span>
-                <span class="side-menu-text text-muted">मुख्य पृष्ठ</span>
-            </div>
-        </div>
 
         <!-- Flash Messages -->
         @if (session('success'))
@@ -56,8 +47,8 @@
             <h5 class="mb-2 fw-semibold">वेतनवाढ यादी</h5>
             <p class="text-muted mb-3">एकूण नोंदी: {{ count($polices) }}</p>
 
-            <div class="table-responsive ps-2" style="max-height: 500px; overflow-y: auto;">
-                <table class="table table-bordered table-striped">
+            <div class="table-responsive" style="max-height:400px;overflow-y:auto;padding:10px;">
+                <table class="table table-bordered align-middle my-rounded-table">
                     <thead class="table-light">
                         <tr>
                             <th>क्रमांक</th>
@@ -77,50 +68,52 @@
                     </thead>
                     <tbody id="tableBody">
                         @php
-    $designation = Session::get('user.designation_type');
-@endphp
+                            $designation = Session::get('user.designation_type');
+                        @endphp
 
-@forelse($polices as $index => $police)
-    <tr>
-        <td>{{ $index + 1 }}</td>
-        <td>{{ $police->city_name ?? '--' }}</td>
-        <td>{{ $police->police_name ?? '--' }}</td>
-        <td>{{ $police->buckle_number ?? '--' }}</td>
-        <td>{{ $police->designation_type ?? '--' }}</td>
-        <td>{{ $police->increment_date ? \Carbon\Carbon::parse($police->increment_date)->format('d-m-Y') : '--' }}</td>
-        <td>{{ $police->increment_type ?? '--' }}</td>
-        <td>{{ $police->level ?? '--' }}</td>
-        <td>{{ $police->grade_pay ?? '--' }}</td>
-        <td>{{ $police->new_salary ?? '--' }}</td>s;
-        <td>{{ $police->increased_amount ?? '--' }}</td>
-        <td>
-            @if ($police->increment_documents)
-                <a href="{{ route('salary_increment.view', $police->increment_documents) }}" target="_blank"
-                   class="btn btn-sm btn-danger">
-                    <i class="fas fa-file-pdf"></i> पहा
-                </a>
-            @else
-                <span class="text-muted">नाही</span>
-            @endif
-        </td>
-        <td>
-            @if ($designation === 'Head_Person')
-                <button class="btn btn-sm btn-warning"
-                        onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
-                    <i class="fas fa-edit"></i> वेतनवाढ जोडा
-                </button>
-            @endif
+                        @forelse($polices as $index => $police)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $police->city_name ?? '--' }}</td>
+                                <td>{{ $police->police_name ?? '--' }}</td>
+                                <td>{{ $police->buckle_number ?? '--' }}</td>
+                                <td>{{ $police->designation_type ?? '--' }}</td>
+                                <td>{{ $police->increment_date ? \Carbon\Carbon::parse($police->increment_date)->format('d-m-Y') : '--' }}
+                                </td>
+                                <td>{{ $police->increment_type ?? '--' }}</td>
+                                <td>{{ $police->level ?? '--' }}</td>
+                                <td>{{ $police->grade_pay ?? '--' }}</td>
+                                <td>{{ $police->new_salary ?? '--' }}</td>
+                                <td>{{ $police->increased_amount ?? '--' }}</td>
+                                <td>
+                                    @if ($police->increment_documents)
+                                        <a href="{{ route('salary_increment.view', $police->increment_documents) }}"
+                                            target="_blank" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-file-pdf"></i> पहा
+                                        </a>
+                                    @else
+                                        <span class="text-muted">नाही</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($designation === 'Head_Person')
+                                        <button class="btn btn-sm btn-warning"
+                                            onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
+                                            <i class="fas fa-edit"></i> वेतनवाढ जोडा
+                                        </button>
+                                    @endif
 
-            <a href="{{ route('police_profile.index', $police->police_user_id) }}" class="btn btn-sm btn-info">
-                <i class="fas fa-eye"></i>
-            </a>
-        </td>
-    </tr>
-@empty
-    <tr>
-        <td colspan="15" class="text-center">कोणतीही नोंद सापडली नाही</td>
-    </tr>
-@endforelse
+                                    <a href="{{ route('police_profile.index', $police->police_user_id) }}"
+                                        class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="15" class="text-center">कोणतीही नोंद सापडली नाही</td>
+                            </tr>
+                        @endforelse
 
                     </tbody>
                 </table>
