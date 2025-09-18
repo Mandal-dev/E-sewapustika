@@ -52,8 +52,8 @@
                     <thead class="table-light">
                         <tr>
                             <th>क्रमांक</th>
-                            <th>पोलीस ठाणे</th>
-                            <th>अधिकाऱ्याचे नाव</th>
+                            <th>Department</th>
+                            <th>नाव</th>
                             <th>बकल क्रमांक</th>
                             <th>पद</th>
                             <th>वेतनवाढ दिनांक</th>
