@@ -27,7 +27,7 @@
 
         <nav class="nav">
             <!-- Dashboard -->
-            <a href="#" class="active">
+            <a href="{{ route('dashboard') }}" class="active">
                 <span class="db material-icons" style="color:white">grid_view</span> Dashboard
             </a>
 

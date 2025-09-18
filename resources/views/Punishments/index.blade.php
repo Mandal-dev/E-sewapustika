@@ -113,6 +113,16 @@
                     </tbody>
                 </table>
             </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted small">
+                    Showing {{ $polices->firstItem() }} to {{ $polices->lastItem() }}
+                    of {{ $polices->total() }} records
+                    (Page {{ $polices->currentPage() }} of {{ $polices->lastPage() }})
+                </div>
+                <div>
+                    {!! $polices->links('pagination::bootstrap-5') !!}
+                </div>
+            </div>
         </div>
 
         <!-- Bootstrap 5 Modal -->

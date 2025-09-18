@@ -28,7 +28,6 @@ public function index()
                 'increment_date',
                 'new_salary',
                 'level',
-
                 'grade_pay',
                 'increased_amount'
             )
@@ -58,7 +57,6 @@ public function index()
                 't5.increment_documents',
                 't5.new_salary',
                 't5.level',
-
                 't5.grade_pay',
                 't5.increased_amount'
             )
@@ -84,13 +82,15 @@ public function index()
                 break;
         }
 
-        $polices = $query->orderBy('t4.id', 'desc')->get();
+        // Use pagination instead of get()
+        $polices = $query->orderBy('t4.id', 'desc')->paginate(10); // 10 records per page
 
         return view('Salary_Increment.index', compact('polices'));
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
     }
 }
+
 
 public function search(Request $request)
 {
