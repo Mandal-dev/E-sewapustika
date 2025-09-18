@@ -333,6 +333,7 @@ class SewaPustikaController extends Controller
             // Role-based filters
             switch ($user['designation_type']) {
                 case 'Police':
+
                     if ($request->ajax()) {
                         return response()->json(['error' => 'Access denied.'], 403);
                     }
@@ -362,7 +363,11 @@ class SewaPustikaController extends Controller
                         ->orWhere('t4.designation_type', 'LIKE', "%{$keyword}%")
                         ->orWhere('t3.city_name', 'LIKE', "%{$keyword}%")
                         ->orWhere('t2.district_name', 'LIKE', "%{$keyword}%")
-                        ->orWhere('t1.state_name', 'LIKE', "%{$keyword}%");
+                        ->orWhere('t1.state_name', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t6.name', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t4.post', 'LIKE', "%{$keyword}%")
+
+                        ->orWhere('t4.mobile', 'LIKE', "%{$keyword}%");
                 });
             }
 
