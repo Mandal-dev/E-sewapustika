@@ -154,10 +154,6 @@
                                         <p><span class="text-muted">नाही</span></p>
                                     @endif
                                 </div>
-
-
-
-
                         @empty
                             <tr>
                                 <td colspan="15" class="text-center">कोणतीही नोंद सापडली नाही</td>
