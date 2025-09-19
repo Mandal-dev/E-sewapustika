@@ -80,10 +80,12 @@
                                     @endif
 
                                     <!-- Edit button -->
-                                    <button class="action-btn"
-                                        onclick="openModal('{{ route('sewa_pustika.addshow', $police->police_user_id) }}')">
-                                        <i class="fas fa-edit"></i> Edit
+                                    <button class="action-btn menuBtn"
+                                        data-url="{{ route('sewa_pustika.addshow', $police->police_user_id) }}">
+                                        <i class="fas fa-edit"></i> Add
                                     </button>
+
+
 
                                     <!-- MObile No (single row) -->
                                     <p>Mobile no:{{ $police->mobile }}</p>

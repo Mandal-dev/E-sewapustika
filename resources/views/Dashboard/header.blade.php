@@ -14,6 +14,19 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: flex;               /* Center the icon */
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;         /* light background */
+    color: #2c3e50;              /* icon color */
+    font-size: 40px;             /* icon size */
+}
+</style>
 </head>
 
 <body>
@@ -22,11 +35,18 @@
     <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">
              <div class="dash-img">
-                <a href="#"><i class="fa-solid fa-user logo-icon"></i></a>
-                <div class="profile-pic">
-                    <img src="{{ asset('img/police image.png') }}" alt="Profile Picture">
-                </div>
-                <a href="#"><i class="fa-solid fa-gear logo-icon"></i></a>
+ <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+    <i class="fa-solid fa-user logo-icon"></i>
+</a>
+
+<div class="profile-pic">
+    <img src="{{ asset('img/police image.png') }}" alt="Profile Picture">
+</div>
+
+<a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+    <i class="fa-solid fa-gear logo-icon"></i>
+</a>
+
             </div><br>
 
             <h1>{{ Session::get('user.name', 'Maharashtra') }}</h1>

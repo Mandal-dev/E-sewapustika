@@ -345,4 +345,116 @@ class rewardsController extends Controller
             return redirect()->back()->with('error', 'Failed to store reward review.');
         }
     }
+
+    public function search(Request $request)
+{
+    try {
+        $user = Session::get('user');
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Session expired. Please login again.'
+            ], 401);
+        }
+
+        $perPage = 10;
+        $keyword = $request->get('keyword');
+        $designation = $request->get('designation');
+
+        $query = DB::table('police_users AS t4')
+            ->leftJoin('districts AS t2', function ($join) {
+                $join->on('t4.district_id', '=', 't2.id')
+                    ->where(function ($q) {
+                        $q->where('t2.is_delete', 'No')
+                            ->orWhereNull('t2.is_delete');
+                    })
+                    ->where(function ($q) {
+                        $q->where('t2.status', 'Active')
+                            ->orWhereNull('t2.status');
+                    });
+            })
+            ->leftJoin('states AS t1', 't2.state_id', '=', 't1.id')
+            ->leftJoin('cities AS t3', 't4.city_id', '=', 't3.id')
+            ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
+            ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
+            ->select(
+                't1.state_name',
+                't1.id AS state_id',
+                't2.id AS district_id',
+                't2.district_name',
+                't3.id AS city_id',
+                't3.city_name',
+                't3.status AS city_status',
+                't4.id AS police_user_id',
+                't4.police_name',
+                't4.buckle_number',
+                't4.designation_type AS role',
+                't5.reward_given_date',
+                't5.reason',
+                't6.reject_reason',
+                't5.reward_type',
+                't5.rewards_documents',
+                't5.id AS reward_id',
+                DB::raw('COALESCE(t6.review_status, "Pending") AS reward_status')
+            );
+
+        // ✅ Role-based filter
+        switch ($user['designation_type']) {
+            case 'Police':
+                $query->where('t4.id', $user['id']);
+                break;
+
+            case 'Station_Head':
+                $myStationId = DB::table('police_users')
+                    ->where('id', $user['id'])
+                    ->value('police_station_id');
+                $query->where('t4.police_station_id', $myStationId);
+                break;
+
+            case 'Head_Person':
+                $query->where('t4.district_id', $user['district_id']);
+                break;
+
+            case 'Admin':
+                // no filter
+                break;
+
+            default:
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized access.'
+                ], 403);
+        }
+
+        // ✅ Apply search filters
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('t4.police_name', 'LIKE', "%{$keyword}%")
+                  ->orWhere('t4.buckle_number', 'LIKE', "%{$keyword}%")
+                  ->orWhere('t2.district_name', 'LIKE', "%{$keyword}%")
+                  ->orWhere('t3.city_name', 'LIKE', "%{$keyword}%")
+                  ->orWhere('t1.state_name', 'LIKE', "%{$keyword}%")
+                  ->orWhere('t5.reason', 'LIKE', "%{$keyword}%");
+            });
+        }
+
+        if (!empty($designation)) {
+            $query->where('t4.designation_type', $designation);
+        }
+
+        $polices = $query->orderBy('t4.id', 'desc')->paginate($perPage);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $polices
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
 }

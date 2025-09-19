@@ -32,15 +32,20 @@
         <!-- Search Section -->
         <div class="search-section p-3 d-flex flex-wrap align-items-center gap-2 mb-2"
             style="background: #fff; border-radius: 8px;">
-            <input type="text" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक"
+            <input type="text" id="searchKeyword" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक"
                 style="min-width: 220px; flex: 1;">
-            <select class="form-select" style="width: 180px;">
-                <option>सर्व बक्षीस जोडा</option>
-                <option>पोलीस अधीक्षक</option>
-                <option>निरीक्षक</option>
+
+            <select id="searchDesignation" class="form-select" style="width: 180px;">
+                <option value="">सर्व बक्षीस जोडा</option>
+                <option value="Police">पोलीस</option>
+                <option value="Station_Head">स्टेशन हेड</option>
+                <option value="Head_Person">हेड पर्सन</option>
+                <option value="Admin">ॲडमिन</option>
             </select>
-            <button class="btn btn-success"><i class="fas fa-search"></i> शोधा</button>
+
+            <button class="btn btn-success" id="searchBtn"><i class="fas fa-search"></i> शोधा</button>
         </div>
+
 
         <!-- Table Section -->
         <div class="table-section p-3" style="background: #fff; border-radius: 8px;">
@@ -63,91 +68,28 @@
                             <th>क्रिया</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse($polices as $index => $police)
-                            <tr>
-                                <td>{{ $polices->firstItem() + $index }}</td>
-                                <td>{{ $police->police_name ?? '--' }}</td>
-                                <td>{{ $police->buckle_number ?? '--' }}</td>
-                                <td>{{ $police->role ?? '--' }}</td>
-                                <td>
-                                    {{ $police->reward_given_date ? \Carbon\Carbon::parse($police->reward_given_date)->format('d-m-Y') : '--' }}
-                                </td>
-                                <td>{{ $police->reward_type ?? '--' }}</td>
-                                <td>{{ $police->reason ?? '--' }}</td>
-                                <td>
-                                    @if ($police->rewards_documents)
-                                        <a href="{{ asset('uploads/rewards/' . $police->rewards_documents) }}"
-                                            target="_blank" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-file-pdf"></i> पहा
-                                        </a>
-                                    @else
-                                        <span class="text-muted">नाही</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if (strtolower($police->reward_status) === 'approved')
-                                        <span class="badge bg-success">मंजूर</span>
-                                    @elseif (strtolower($police->reward_status) === 'rejected')
-                                        <span class="badge bg-danger">नाकारले</span>
-                                    @else
-                                        <span class="badge bg-warning text-dark">प्रलंबित</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <!-- Add Reward -->
-                                    <button class="btn btn-sm btn-warning"
-                                        onclick="openModal('{{ route('rewards.add', $police->police_user_id) }}')">
-                                        <i class="fas fa-edit"></i> बक्षीस जोडा
-                                    </button>
-
-                                    @if ($police->reward_id)
-                                        @if (strtolower($police->reward_status) === 'pending')
-                                            <!-- Approve -->
-                                            <button class="btn btn-sm btn-success"
-                                                onclick="aproveopenModal('{{ route('aprove.rewards.show', $police->reward_id) }}')">
-                                                <i class="fas fa-check-circle"></i> मंजूर करा
-                                            </button>
-                                        @elseif(strtolower($police->reward_status) === 'rejected')
-                                            <!-- View Reject Reason -->
-                                            <button class="btn btn-sm btn-danger"
-                                                onclick="viewRejectReason('{{ $police->reason ?? 'No reason provided' }}')">
-                                                <i class="fas fa-eye"></i> कारण पहा
-                                            </button>
-                                        @endif
-                                    @endif
-
-                                    <!-- View Profile -->
-                                    <a href="{{ route('police_profile.index', $police->police_user_id) }}"
-                                        class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" class="text-center">कोणतीही नोंद सापडली नाही</td>
-                            </tr>
-                        @endforelse
+                    <tbody id="rewardTableBody">
+                        @include('rewards.table-rows', ['polices' => $polices])
                     </tbody>
+
                 </table>
             </div>
 
             <!-- Pagination -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
-    <!-- Left: Records Info -->
-    <div class="text-muted small">
-        दर्शवित आहे <strong>{{ $polices->firstItem() }}</strong> ते
-        <strong>{{ $polices->lastItem() }}</strong> पैकी
-        <strong>{{ $polices->total() }}</strong> नोंदी
-        <span class="ms-2">(पान {{ $polices->currentPage() }} / {{ $polices->lastPage() }})</span>
-    </div>
+            <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+                <!-- Left: Records Info -->
+                <div class="text-muted small">
+                    दर्शवित आहे <strong>{{ $polices->firstItem() }}</strong> ते
+                    <strong>{{ $polices->lastItem() }}</strong> पैकी
+                    <strong>{{ $polices->total() }}</strong> नोंदी
+                    <span class="ms-2">(पान {{ $polices->currentPage() }} / {{ $polices->lastPage() }})</span>
+                </div>
 
-    <!-- Right: Pagination Links -->
-    <nav>
-        {!! $polices->links('pagination::bootstrap-5') !!}
-    </nav>
-</div>
+                <!-- Right: Pagination Links -->
+                <nav>
+                    {!! $polices->links('pagination::bootstrap-5') !!}
+                </nav>
+            </div>
 
 
         </div>
@@ -274,6 +216,73 @@
                 $('.alert').fadeOut('slow');
             }, 4000);
         });
-    </script>
 
+
+        $(document).ready(function () {
+    function fetchRewards() {
+        let keyword = $("#searchKeyword").val();
+        let designation = $("#searchDesignation").val();
+
+        $.ajax({
+            url: "{{ route('rewards.search') }}", // ✅ backend search route
+            method: "GET",
+            data: {
+                keyword: keyword,
+                designation: designation
+            },
+            success: function (response) {
+                if (response.status === "success") {
+                    // Replace tbody with new rows
+                    let html = "";
+                    if (response.data.data.length > 0) {
+                        response.data.data.forEach((item, index) => {
+                            html += `
+                                <tr>
+                                    <td>${response.data.from + index}</td>
+                                    <td>${item.police_name ?? '--'}</td>
+                                    <td>${item.buckle_number ?? '--'}</td>
+                                    <td>${item.role ?? '--'}</td>
+                                    <td>${item.reward_given_date ?? '--'}</td>
+                                    <td>${item.reward_type ?? '--'}</td>
+                                    <td>${item.reason ?? '--'}</td>
+                                    <td>
+                                        ${item.rewards_documents
+                                            ? `<a href="/uploads/rewards/${item.rewards_documents}" target="_blank" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf"></i> पहा</a>`
+                                            : `<span class="text-muted">नाही</span>`}
+                                    </td>
+                                    <td>
+                                        ${item.reward_status.toLowerCase() === 'approved'
+                                            ? `<span class="badge bg-success">मंजूर</span>`
+                                            : item.reward_status.toLowerCase() === 'rejected'
+                                            ? `<span class="badge bg-danger">नाकारले</span>`
+                                            : `<span class="badge bg-warning text-dark">प्रलंबित</span>`}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="openModal('/rewards/add/${item.police_user_id}')">
+                                            <i class="fas fa-edit"></i> बक्षीस जोडा
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        html = `<tr><td colspan="10" class="text-center">कोणतीही नोंद सापडली नाही</td></tr>`;
+                    }
+
+                    $("#rewardTableBody").html(html);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", error);
+            }
+        });
+    }
+
+    // 🔎 Trigger search on typing & dropdown change
+    $("#searchKeyword").on("keyup", fetchRewards);
+    $("#searchDesignation").on("change", fetchRewards);
+    $("#searchBtn").on("click", fetchRewards);
+});
+
+    </script>
 @endsection

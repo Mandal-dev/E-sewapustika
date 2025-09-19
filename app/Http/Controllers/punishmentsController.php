@@ -195,5 +195,112 @@ public function view($filename)
         'Content-Type' => $mime ?? 'application/pdf'
     ]);
 }
+public function search(Request $request)
+{
+    try {
+        $user = Session::get('user');
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access. Please login again.'
+            ], 401);
+        }
+
+        $perPage = 10;
+        $keyword = $request->get('keyword');
+        $designation = $request->get('designation');
+
+        // latest punishment subquery
+        $latestPustika = DB::table('police_punishments')
+            ->select('id', 'police_id', 'punishment_documents', 'punishment_given_date', 'punishment_type', 'reason')
+            ->whereRaw('id IN (SELECT MAX(id) FROM police_punishments GROUP BY police_id)');
+
+        // base query
+        $query = DB::table('police_users AS t4')
+            ->join('districts AS t2', 't4.district_id', '=', 't2.id')
+            ->join('states AS t1', 't2.state_id', '=', 't1.id')
+            ->join('cities AS t3', 't4.city_id', '=', 't3.id')
+            ->leftJoinSub($latestPustika, 't5', function ($join) {
+                $join->on('t4.id', '=', 't5.police_id');
+            })
+            ->select(
+                't1.state_name',
+                't1.id AS state_id',
+                't2.id AS district_id',
+                't2.district_name',
+                't3.id AS city_id',
+                't3.city_name',
+                't3.status AS city_status',
+                't4.id AS police_user_id',
+                't4.police_name',
+                't4.buckle_number',
+                't4.designation_type AS role',
+                't5.punishment_given_date',
+                't5.reason',
+                't5.punishment_type',
+                't5.punishment_documents'
+            )
+            ->where('t2.is_delete', 'No')
+            ->where('t2.status', 'Active');
+
+        // 🔎 keyword search
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('t4.police_name', 'like', "%{$keyword}%")
+                  ->orWhere('t4.buckle_number', 'like', "%{$keyword}%")
+                  ->orWhere('t5.reason', 'like', "%{$keyword}%")
+                  ->orWhere('t5.punishment_type', 'like', "%{$keyword}%");
+            });
+        }
+
+        // 🔎 designation filter
+        if (!empty($designation)) {
+            $query->where('t4.designation_type', $designation);
+        }
+
+        // designation-based restrictions
+        switch ($user['designation_type']) {
+            case 'Police':
+                $query->where('t4.id', $user['id']);
+                break;
+
+            case 'Station_Head':
+                $myStationId = DB::table('police_users')
+                    ->where('id', $user['id'])
+                    ->value('police_station_id');
+                $query->where('t4.police_station_id', $myStationId);
+                break;
+
+            case 'Head_Person':
+                $query->where('t4.district_id', $user['district_id']);
+                break;
+
+            case 'Admin':
+                // no extra filter
+                break;
+
+            default:
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized access.'
+                ], 403);
+        }
+
+        // pagination
+        $results = $query->orderBy('t4.id', 'desc')->paginate($perPage);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $results
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Something went wrong. ' . $e->getMessage()
+        ], 500);
+    }
+}
+
 
 }

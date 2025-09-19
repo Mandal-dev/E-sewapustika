@@ -130,6 +130,10 @@ Route::middleware(['setlang'])->group(function () {
     Route::get('/police-user/all_list', [PoliceUsersController::class, 'indexTable'])->name('police_users.list.table');
     Route::get('/sewapustika/search', [SewaPustikaController::class, 'search'])->name('sevapustika.search');
     Route::get('/salaryincrement/search', [SalaryIncrementController::class, 'search'])->name('SalaryIncrement.search');
+    Route::get('/punishment/search', [punishmentsController::class, 'search'])->name('punishments.search');
+    Route::get('/reward/search', [rewardsController::class, 'search'])->name('rewards.search');
+
+
 
     Route::get('/newdashboard', [MainController::class, 'newDashboard'])->name('newdashboard');
     // routes/web.php

@@ -42,24 +42,24 @@
         <div class="table-section p-3"
             style="background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);">
             <!-- Search Section -->
-          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-    <!-- Left Buttons -->
-    <div class="d-flex flex-wrap gap-2">
-        <a class="section-btn1" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
-            <i class="fas fa-plus"></i> पोलीस जोडा
-        </a>
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                <!-- Left Buttons -->
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="section-btn1" data-bs-toggle="modal" data-bs-target="#uploadExcelModal">
+                        <i class="fas fa-plus"></i> पोलीस जोडा
+                    </a>
 
-        <a href="{{ route('police-users.template') }}" class="section-btn2">
-            <i class="fas fa-file-excel"></i> टेम्पलेट डाउनलोड
-        </a>
-    </div>
+                    <a href="{{ route('police-users.template') }}" class="section-btn2">
+                        <i class="fas fa-file-excel"></i> टेम्पलेट डाउनलोड
+                    </a>
+                </div>
 
-    <!-- Right Search Bar -->
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="नाव, ठाणे किंवा बकल क्रमांक">
-        <i class="fas fa-search search-icon"></i>
-    </div>
-</div>
+                <!-- Right Search Bar -->
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="नाव, ठाणे किंवा बकल क्रमांक">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="mb-2 fw-semibold">पोलीसांची यादी</h5>

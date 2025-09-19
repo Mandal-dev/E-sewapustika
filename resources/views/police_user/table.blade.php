@@ -12,7 +12,7 @@
             <thead class="table-light">
                 <tr>
                     <th>क्रमांक</th>
-                    <th>police नाव</th>
+                    <th>नाव</th>
                     <th>बकल क्रमांक</th>
                     <th>पद</th>
                     <th>ठाणे</th>

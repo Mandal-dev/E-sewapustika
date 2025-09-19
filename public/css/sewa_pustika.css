@@ -524,6 +524,26 @@
 
 
 @media (max-width: 768px) {
+ .app-content {
+    padding: none !important; /* top right bottom left */
+
+}
+
+
+.add-btn {
+    border-radius: 11px !important;
+    height: 30px !important;
+    color: white !important;
+}
+
+.view-btn {
+    border-radius: 11px !important;
+    height: 30px !important;
+    text-decoration: none !important;
+    color: white !important;
+}
+
+
   table.my-rounded-table {
     display: none; /* hide the table layout */
   }
