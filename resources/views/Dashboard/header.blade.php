@@ -82,7 +82,7 @@
                             </a>
                         @endif
                         <a href="{{ route('station.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-building"></i> पोलीस ठाणे व्यवस्थापन
+                            <i class="fas fa-building"></i> विभाग
                         </a>
                         <a href="{{ route('police.list.index') }}" class="nav-item submenu-item">
                             <i class="fas fa-user-shield"></i> पोलीस वापरकर्ता व्यवस्थापन

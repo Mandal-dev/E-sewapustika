@@ -301,5 +301,38 @@ public function getStationsByCity($cityId)
 
     return response()->json(['error' => 'Invalid user'], 400);
 }
+    public function getStationsByUser()
+    {
+        $user = Session::get('user');
 
+        if (!$user) {
+            return response()->json([]); // return empty if no user
+        }
+
+        $query = DB::table('police_stations')
+            ->where('is_delete', 'No')
+            ->where('status', 'Active');
+
+        switch ($user['designation_type']) {
+            case 'Station_Head':
+            case 'Police':
+                $stations = $query->where('police_station_id', $user['police_station_id'] ?? 0)
+                                  ->pluck('name');
+                break;
+
+            case 'Head_Person':
+                $stations = $query->where('district_id', $user['district_id'] ?? 0)
+                                  ->pluck('name');
+                break;
+
+            case 'Admin':
+                $stations = $query->pluck('name');
+                break;
+
+            default:
+                $stations = collect();
+        }
+
+        return response()->json($stations);
+    }
 }

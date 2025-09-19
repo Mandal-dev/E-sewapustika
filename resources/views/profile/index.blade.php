@@ -6,7 +6,7 @@
     <!-- Officer Profile Card -->
     <div class="officer-card">
         <!-- Edit Button -->
-        <a href="{{ route('police.edit', $police->police_user_id ?? 0) }}" class="edit-btn" title="Edit Profile">
+        <a open mode"{{ route('police.edit', $police->police_user_id ?? 0) }}" class="edit-btn" title="Edit Profile">
             <span class="material-icons">edit</span>
         </a>
 
@@ -147,6 +147,39 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+    // Modal open function
+    window.openModal = function (url) {
+        const modalElement = document.getElementById('sewaPustikaModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+
+        $('#sewaPustikaModalBody').html(`
+            <div class="p-5 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">लोड होत आहे...</span>
+                </div>
+            </div>
+        `);
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (response) {
+                $('#sewaPustikaModalBody').html(response);
+            },
+            error: function () {
+                $('#sewaPustikaModalBody').html(`
+                    <div class="p-5 text-danger text-center">
+                        डेटा लोड करण्यात अडचण आली.
+                    </div>
+                `);
+            }
+        });
+    };
+});
+
     </script>
     <script src="{{ asset('js/table-scroll.js') }}"></script>
 

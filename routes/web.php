@@ -154,6 +154,10 @@ Route::middleware(['setlang'])->group(function () {
     Route::get('/get-salary/bylave-and-grade', [SalaryIncrementController::class, 'getSalary'])->name('get.salary');
     //logout
     Route::post('/logout', [LoginUserController::class, 'logout'])->name('logout');
+
+    // web.php
+Route::get('/get-stations-by-user', [MainController::class, 'getStationsByUser'])->name('get.stations');
+
 });
 
 

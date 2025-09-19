@@ -45,7 +45,7 @@
                     <a onclick="openModal('{{ route('stations.create') }}')" class="btn-txt"
                         style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-decoration: none;">
                         <i class="fas fa-plus-circle" style="font-size:20px; color:#133367;"></i>
-                        <span style="text-decoration: underline; color: inherit;">Add Station</span>
+                        <span style="text-decoration: underline; color: inherit;">Add विभाग</span>
                     </a>
                 </span>
             </div>
@@ -61,7 +61,7 @@
                             <th class="my-cell">Country</th>
                             <th class="my-cell">Division</th>
                             <th class="my-cell">City</th>
-                            <th class="my-cell">Station Name</th>
+                            <th class="my-cell">विभाग</th>
                             <th class="my-cell">Status</th>
                             <th class="my-cell">Action</th>
                         </tr>

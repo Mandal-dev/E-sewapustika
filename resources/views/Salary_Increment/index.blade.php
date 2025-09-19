@@ -4,17 +4,12 @@
     <!-- Bootstrap + Custom CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sewa_pustika.css') }}">
-
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <!-- jQuery + Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <div class="app-content">
-
-
         <!-- Flash Messages -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -34,12 +29,12 @@
             style="background: #fff; border-radius: 8px;">
             <input type="text" id="searchInput" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक"
                 style="min-width: 220px; flex: 1;" value="{{ $search ?? '' }}">
-            <select id="designationFilter" class="form-select" style="width: 180px;">
-                <option value="">सर्व वेतनवाढ जोडा</option>
-                <option value="Police">पोलीस अधीक्षक</option>
-                <option value="Inspector">निरीक्षक</option>
+                      <select class="form-select" id="searchDesignation" style="width: 180px;">
+                <option value="">सर्व ठाणे</option>
             </select>
-            <button id="searchBtn" class="btn btn-success"><i class="fas fa-search"></i> शोधा</button>
+            <button class="btn btn-success" id="searchButton">
+                <i class="fas fa-search"></i> शोधा
+            </button>
         </div>
 
         <!-- Table Section -->
@@ -265,6 +260,18 @@
 
             $('#searchInput').on('keyup', performSearch);
             $('#searchBtn').on('click', performSearch);
+        });
+
+            $(document).ready(function() {
+            $.get("{{ route('get.stations') }}", function(stations) {
+                const select = $('#searchDesignation');
+                select.empty();
+                select.append('<option value="">सर्व ठाणे</option>');
+
+                stations.forEach(name => {
+                    select.append(`<option value="${name}">${name}</option>`);
+                });
+            });
         });
     </script>
 @endsection
