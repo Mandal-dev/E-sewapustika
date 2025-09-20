@@ -11,8 +11,6 @@
 <body class="h-screen w-screen flex">
 @yield('data')
     <!-- Left Side -->
-
-
     <!-- Right Side -->
     <div class="hidden md:flex w-1/2 bg-gray-100">
         <img src="{{ asset('img/police image.png') }}" alt="Police Officer" class="w-full h-full object-cover">
