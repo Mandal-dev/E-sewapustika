@@ -222,6 +222,7 @@
             animation: fadeIn 0.3s ease;
         }
 
+
        .modal-footer{
          background-color: white !important;
        }
@@ -663,6 +664,13 @@
 
 
 @media (max-width: 768px) {
+
+ .app-content {
+    padding: none !important; /* top right bottom left */
+
+}
+
+
     /* Stack vertically instead of side by side */
     .d-flex.justify-content-between {
         flex-direction: column !important;

@@ -57,7 +57,7 @@
             </p>
         </div>
         <nav class="nav">
-            <a href="{{ route('dashboard') }}" class="active">
+            <a href="{{ route('dashboard') }}" class="active dash-btn">
                 <span class="db material-icons" style="color:white">grid_view</span> Dashboard
             </a>
 
@@ -165,7 +165,7 @@
             </div>
         </header>
 
-        <main style="padding:1rem;">
+        <main >
             @yield('data')
         </main>
     </div>

@@ -95,6 +95,33 @@
                                     </button>
                                 </td>
                             </tr>
+
+
+                            <!-- Mobile Card View -->
+                            <div class="officer-card d-md-none">
+                                <div class="left-col">
+                                    <p class="city"><strong>City:</strong>{{ $city->state_name }}</p>
+                                    <p><strong>District Name:</strong>{{ $city->district_name }}</p>
+                                    <p><strong>City Name:</strong>{{ $city->city_name }}</p>
+
+                                </div>
+                                <div class="right-col text-start">
+
+
+
+                                    <button class="action-btn"
+                                        onclick="openModal('{{ route('cities.edit', $city->id) }}')">
+                                        <i class="fas fa-edit"></i> संपादन
+                                    </button>
+
+                                    <p>@if ($city->status === 'Active')
+                                        <span class="badge bg-success">सक्रिय</span>
+                                    @else
+                                        <span class="badge bg-secondary">निष्क्रिय</span>
+                                    @endif</p>
+
+
+                                </div>
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center text-muted">कोणतेही शहर सापडले नाही.</td>

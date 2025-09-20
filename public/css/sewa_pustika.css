@@ -524,6 +524,11 @@
 
 
 @media (max-width: 768px) {
+
+     table.my-rounded-table {
+    display: none; /* hide the table layout */
+  }
+
  .app-content {
     padding: none !important; /* top right bottom left */
 
@@ -532,8 +537,24 @@
 
 .add-btn {
     border-radius: 11px !important;
-    height: 30px !important;
+
     color: white !important;
+    outline: none !important;
+    border: none !important;
+    margin-bottom: 2px !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: #14649a;
+    color: #fff;
+    font-size: 13px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    height: 23px ;
+    width: 95px;
+    text-decoration: none;
 }
 
 .view-btn {
@@ -544,9 +565,7 @@
 }
 
 
-  table.my-rounded-table {
-    display: none; /* hide the table layout */
-  }
+
 
   .officer-card {
     display: flex;

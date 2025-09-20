@@ -20,7 +20,7 @@
                 <div class="info-item"><span class="material-icons">email</span> Email:
                     {{ $police->email ?? 'Not available' }}</div>
                 <div class="info-item"><span class="material-icons">phone</span> Contact:
-                    {{ $police->contact ?? 'Not available' }}</div>
+                    {{ $police->mobile ?? 'Not available' }}</div>
                 <div class="info-item"><span class="label">Station:</span> <span
                         class="value">{{ $police->police_station_name ?? 'N/A' }}</span></div>
                 <div class="info-item"><span class="label">District:</span> <span

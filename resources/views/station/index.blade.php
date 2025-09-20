@@ -45,7 +45,7 @@
                     <a onclick="openModal('{{ route('stations.create') }}')" class="btn-txt"
                         style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; text-decoration: none;">
                         <i class="fas fa-plus-circle" style="font-size:20px; color:#133367;"></i>
-                        <span style="text-decoration: underline; color: inherit;">Add विभाग</span>
+                        <span style="text-decoration: underline; color: inherit;">Add Station</span>
                     </a>
                 </span>
             </div>
@@ -61,7 +61,7 @@
                             <th class="my-cell">Country</th>
                             <th class="my-cell">Division</th>
                             <th class="my-cell">City</th>
-                            <th class="my-cell">विभाग</th>
+                            <th class="my-cell">Station Name</th>
                             <th class="my-cell">Status</th>
                             <th class="my-cell">Action</th>
                         </tr>
@@ -90,6 +90,43 @@
                                     </button>
                                 </td>
                             </tr>
+
+                            <!-- Mobile Card Row -->
+                            <div class="officer-card d-md-none">
+                                <div class="left-col">
+                                    <p class="state"><strong>State:</strong>{{ $station->state_name ?? 'N/A' }}</p>
+                                    <p><strong>District Name:</strong>{{ $station->district_name ?? 'N/A' }}</p>
+                                    <p><strong>City Name:</strong>{{ $station->city_name ?? 'N/A' }}</p>
+                                    <p><strong>Station Name:</strong>{{ $station->station_name ?? 'N/A' }}</p>
+                                </div>
+
+
+                                <div class="right-col text-start">
+
+
+
+                                    <!-- View button -->
+
+                                  <!-- Edit button -->
+                                    <button class="action-btn"
+                                        >
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+
+                                    <!-- Status (single row) -->
+                            <p class=" mb-2 d-flex align-items-center">
+                                Status:&nbsp;
+                                <span class="{{ $station->status == 'Active' ? 'text-success fw-bold' : 'text-danger' }} d-flex align-items-center">
+                                @if ($station->status == 'Active')
+                                    <i class="fas fa-circle me-1" style="font-size:8px;"></i> {{ $station->status }}
+                                     @else
+                                            {{ $station->status }}
+                                        @endif
+                                </span>
+                            </p>
+
+                                </div>
+
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center text-muted">नोंदी आढळल्या नाहीत</td>

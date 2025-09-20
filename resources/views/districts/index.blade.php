@@ -18,23 +18,23 @@
             style="background: #fff; padding: 1rem 1.5rem; border-radius: 8px;">
             <div class="breadcrumb d-flex align-items-center gap-2 mb-0">
                 <i class="fas fa-home text-primary"></i>
-                <span class="current fw-bold text-dark">सर्व  जिल्हा</span>
+                <span class="current fw-bold text-dark">सर्व जिल्हा</span>
                 <span class="side-menu-text text-muted">मुख्य पृष्ठ</span>
             </div>
             <button class="btn btn-primary" onclick="openModal('{{ route('districts.create') }}')">
-                <i class="fas fa-plus"></i>  जिल्हा जोडा
+                <i class="fas fa-plus"></i> जिल्हा जोडा
             </button>
         </div>
 
         <!-- ✅ Flash Messages -->
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <strong>यशस्वी:</strong> {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
-        @if(session('error'))
+        @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>चूक:</strong> {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -47,7 +47,7 @@
             <input type="text" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक"
                 style="min-width: 220px; flex: 1;">
             <select class="form-select" style="width: 180px;">
-                <option>सर्व  जिल्हा</option>
+                <option>सर्व जिल्हा</option>
                 <option>पोलीस अधीक्षक</option>
                 <option>निरीक्षक</option>
             </select>
@@ -88,6 +88,31 @@
                                     </button>
                                 </td>
                             </tr>
+
+                            <!-- Mobile Card View -->
+                            <div class="officer-card d-md-none">
+                                <div class="left-col">
+                                    <p class="department"><strong>State Name:</strong>{{ $district->state_name ?? 'N/A' }}
+                                    </p>
+                                    <p><strong>District Name:</strong>{{ $district->district_name }}</p>
+
+                                </div>
+
+
+                                <div class="right-col text-start">
+
+                                <button class="action-btn"
+                                        onclick="openModal('{{ route('districts.edit', $district->id) }}')">
+                                        <i class="fas fa-edit"></i> संपादन
+                                    </button>
+
+                                    <p><span
+                                            class="badge {{ $district->status == 'Active' ? 'bg-success' : 'bg-danger' }}">
+                                            {{ $district->status }}
+                                        </span></p>
+
+
+                                </div>
                         @endforeach
                     </tbody>
                 </table>
@@ -142,8 +167,8 @@
         }
 
         // ✅ Auto-hide flash alerts after 4 seconds
-        $(document).ready(function () {
-            setTimeout(function () {
+        $(document).ready(function() {
+            setTimeout(function() {
                 $('.alert').fadeOut('slow');
             }, 4000);
         });

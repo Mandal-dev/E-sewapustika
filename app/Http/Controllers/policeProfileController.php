@@ -33,6 +33,8 @@ public function index($id)
             ->select(
                 't4.id AS police_user_id',
                 't4.police_name',
+                't4.mobile',
+
                 't4.buckle_number',
                 't1.id AS state_id',
                 't1.state_name',

@@ -263,9 +263,13 @@ body {
     margin-left: 0;
     display: flex;
     flex-direction: column;
-    padding-left: 30px;
+    padding-left: 0px;
 }
 
+.app-content {
+
+    padding: none !important;
+}
 /* --------------------------------
    NAVBAR / HEADER
 -----------------------------------*/
@@ -370,9 +374,7 @@ header button {
     align-items: center !important;
     justify-content: flex-start !important;
      /* 25px left/right gap */
-    margin: 0 auto 0.5rem auto !important; /* same bottom gap as others */
 
-    padding: 0 1rem !important;
     border-radius: 0.8rem !important;
     border: 1.5px solid #30343a !important;
 
@@ -381,7 +383,10 @@ header button {
     gap: 0.75rem !important;
     box-sizing: border-box !important;
 }
-
+ .dash-btn{
+    margin: 0 auto 0.5rem auto !important; /* same bottom gap as others */
+    padding: 0 1rem !important;
+ }
 
 
 
@@ -450,7 +455,19 @@ header button {
 .lang-dropdown.show .lang-menu {
     display: block;
 }
-/* image on dashboard */
+
+
+.logo-icon {
+    color: white !important;
+}
+.sidebar-header {
+    background: linear-gradient(to bottom, #283e51, #4b79a1);
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+    position: relative;
+    height: 15rem;
+}/* image on dashboard */
 
 .dash-img {
     display: flex;
@@ -478,11 +495,14 @@ header button {
     height: 100%;
     object-fit: cover;
 }
-.sidebar-header {
-    background: linear-gradient(to bottom, #283e51, #4b79a1);
-    color: white;
-    text-align: center;
-    padding: 2rem 1rem;
-    position: relative;
-    height: 15rem;
+#mainContent {
+    flex: 1;
+    transition: margin-left 0.3s;
+    margin-left: 0px;
+    display: flex;
+    flex-direction: column;
+    padding-left: 35px;
+    border: none !important;
+    outline: none !important;
+
 }

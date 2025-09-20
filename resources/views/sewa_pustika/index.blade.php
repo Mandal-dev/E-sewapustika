@@ -10,7 +10,7 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <div class="app-content" style="margin: 0; padding: 1rem;">
+    <div class="app-content" >
 
         <!-- Flash Messages -->
         @if (session('success'))

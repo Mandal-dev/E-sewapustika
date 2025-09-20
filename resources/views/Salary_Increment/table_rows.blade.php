@@ -18,7 +18,7 @@
         <td>
             @if ($police->increment_documents)
                 <a href="{{ route('salary_increment.view', $police->increment_documents) }}" target="_blank"
-                   class="btn btn-sm btn-danger">
+                    class="btn btn-sm btn-danger">
                     <i class="fas fa-file-pdf"></i> पहा
                 </a>
             @else
@@ -28,7 +28,7 @@
         <td>
             @if ($designation === 'Head_Person')
                 <button class="btn btn-sm btn-warning"
-                        onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
+                    onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
                     <i class="fas fa-edit"></i> वेतनवाढ जोडा
                 </button>
             @endif
@@ -80,10 +80,10 @@
                 <i class="fas fa-eye"></i> View
             </a>
         </div>
+    </div>
 
-
-@empty
-    <tr>
-        <td colspan="15" class="text-center">कोणतीही नोंद सापडली नाही</td>
-    </tr>
+    @empty
+        <tr>
+            <td colspan="15" class="text-center">कोणतीही नोंद सापडली नाही</td>
+        </tr>
 @endforelse
