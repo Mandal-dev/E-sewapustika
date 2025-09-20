@@ -77,7 +77,7 @@
             @endif
 
             <a class="btn btn-sm btn-info mb-2" href="{{ route('police_profile.index', $police->police_user_id) }}">
-                <i class="fas fa-eye"></i> View
+                <i class="fas fa-eye"></i>
             </a>
         </div>
     </div>

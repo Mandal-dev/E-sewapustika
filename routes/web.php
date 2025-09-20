@@ -160,6 +160,7 @@ Route::get('/get-stations-by-user', [MainController::class, 'getStationsByUser']
 
 });
 
+Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp.resend');
 
 Route::get('/', [LoginUserController::class, 'showLoginPage'])->name('login.page');
 Route::post('/login', [LoginUserController::class, 'login'])->name('login.user');
