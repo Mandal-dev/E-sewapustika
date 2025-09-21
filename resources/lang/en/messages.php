@@ -93,5 +93,6 @@ return [
     'cancel' => 'Cancel',
         'buckle_number' => 'Buckle Number',
     'police_name'   => 'Police Name',
+    'present_days' => 'Present Days',
 
 ];

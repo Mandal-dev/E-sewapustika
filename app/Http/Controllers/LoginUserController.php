@@ -27,12 +27,20 @@ class LoginUserController extends Controller
     // ===============================
 public function login(Request $request)
 {
+
+
+    // -------------------
+    // Validate Input
+    // -------------------
     $request->validate([
         'mobile' => 'required|digits:10',
     ]);
 
     $mobile = $request->input('mobile');
 
+    // -------------------
+    // Check User Exists
+    // -------------------
     $user = DB::table('police_users')->where('mobile', $mobile)->first();
     if (!$user) {
         return back()->withErrors(['mobile' => 'Invalid credentials.']);
@@ -53,25 +61,29 @@ public function login(Request $request)
     $message = "{$otp} is your verification code. Use it to complete your login. Do not share it with anyone. HBGADGET";
 
     // -------------------
-    // SMS API credentials
+    // Get SMS API credentials from config/services.php
     // -------------------
-    $api_url   = "https://api.pinnacle.in/index.php/sms/urlsms";
-    $apikey    = "10bdfb-cee7f2-f322fa-108c09-3e3a7b";
-    $senderid  = "HBTSPL";
-    $dlttempid = "1707175828703777137";
+    $apiUrl   = config('services.sms.url');
+    $apiKey   = config('services.sms.key');
+    $senderId = config('services.sms.sender_id');
+    $msgType  = config('services.sms.msg_type');
+    $response = config('services.sms.response');
+    $tempId   = config('services.sms.temp_id');
 
     try {
+        // -------------------
         // Send SMS using query parameters
+        // -------------------
         $response = Http::timeout(15)
-            ->withoutVerifying() // bypass SSL for localhost
-            ->get($api_url, [
-                'sender'     => $senderid,
-                'numbers'    => $mobile,
-                'messagetype'=> 'TXT',
-                'message'    => $message,
-                'response'   => 'Y',
-                'apikey'     => $apikey,
-                'dlttempid'  => $dlttempid
+            ->withoutVerifying() // only for localhost; remove in production
+            ->get($apiUrl, [
+                'sender'      => $senderId,
+                'numbers'     => $mobile,
+                'messagetype' => $msgType,
+                'message'     => $message,
+                'response'    => $response,
+                'apikey'      => $apiKey,
+                'dlttempid'   => $tempId,
             ]);
 
         $result = $response->json();
@@ -83,7 +95,7 @@ public function login(Request $request)
             'mobile'   => $mobile,
             'status'   => $result['status'] ?? 'unknown',
             'uniqueid' => $result['data'][0]['uniqueid'] ?? null,
-            'ip'       => $request->ip(), // store device IP
+            'ip'       => $request->ip(),
         ]);
 
         // -------------------
@@ -91,8 +103,8 @@ public function login(Request $request)
         // -------------------
         $insertData = [
             'mobile_no'  => $mobile,
-            'shop_id'    => $request->ip(), // store IP instead of shop_id
-            'status'     => $result['status'] === 'success' ? 'success' : 'failed',
+            'device_ip'    => $request->ip(), // using IP in place of shop_id
+            'status'     => ($result['status'] ?? null) === 'success' ? 'success' : 'failed',
             'unique_id'  => $result['data'][0]['uniqueid'] ?? null,
             'date'       => now(),
             'created_at' => now(),
@@ -111,7 +123,6 @@ public function login(Request $request)
 
     return redirect()->route('otp.page')->with('success', 'OTP sent to your mobile.');
 }
-
 
     // ===============================
     // Show OTP form page
@@ -213,52 +224,68 @@ public function resendOtp(Request $request)
     }
 
     // -------------------
-    // Delete previous OTP session
+    // Clear old OTP
     // -------------------
     Session::forget(['otp', 'otp_expires_at']);
 
     // -------------------
-    // Generate new OTP
+    // Generate new OTP and store in session
     // -------------------
     $otp = rand(100000, 999999);
-
-    // Store new OTP and expiry (5 min)
     Session::put('otp', $otp);
     Session::put('otp_mobile', $mobile);
     Session::put('otp_expires_at', now()->addMinutes(5));
 
     // -------------------
-    // Prepare SMS
+    // Prepare SMS message
     // -------------------
     $message = "{$otp} is your verification code. Use it to complete your login. Do not share it with anyone. HBGADGET";
 
-    $api_url   = "https://api.pinnacle.in/index.php/sms/urlsms";
-    $apikey    = "10bdfb-cee7f2-f322fa-108c09-3e3a7b";
-    $senderid  = "HBTSPL";
-    $dlttempid = "1707175828703777137";
-
-    $full_url = "{$api_url}?sender=" . urlencode($senderid) .
-        "&numbers=" . urlencode($mobile) .
-        "&messagetype=" . urlencode("TXT") .
-        "&message=" . urlencode($message) .
-        "&response=Y" .
-        "&apikey=" . urlencode($apikey) .
-        "&dlttempid=" . urlencode($dlttempid);
+    // -------------------
+    // Get SMS API credentials from config/services.php
+    // -------------------
+    $apiUrl   = config('services.sms.url');
+    $apiKey   = config('services.sms.key');
+    $senderId = config('services.sms.sender_id');
+    $msgType  = config('services.sms.msg_type');
+    $response = config('services.sms.response');
+    $tempId   = config('services.sms.temp_id');
 
     try {
-        $response = Http::timeout(15)->withoutVerifying()->get($full_url);
-        $result = $response->json();
-        Log::info('Resend OTP SMS Response:', $result);
+        // -------------------
+        // Send SMS
+        // -------------------
+        $response = Http::timeout(15)
+            ->withoutVerifying() // remove this in production
+            ->get($apiUrl, [
+                'sender'      => $senderId,
+                'numbers'     => $mobile,
+                'messagetype' => $msgType,
+                'message'     => $message,
+                'response'    => $response,
+                'apikey'      => $apiKey,
+                'dlttempid'   => $tempId,
+            ]);
 
-        // Optionally, log SMS in database (like sms_logs)
+        $result = $response->json();
+
+        Log::info('Resend OTP SMS Response:', [
+            'mobile'   => $mobile,
+            'status'   => $result['status'] ?? 'unknown',
+            'uniqueid' => $result['data'][0]['uniqueid'] ?? null,
+        ]);
+
+        // -------------------
+        // Save SMS log in DB
+        // -------------------
         DB::table('sms_logs')->insert([
-            'mobile_no' => $mobile,
-            'shop_id'   => request()->ip(), // store device IP instead of shop
-            'status'    => $result['status'] ?? 'failed',
-            'unique_id' => $result['data'][0]['uniqueid'] ?? null,
-            'date'      => now(),
-            'created_at'=> now(),
-            'updated_at'=> now(),
+            'mobile_no'  => $mobile,
+            'device_ip'  => $request->input('device_id', $request->ip()), // save device_id or fallback to IP
+            'status'     => ($result['status'] ?? null) === 'success' ? 'success' : 'failed',
+            'unique_id'  => $result['data'][0]['uniqueid'] ?? null,
+            'date'       => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
     } catch (\Exception $e) {
@@ -268,6 +295,5 @@ public function resendOtp(Request $request)
     return redirect()->route('otp.page')
         ->with('success', 'A new OTP has been sent to your mobile.');
 }
-
 
 }

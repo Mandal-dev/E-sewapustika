@@ -5,7 +5,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
-    <form action="{{ route('salary.increment.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="salaryIncrementForm" action="{{ route('salary.increment.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <!-- Scrollable Body -->
@@ -99,9 +99,7 @@
                                 {{ $option->level_no }}
                             </option>
                         @endforeach
-
                     </select>
-
                 </div>
                 <div class="col-md-6">
                     <label>{{ __('messages.net_salary') }}</label>
@@ -120,19 +118,32 @@
                     <input type="file" name="increment_documents" class="form-control" accept=".pdf" required>
                 </div>
             </div>
+
+            {{-- ✅ Present Days --}}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label>{{ __('messages.present_days') }}</label>
+                    <input type="number" name="present_days" id="present_days" class="form-control" min="0" required>
+                    <small id="presentDaysError" class="text-danger d-none">Attendance is too low for salary increment (minimum 180 days required).</small>
+                </div>
+            </div>
+
         </div>
 
         <!-- Footer -->
         <div class="modal-footer">
             <button type="submit" class="btn btn-primary">{{ __('messages.submit') }}</button>
-            <button type="button" class="btn btn-secondary"
-                data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('messages.cancel') }}</button>
         </div>
     </form>
 </div>
+
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
+        // Fetch salary dynamically
         function fetchSalary() {
             let level_no = $('#level_no_select').val();
             let grade_pay = $('#grade_pay_select').val();
@@ -141,11 +152,8 @@
                 $.ajax({
                     url: "{{ route('get.salary') }}",
                     type: "GET",
-                    data: {
-                        level_no: level_no,
-                        grade_pay: grade_pay
-                    },
-                    success: function(response) {
+                    data: { level_no: level_no, grade_pay: grade_pay },
+                    success: function (response) {
                         if (response.salary) {
                             $('input[name="new_salary"]').val(response.salary);
                         } else {
@@ -153,7 +161,7 @@
                             alert("No salary found for selected Level & Grade Pay");
                         }
                     },
-                    error: function() {
+                    error: function () {
                         alert("Error fetching salary");
                     }
                 });
@@ -161,5 +169,19 @@
         }
 
         $('#level_no_select, #grade_pay_select').change(fetchSalary);
+
+        // ✅ Attendance Validation
+        $('#salaryIncrementForm').on('submit', function (e) {
+            let presentDays = parseInt($('#present_days').val()) || 0;
+
+            if (presentDays < 180) {
+                e.preventDefault();
+                $('#presentDaysError').removeClass('d-none'); // show inline error
+                $('#present_days').addClass('is-invalid');
+            } else {
+                $('#presentDaysError').addClass('d-none'); // hide error if valid
+                $('#present_days').removeClass('is-invalid');
+            }
+        });
     });
 </script>

@@ -5,22 +5,21 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('css/sewa_pustika.css') }}">
 
-<!-- jQuery (required for AJAX) -->
+<!-- jQuery + Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<div class="app-content" style="margin: 0; padding: 1rem;">
+<div class="app-content" style="margin:0; padding:1rem;">
 
     <!-- Flash Messages -->
-    @if (session('success'))
+    @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <strong>यशस्वी:</strong> {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
-    @if (session('error'))
+    @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>चूक:</strong> {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -28,11 +27,9 @@
     @endif
 
     <!-- Search Section -->
-    <div class="search-section p-3 d-flex flex-wrap align-items-center gap-2 mb-2"
-         style="background: #fff; border-radius: 8px;">
-        <input type="text" id="searchKeyword" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक"
-               style="min-width: 220px; flex: 1;">
-        <select id="searchDesignation" class="form-select" style="width: 180px;">
+    <div class="search-section p-3 d-flex flex-wrap align-items-center gap-2 mb-2" style="background:#fff; border-radius:8px;">
+        <input type="text" id="searchKeyword" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक" style="min-width:220px; flex:1;">
+        <select id="searchDesignation" class="form-select" style="width:180px;">
             <option value="">सर्व बक्षीस जोडा</option>
             <option value="Police">पोलीस</option>
             <option value="Station_Head">स्टेशन हेड</option>
@@ -43,7 +40,7 @@
     </div>
 
     <!-- Table Section (Desktop) -->
-    <div class="table-section p-3 d-none d-md-block" style="background: #fff; border-radius: 8px;">
+    <div class="table-section d-none d-md-block" id="rewardTableWrapper">
         <h5 class="mb-2 fw-semibold">बक्षीस यादी</h5>
         <div class="table-responsive" style="max-height:400px; overflow-y:auto; padding:10px;">
             <table class="table table-bordered align-middle my-rounded-table">
@@ -69,20 +66,18 @@
     </div>
 
     <!-- Card Section (Mobile) -->
-    <div class="d-md-none" id="rewardCards">
+    <div class="d-md-none" id="rewardCardsWrapper">
         @forelse($polices as $police)
             <div class="officer-card p-3 mb-3 border rounded shadow-sm">
                 <p><strong>नाव:</strong> {{ $police->police_name ?? '--' }}</p>
                 <p><strong>बकल नं.:</strong> {{ $police->buckle_number ?? '--' }}</p>
                 <p><strong>पद:</strong> {{ $police->role ?? '--' }}</p>
-                <p><strong>दिनांक:</strong>
-                    {{ $police->reward_given_date ? \Carbon\Carbon::parse($police->reward_given_date)->format('d-m-Y') : '--' }}
-                </p>
+                <p><strong>दिनांक:</strong> {{ $police->reward_given_date ? \Carbon\Carbon::parse($police->reward_given_date)->format('d-m-Y') : '--' }}</p>
                 <p><strong>प्रकार:</strong> {{ $police->reward_type ?? '--' }}</p>
                 <p><strong>कारण:</strong> {{ $police->reason ?? '--' }}</p>
                 <p>
                     <strong>स्थिती:</strong>
-                    @if (strtolower($police->reward_status) === 'approved')
+                    @if(strtolower($police->reward_status) === 'approved')
                         <span class="badge bg-success">मंजूर</span>
                     @elseif(strtolower($police->reward_status) === 'rejected')
                         <span class="badge bg-danger">नाकारले</span>
@@ -90,52 +85,25 @@
                         <span class="badge bg-warning text-dark">प्रलंबित</span>
                     @endif
                 </p>
-                <div class="d-flex flex-wrap gap-2 mt-2">
-                    <button class="btn btn-sm btn-warning"
-                        onclick="openModal('{{ route('rewards.add', $police->police_user_id) }}')">
-                        <i class="fas fa-plus"></i> बक्षीस जोडा
-                    </button>
-                    <a href="{{ route('police_profile.index', $police->police_user_id) }}" class="btn btn-sm btn-info">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    @if ($police->reward_id)
-                        @if (strtolower($police->reward_status) === 'pending')
-                            <button class="btn btn-sm btn-success"
-                                onclick="aproveopenModal('{{ route('aprove.rewards.show', $police->reward_id) }}')">
-                                <i class="fas fa-check-circle"></i> मंजूर करा
-                            </button>
-                        @elseif(strtolower($police->reward_status) === 'rejected')
-                            <button class="btn btn-sm btn-danger"
-                                onclick="viewRejectReason('{{ $police->reason ?? 'No reason provided' }}')">
-                                <i class="fas fa-eye"></i> कारण पहा
-                            </button>
-                        @endif
-                    @endif
-                    @if ($police->rewards_documents)
-                        <a href="{{ asset('uploads/rewards/' . $police->rewards_documents) }}" target="_blank"
-                            class="btn btn-sm btn-danger">
-                            <i class="fas fa-file-pdf"></i> पहा
-                        </a>
-                    @else
-                        <span class="text-muted align-self-center">नाही</span>
-                    @endif
-                </div>
             </div>
         @empty
             <div class="text-center text-muted">कोणतीही नोंद सापडली नाही</div>
         @endforelse
     </div>
-        <div class="modal fade" id="sewaPustikaModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div id="sewaPustikaModalBody" class="p-4 text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">लोड होत आहे...</span>
-                        </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="sewaPustikaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div id="sewaPustikaModalBody" class="p-4 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">लोड होत आहे...</span>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
     <!-- Pagination -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
         <div class="text-muted small"></div>
@@ -143,37 +111,14 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script>
-function openModal(url) {
-    const modal = new bootstrap.Modal(document.getElementById('sewaPustikaModal'));
-    modal.show();
-    $('#sewaPustikaModalBody').html('<div class="p-5 text-center"><div class="spinner-border text-primary"></div></div>');
-    $.get(url, function(res) {
-        $('#sewaPustikaModalBody').html(res);
-    });
-}
-
-function aproveopenModal(url) {
-    const modal = new bootstrap.Modal(document.getElementById('aprovePustikaModal'));
-    modal.show();
-    $('#aproveModalBody').html('<div class="p-5 text-center"><div class="spinner-border text-primary"></div></div>');
-    $.get(url, function(res) {
-        $('#aproveModalBody').html(res);
-    });
-}
-
-function viewRejectReason(reason) {
-    $('#rejectReasonBody').text(reason);
-    new bootstrap.Modal(document.getElementById('rejectReasonModal')).show();
-}
-
 $(document).ready(function() {
     setTimeout(() => $('.alert').fadeOut('slow'), 4000);
 
     function fetchRewards() {
         let keyword = $("#searchKeyword").val();
         let designation = $("#searchDesignation").val();
+        let isMobile = window.innerWidth < 768;
 
         $.ajax({
             url: "{{ route('rewards.search') }}",
@@ -181,11 +126,32 @@ $(document).ready(function() {
             data: { keyword, designation },
             success: function(response) {
                 let items = response.data.data || response.data;
-                let tableHtml = '', cardHtml = '';
-
-                if (items.length > 0) {
-                    items.forEach((item, index) => {
-                        tableHtml += `
+                if(isMobile) {
+                    // Mobile: update cards only
+                    let cardHtml = '';
+                    if(items.length > 0) {
+                        items.forEach(item => {
+                            cardHtml += `
+<div class="officer-card p-3 mb-3 border rounded shadow-sm">
+    <p><strong>नाव:</strong> ${item.police_name ?? '--'}</p>
+    <p><strong>बकल नं.:</strong> ${item.buckle_number ?? '--'}</p>
+    <p><strong>पद:</strong> ${item.role ?? '--'}</p>
+    <p><strong>दिनांक:</strong> ${item.reward_given_date ? new Date(item.reward_given_date).toLocaleDateString('en-GB') : '--'}</p>
+    <p><strong>प्रकार:</strong> ${item.reward_type ?? '--'}</p>
+    <p><strong>कारण:</strong> ${item.reason ?? '--'}</p>
+    <p><strong>स्थिती:</strong> ${item.reward_status.toLowerCase() === 'approved' ? '<span class="badge bg-success">मंजूर</span>' : item.reward_status.toLowerCase() === 'rejected' ? '<span class="badge bg-danger">नाकारले</span>' : '<span class="badge bg-warning text-dark">प्रलंबित</span>'}</p>
+</div>`;
+                        });
+                    } else {
+                        cardHtml = `<div class="text-center text-muted">कोणतीही नोंद सापडली नाही</div>`;
+                    }
+                    $("#rewardCardsWrapper").html(cardHtml);
+                } else {
+                    // Desktop: update table only
+                    let tableHtml = '';
+                    if(items.length > 0) {
+                        items.forEach((item, index) => {
+                            tableHtml += `
 <tr>
     <td>${response.data.from ? response.data.from + index : index + 1}</td>
     <td>${item.police_name ?? '--'}</td>
@@ -198,37 +164,12 @@ $(document).ready(function() {
     <td>${item.reward_status.toLowerCase() === 'approved' ? '<span class="badge bg-success">मंजूर</span>' : item.reward_status.toLowerCase() === 'rejected' ? '<span class="badge bg-danger">नाकारले</span>' : '<span class="badge bg-warning text-dark">प्रलंबित</span>'}</td>
     <td><button class="btn btn-sm btn-warning" onclick="openModal('/rewards/add/${item.police_user_id}')"><i class="fas fa-edit"></i> बक्षीस जोडा</button></td>
 </tr>`;
-
-                        cardHtml += `
-<div class="officer-card p-3 mb-3 border rounded shadow-sm">
-    <p><strong>नाव:</strong> ${item.police_name ?? '--'}</p>
-    <p><strong>बकल नं.:</strong> ${item.buckle_number ?? '--'}</p>
-    <p><strong>पद:</strong> ${item.role ?? '--'}</p>
-    <p><strong>दिनांक:</strong> ${item.reward_given_date ? new Date(item.reward_given_date).toLocaleDateString('en-GB') : '--'}</p>
-    <p><strong>प्रकार:</strong> ${item.reward_type ?? '--'}</p>
-    <p><strong>कारण:</strong> ${item.reason ?? '--'}</p>
-    <p><strong>स्थिती:</strong> ${item.reward_status.toLowerCase() === 'approved' ? '<span class="badge bg-success">मंजूर</span>' : item.reward_status.toLowerCase() === 'rejected' ? '<span class="badge bg-danger">नाकारले</span>' : '<span class="badge bg-warning text-dark">प्रलंबित</span>'}</p>
-    <div class="d-flex flex-wrap gap-2 mt-2">
-        <button class="btn btn-sm btn-warning" onclick="openModal('/rewards/add/${item.police_user_id}')"><i class="fas fa-plus"></i> बक्षीस जोडा</button>
-        <a href="/police_profile/${item.police_user_id}" class="btn btn-sm btn-info">View</a>
-        ${item.reward_id ? (item.reward_status.toLowerCase() === 'pending' ?
-            `<button class="btn btn-sm btn-success" onclick="aproveopenModal('/aprove/rewards/show/${item.reward_id}')"><i class="fas fa-check-circle"></i> मंजूर करा</button>` :
-            item.reward_status.toLowerCase() === 'rejected' ?
-            `<button class="btn btn-sm btn-danger" onclick="viewRejectReason('${item.reason ?? 'No reason provided'}')"><i class="fas fa-eye"></i> कारण पहा</button>` : '') : ''}
-        ${item.rewards_documents ? `<a href="/uploads/rewards/${item.rewards_documents}" target="_blank" class="btn btn-sm btn-danger"><i class="fas fa-file-pdf"></i> पहा</a>` : '<span class="text-muted">नाही</span>'}
-    </div>
-</div>`;
-                    });
-                } else {
-                    tableHtml = `<tr><td colspan="10" class="text-center">कोणतीही नोंद सापडली नाही</td></tr>`;
-                    cardHtml = `<div class="text-center text-muted">कोणतीही नोंद सापडली नाही</div>`;
+                        });
+                    } else {
+                        tableHtml = `<tr><td colspan="10" class="text-center">कोणतीही नोंद सापडली नाही</td></tr>`;
+                    }
+                    $("#rewardTableBody").html(tableHtml);
                 }
-
-                $("#rewardTableBody").html(tableHtml);
-                $("#rewardCards").html(cardHtml);
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", error);
             }
         });
     }
@@ -236,6 +177,21 @@ $(document).ready(function() {
     $("#searchKeyword").on("keyup", fetchRewards);
     $("#searchDesignation").on("change", fetchRewards);
     $("#searchBtn").on("click", fetchRewards);
+
+    // Optional: re-fetch on window resize
+    $(window).resize(function() {
+        fetchRewards();
+    });
 });
+
+// Modal open
+function openModal(url) {
+    const modal = new bootstrap.Modal(document.getElementById('sewaPustikaModal'));
+    modal.show();
+    $('#sewaPustikaModalBody').html('<div class="p-5 text-center"><div class="spinner-border text-primary"></div></div>');
+    $.get(url, function(res) {
+        $('#sewaPustikaModalBody').html(res);
+    });
+}
 </script>
 @endsection

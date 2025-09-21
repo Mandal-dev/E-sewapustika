@@ -14,7 +14,6 @@
 
     <div class="app-content">
 
-
         <!-- Flash Messages -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -55,8 +54,8 @@
                             <th>Department</th>
                             <th>नाव</th>
                             <th>बकल क्रमांक</th>
-                            <th>पद</th>
                             <th>वेतनवाढ दिनांक</th>
+                            <th>Present Days</th>
                             <th>वेतनवाढ प्रकार</th>
                             <th>Level</th>
                             <th>ग्रेड पेमेण्ट</th>
@@ -74,12 +73,12 @@
                         @forelse($polices as $index => $police)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $police->city_name ?? '--' }}</td>
+                                <td>{{ $police->post ?? '--' }}</td>
                                 <td>{{ $police->police_name ?? '--' }}</td>
                                 <td>{{ $police->buckle_number ?? '--' }}</td>
-                                <td>{{ $police->designation_type ?? '--' }}</td>
                                 <td>{{ $police->increment_date ? \Carbon\Carbon::parse($police->increment_date)->format('d-m-Y') : '--' }}
                                 </td>
+                                <td>{{ $police->present_days ?? '--' }}</td>
                                 <td>{{ $police->increment_type ?? '--' }}</td>
                                 <td>{{ $police->level ?? '--' }}</td>
                                 <td>{{ $police->grade_pay ?? '--' }}</td>
@@ -95,16 +94,16 @@
                                         <span class="text-muted">नाही</span>
                                     @endif
                                 </td>
-
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-1">
                                         <!-- Edit Icon -->
-                                        <button class="btn btn-primary btn-sm"
-                                            onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')"
-                                            title="Edit" style="padding: 6px 10px; border-radius: 50%;">
-                                            <i class="fas fa-plus"></i>
-                                            </i>
-                                        </button>
+                                        @if ($designation === 'Head_Person')
+                                            <button class="btn btn-primary btn-sm"
+                                                onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')"
+                                                title="Edit" style="padding: 6px 10px; border-radius: 50%;">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        @endif
 
                                         <!-- View Icon -->
                                         <a href="{{ route('police_profile.index', $police->police_user_id) }}"
@@ -115,10 +114,11 @@
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Mobile Card View -->
+
+                            {{-- Mobile Card View --}}
                             <div class="officer-card d-md-none p-3 mb-3 border rounded shadow-sm">
                                 <div class="left-col mb-2">
-                                    <p><strong>City:</strong> {{ $police->city_name ?? '--' }}</p>
+                                    <p><strong>City:</strong> {{ $police->post ?? '--' }}</p>
                                     <p><strong>Police Name:</strong> {{ $police->police_name ?? '--' }}</p>
                                     <p><strong>Buckle No:</strong> {{ $police->buckle_number ?? '--' }}</p>
                                     <p><strong>Designation:</strong> {{ $police->designation_type ?? '--' }}</p>
@@ -126,11 +126,10 @@
                                         {{ $police->increment_date ? \Carbon\Carbon::parse($police->increment_date)->format('d-m-Y') : '--' }}
                                     </p>
                                     <p><strong>Increment Type:</strong> {{ $police->increment_type ?? '--' }}</p>
+                                    <p><strong>Present Days:</strong> {{ $police->present_days ?? '--' }}</p>
                                 </div>
 
                                 <div class="right-col text-start mb-2">
-
-
                                     <div class="action-buttons">
                                         @if ($designation === 'Head_Person')
                                             <button class="add-btn btn-sm btn-warning mb-2"
@@ -161,8 +160,6 @@
                                 </div>
                             </div>
 
-
-
                         @empty
                             <tr>
                                 <td colspan="15" class="text-center">कोणतीही नोंद सापडली नाही</td>
@@ -171,8 +168,8 @@
 
                     </tbody>
                 </table>
-
             </div>
+
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div class="text-muted small">
                     Showing {{ $polices->firstItem() }} to {{ $polices->lastItem() }}
@@ -183,7 +180,6 @@
                     {!! $polices->links('pagination::bootstrap-5') !!}
                 </div>
             </div>
-
         </div>
 
         <!-- Bootstrap Modal -->
@@ -200,7 +196,7 @@
         </div>
     </div>
 
-    <!-- AJAX + Search Script -->
+    <!-- AJAX + Search + Validation Script -->
     <script>
         $.ajaxSetup({
             headers: {
@@ -214,18 +210,29 @@
             modal.show();
 
             $('#sewaPustikaModalBody').html(`
-        <div class="p-5 text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">लोड होत आहे...</span>
-            </div>
-        </div>
-    `);
+                <div class="p-5 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">लोड होत आहे...</span>
+                    </div>
+                </div>
+            `);
 
             $.ajax({
                 url: url,
                 type: 'GET',
                 success: function(response) {
                     $('#sewaPustikaModalBody').html(response);
+
+                    // Add Present Days Validation for modal form
+                    $('#incrementSubmit').click(function(e) {
+                        const presentDays = parseInt($('#present_days').val());
+                        if (isNaN(presentDays) || presentDays < 180) {
+                            e.preventDefault();
+                            alert(
+                                "वेतनवाढसाठी उपस्थित दिवस कमीत कमी 180 असणे आवश्यक आहे.\nAttendance is too low for salary increment.");
+                            return false;
+                        }
+                    });
                 },
                 error: function(xhr, status, error) {
                     console.error("AJAX Error:", error, xhr.responseText);
@@ -234,8 +241,8 @@
                         message = xhr.responseJSON.error;
                     }
                     $('#sewaPustikaModalBody').html(`
-                <div class="p-5 text-danger text-center">${message}</div>
-            `);
+                        <div class="p-5 text-danger text-center">${message}</div>
+                    `);
                 }
             });
         }

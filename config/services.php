@@ -26,9 +26,18 @@ return [
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
+        'key'    => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+    ],
+
+    'sms' => [
+        'url'       => env('SMS_API_URL'),
+        'key'       => env('SMS_API_KEY'),
+        'sender_id' => env('SMS_SENDER_ID'),
+        'msg_type'  => 'TXT',   // fixed value
+        'response'  => 'Y',     // fixed value
+        'temp_id'   => env('SMS_TEMP_ID'),
     ],
 
 ];

@@ -2,515 +2,397 @@
    OFFICER PROFILE CARD
 -----------------------------------*/
 .officer-card {
-    width: 100%; /* full width on smaller screens */
-    max-width: 1210px; /* original width for large screens */
-    height: auto; /* let height adjust automatically */
-    display: flex;
-    flex-wrap: wrap; /* allow items to wrap on smaller screens */
-    align-items: center;
-    gap: 20px; /* reduce gap for smaller screens */
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 40px;
-    padding: 20px 25px;
-    margin-bottom: 0;
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    box-shadow: none !important;
+  width: 100%;
+  max-width: 1210px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 40px;
+  padding: 20px 25px;
+  margin-bottom: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  box-shadow: none !important;
+  transition: all 0.3s ease;
 }
-
-/* Tablets */
-@media (max-width: 992px) {
-    .officer-card {
-        flex-direction: column; /* stack items vertically */
-        gap: 15px;
-        padding: 15px 20px;
-        border-radius: 25px;
-    }
-}
-
-/* Mobile */
-@media (max-width: 576px) {
-    .officer-card {
-        padding: 10px 15px;
-        border-radius: 20px;
-        gap: 10px;
-    }
-}
-
-
 
 .officer-card img {
-    width: 137px;
-    height: 137px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #133369;
+  width: 137px;
+  height: 137px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #133369;
 }
 
 .officer-info {
-    flex: 1;
+  flex: 1;
 }
 
 .officer-info h2 {
-    font-size: 1.25rem;
-    margin-bottom: 35px;
-    font-weight: 600;
-    color: #111827;
+  font-size: 1.25rem;
+  margin-bottom: 35px;
+  font-weight: 600;
+  color: #111827;
 }
 
 /* Officer details grid */
 .info-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px 25px;
-    font-size: 14px;
-    color: #444;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px 25px;
+  font-size: 14px;
+  color: #444;
 }
 
 .info-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .status {
-    color: #10b981;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  color: #10b981;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .status-dot {
-    width: 10px;
-    height: 10px;
-    background: #10b981;
-    border-radius: 50%;
-    display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border-radius: 50%;
+  display: inline-block;
 }
 
 .label {
-    color: #666;
-    font-weight: 500;
+  color: #666;
+  font-weight: 500;
 }
 
 .value {
-    font-weight: bold;
-    color: #000;
+  font-weight: bold;
+  color: #000;
 }
 
 /* --------------------------------
    EDIT BUTTON
 -----------------------------------*/
 .edit-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #133369;
-    color: white;
-    padding: 8px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-    text-decoration: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #133369;
+  color: white;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .edit-btn:hover {
-    background: #ea580c;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  background: #ea580c;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .edit-btn .material-icons {
-    font-size: 18px;
+  font-size: 18px;
 }
 
 /* --------------------------------
    TABS
 -----------------------------------*/
 .tabs {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-    background: #fff;
-    border-radius: 2rem;
-    padding: 1rem;
-    position: sticky;
-    top: 231px;
-    z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 2rem;
+  padding: 1rem;
+  position: sticky;
+  top: 231px;
+  z-index: 20;
 }
 .tabs-container {
-    padding: 2rem;
-    background: none;
-    border: 1px solid #bbb !important;  /* 👈 match card border */
+  padding: 2rem;
+  background: none;
+  border: 1px solid #bbb !important;
 }
 
-/* Buttons inside tabs */
-/* Buttons inside tabs */
 .tabs button {
-    flex: 1;
-    text-align: center;
-    padding: 0.6rem 1rem;
-    border-radius: 1rem;
-    border: none;
-    cursor: pointer;
-    background: #fff;
-    transition: 0.2s;
-    font-size: 14px;
-    font-weight: 500;
-    color: #444;
-    min-width: 139px;
-    max-height: 40px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.28);
+  flex: 1;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  border-radius: 1rem;
+  border: none;
+  cursor: pointer;
+  background: #fff;
+  transition: 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  min-width: 139px;
+  max-height: 40px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.28);
 }
+
 .tabs button.active {
-    background: #133369;
-    color: white !important;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-    text-align: center !important;
-    height: 40px;
-     /* 👈 deeper shadow for active */
+  background: #133369;
+  color: white !important;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  text-align: center !important;
+  height: 40px;
 }
 
 .tabs button:hover {
-    background: #f3f4f6;
-    color: #000;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.22);  /* 👈 stronger on hover */
+  background: #f3f4f6;
+  color: #000;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.22);
 }
 
 /* --------------------------------
    TABLE
 -----------------------------------*/
 .table-container {
-    border-radius: 1rem;
-    background: #fff;
-    margin-top: 1rem;
-    padding: 0.5rem;
-    border: 1px solid #bbb;
-    box-shadow: none !important;
-    /* removed max-height + overflow to prevent double scroll */
+  border-radius: 1rem;
+  background: #fff;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #bbb;
+  box-shadow: none !important;
 }
 
-
 .table-responsive {
-    overflow-x: hidden !important;   /* stop horizontal scroll */
-    border-radius: 1rem;             /* keep your rounded look */
-    margin-bottom: 0;
-    overflow-x: auto;   /* allow horizontal scroll if needed */
-    overflow-y: auto;   /* keep vertical scroll */
-    max-height: 400px;  /* your existing height */
-    padding: 10px;
-    border-radius: 1rem;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 400px;
+  padding: 10px;
+  border-radius: 1rem;
 }
 
 /* Table base */
 .table-container table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
+
 /* Table cells */
 .table-container th,
 .table-container td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e5e7eb;
-    border-right: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
 }
 
 /* Remove last column/row borders */
 .table-container th:last-child,
 .table-container td:last-child {
-    border-right: none;
+  border-right: none;
 }
 .table-container tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
-
 
 /* Sticky header */
 .table-container thead th {
-    position: sticky;
-    top: 0;                  /* 👈 sticks header inside container */
-    background: #fff7ed;     /* 👈 light background so header stands out */
-    z-index: 5;
-    font-weight: 600;
-    text-align: left;
+  position: sticky;
+  top: 0;
+  background: #fff7ed;
+  z-index: 5;
+  font-weight: 600;
+  text-align: left;
 }
 
+/* General table styling */
 table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;         /* keep borders clean */
-    font-size: 0.9rem;
-    border-radius: 1rem;
-    overflow: hidden;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  border-radius: 1rem;
+  overflow: hidden;
 }
 
-/* Table headers */
 table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: #fff7ed;   /* light orange like screenshot */
-    font-weight: 600;
-    text-align: left;
-    border-bottom: 2px solid #e5e7eb;
-    color: #000;
-}
-
-/* Rounded top corners */
-table thead th:first-child {
-    border-top-left-radius: 0.75rem;
-}
-table thead th:last-child {
-    border-top-right-radius: 0.75rem;
+  background: #fff7ed;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 2px solid #e5e7eb;
+  color: #000;
 }
 
 table th, table td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #e5e7eb;   /* row divider */
-    border-right: 1px solid #e5e7eb;    /* column divider */
-    vertical-align: middle;
-    color: #111827;
-    font-size: 14px;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  vertical-align: middle;
+  color: #111827;
+  font-size: 14px;
 }
 
 /* Remove last column’s right border */
 table th:last-child, table td:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 /* Remove last row’s bottom border */
 table tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 /* Row hover effect */
 table tbody tr:hover {
-    background: #f9fafb;
+  background: #f9fafb;
 }
 
+/* Table action buttons */
 table button {
-    padding: 0.25rem 0.5rem;
-    border: none;
-    background: #3b82f6;
-    color: white;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: 0.2s;
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: 0.2s;
 }
-
 table button:hover {
-    background: #2563eb;
+  background: #2563eb;
 }
 
 /* --------------------------------
    CUSTOM BUTTONS
 -----------------------------------*/
 .action-buttons {
-    display: flex;
-    gap: 6px;
+  display: flex;
+  gap: 6px;
 }
-
 .btn-view {
-    background: #f97316;
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    border: none;
-    cursor: pointer;
+  background: #f97316;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
 }
-
 .btn-view:hover {
-    background: #ea580c;
+  background: #ea580c;
 }
-
 .btn-download {
-    background: #3b82f6;
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 6px;
-    font-size: 13px;
-    border: none;
-    cursor: pointer;
+  background: #3b82f6;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
 }
-
 .btn-download:hover {
-    background: #2563eb;
+  background: #2563eb;
 }
 
 .card {
-    border-radius: 3rem !important;
-    padding: 1.5rem;
-    background: #fff;
-    margin-bottom: 1rem;
-    box-shadow: none !important;
+  border-radius: 3rem !important;
+  padding: 1.5rem;
+  background: #fff;
+  margin-bottom: 1rem;
+  box-shadow: none !important;
 }
 
-
-
-
-
-
-
-
+/* --------------------------------
+   ROUNDED TABLE STYLE
+-----------------------------------*/
 .my-rounded-table {
   border-collapse: separate;
-  border-spacing: 12px;       /* 👈 more space between cells */
+  border-spacing: 12px;
   width: 100%;
 }
-
-/* Header + body cells */
 .my-rounded-table th,
 .my-rounded-table td {
-  background: orange;
+  background: #fff;
   border: none;
   border-radius: 12px;
-  padding: 16px 20px;         /* 👈 more internal padding */
+  padding: 16px 20px;
   text-align: center;
-  vertical-align: middle;     /* 👈 centers multi-line text */
-  line-height: 1.5;           /* 👈 improves readability */
-  font-size: 14px;            /* adjust if needed */
+  vertical-align: middle;
+  line-height: 1.5;
+  font-size: 14px;
 }
-
-/* Header cells */
 .my-rounded-table thead th {
   background: #e9f5ff;
   font-weight: 600;
-  box-shadow: 1.95px 1.95px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 1.95px 1.95px 4px rgba(0,0,0,0.2);
 }
-
-/* Body cells */
 .my-rounded-table tbody td {
-  background: #fff;           /* 👈 lighter than header for contrast */
-  box-shadow: 1.95px 1.95px 4px rgba(0, 0, 0, 0.15);
+  background: #fff;
+  box-shadow: 1.95px 1.95px 4px rgba(0,0,0,0.15);
 }
 
+/* --------------------------------
+   RESPONSIVE ADJUSTMENTS
+-----------------------------------*/
+/* ✅ Default (Desktop / Tablet) */
+.officer-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 
+.officer-card img {
+  width: 137px;
+  height: 137px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #133369;
+}
 
+.officer-info {
+  flex: 1;
+}
 
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px 25px;
+}
 
-/* Mobile Responsive Table -> Cards */
-
-
+/* ✅ Mobile (≤ 768px) */
 @media (max-width: 768px) {
-
-
-    table.my-rounded-table {
-    display: none; /* hide the table layout */
-  }
-
- .app-content {
-    padding: none !important; /* top right bottom left */
-
-}
-
-
-.add-btn {
-    border-radius: 11px !important;
-
-    color: white !important;
-    outline: none !important;
-    border: none !important;
-    margin-bottom: 2px !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 8px;
-    background: #14649a;
-    color: #fff;
-    font-size: 13px;
-    border-radius: 9px;
-    border: none;
-    cursor: pointer;
-    height: 23px ;
-    width: 95px;
-    text-decoration: none;
-}
-
-.view-btn {
-    border-radius: 11px !important;
-    height: 30px !important;
-    text-decoration: none !important;
-    color: white !important;
-}
-
-
-  table.my-rounded-table {
-    display: none; /* hide the table layout */
-  }
-
   .officer-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 15px;
-    background: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    gap: 30px;
+    flex-direction: column;      /* stack vertically */
+    align-items: center;         /* center image */
+    text-align: center;          /* center text */
+    padding: 15px;
   }
 
-  .officer-card .left-col {
-    flex: 1;
+  .officer-card img {
+    margin-bottom: 15px;         /* space below image */
+    width: 110px;
+    height: 110px;
   }
 
-  .officer-card .left-col p {
-    margin: 4px 0;
-    font-size: 14px;
-    color: #333;
+  .officer-info {
+    width: 100%;
   }
 
-  .officer-card .left-col p.name {
-    font-weight: 600;
-    font-size: 15px;
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);  /* ✅ 2 columns */
+    gap: 10px 15px;
+    text-align: left;            /* keep details left aligned */
   }
 
-  .officer-card .right-col {
-    text-align: right;
-    flex: 1;
+  .info-item {
+    justify-content: flex-start;
   }
-
-  .officer-card .right-col p {
-    margin: 4px 0;
-    font-size: 14px;
-    color: #333;
-  }
-
-  .officer-card .action-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    background: #14649a;
-    color: #fff;
-    font-size: 13px;
-    border-radius: 9px;
-    border: none;
-    cursor: pointer;
-    height: 20px;
-    width: 70px;
-    text-decoration: none;
-  }
-
-  .officer-card .action-btn i {
-    font-size: 14px;
-  }
-}
-
-
-#mobile_cards .card {
-    border-radius: 12px;
-}
-#mobile_cards .col-6 {
-    margin-bottom: 10px;
 }

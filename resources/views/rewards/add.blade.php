@@ -1,13 +1,17 @@
+
+
+
 @if ($police)
     <div class="modal-header">
         <h5 class="modal-title">बक्षीस अपलोड करा</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
-    <form action="{{ route('rewards.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
 
-        <div class="modal-body">
+<form action="{{ route('rewards.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding-right: 15px;">
+
 
             {{-- राज्य आणि जिल्हा --}}
             <div class="row mb-3">

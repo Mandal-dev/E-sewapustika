@@ -6,7 +6,7 @@
 
     <form action="{{ route('punishments.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding-right: 15px;">
         <div class="modal-body">
 
             {{-- राज्य आणि जिल्हा --}}
@@ -82,6 +82,7 @@
             <button class="btn btn-primary">सबमिट करा</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">रद्द करा</button>
         </div>
+    </div>
     </form>
 @else
     <div class="alert alert-warning m-3">कोणताही पोलीस सापडला नाही.</div>

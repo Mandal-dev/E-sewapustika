@@ -1,7 +1,7 @@
 @php
     $designation = Session::get('user.designation_type');
 @endphp
-
+<div class="table-responsive" style="max-height:400px;overflow-y:auto;padding:10px;">
 @forelse($polices as $index => $police)
     <tr>
         <td>{{ $index + 1 }}</td>
@@ -29,7 +29,7 @@
             @if ($designation === 'Head_Person')
                 <button class="btn btn-sm btn-warning"
                     onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
-                    <i class="fas fa-edit"></i> वेतनवाढ जोडा
+                    <i class="fas fa-plus"></i> वेतनवाढ जोडा
                 </button>
             @endif
 
@@ -38,7 +38,7 @@
             </a>
         </td>
     </tr>
-
+</div>
     <!-- Mobile Card View -->
     <div class="officer-card d-md-none p-3 mb-3 border rounded shadow-sm">
         <div class="left-col mb-2">
@@ -72,7 +72,7 @@
             @if ($designation === 'Head_Person')
                 <button class="btn btn-sm btn-warning mb-2"
                     onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
-                    <i class="fas fa-edit"></i> Add Increment
+                    <i class="fas fa-plus"></i> Add Increment
                 </button>
             @endif
 

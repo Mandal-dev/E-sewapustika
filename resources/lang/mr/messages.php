@@ -93,4 +93,6 @@ return [
     'cancel' => 'रद्द करा',
         'buckle_number' => 'बकल नंबर',
     'police_name'   => 'पोलीस नाव',
+
+       'present_days' => 'हजेरीचे दिवस',
 ];

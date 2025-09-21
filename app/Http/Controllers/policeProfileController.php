@@ -174,8 +174,8 @@ public function index($id)
     public function punishmentHistory($id)
     {
         try {
-            $punishments = DB::table('police_punishments AS pp')
-                ->join('police_users AS pu', 'pp.police_id', '=', 'pu.id')
+            $punishments = DB::table('police_users AS pu')
+                ->leftjoin('police_punishments AS pp', 'pu.id', '=','pp.police_id')
                 ->select(
                     'pp.id',
                     'pp.punishment_given_date',
@@ -200,23 +200,26 @@ public function index($id)
     public function rewardsHistory($id)
     {
         try {
-            $punishments = DB::table('police_rewards AS pp')
-                ->join('police_users AS pu', 'pp.police_id', '=', 'pu.id')
+            $rewards = DB::table('police_users AS pu')
+                ->leftjoin('police_rewards AS pp', 'pu.id', '=', 'pp.police_id')
+                ->leftJoin('reward_reviews AS t6', 'pp.id', '=', 't6.reward_id')
                 ->select(
                     'pp.id',
+
                     'pp.rewards_documents',
                     'pp.reward_given_date',
                     'pp.reason',
                     'pp.reward_type',
                     'pu.police_name',
                     'pu.buckle_number',
-                    'pu.id AS police_user_id'
+                    'pu.id AS police_user_id',
+                    DB::raw('COALESCE(t6.review_status, "Pending") AS reward_status')
                 )
                 ->where('pp.police_id', $id)
                 ->orderBy('pp.created_at', 'desc')
                 ->get();
 
-            return view('profile.reward_history', compact('punishments'));
+            return view('profile.reward_history', compact('rewards'));
         } catch (\Exception $e) {
             Log::error('Error in policeProfileController@historyOfRewards: ' . $e->getMessage());
             return back()->with('error', 'Unable to load reward history.');
@@ -232,9 +235,9 @@ public function salaryIncrementHistory($id)
                 ->with('increments', collect([]));
         }
 
-        $query = DB::table('salary_increments AS si')
-            ->leftJoin('police_users AS pu', 'si.police_id', '=', 'pu.id')
-            ->leftJoin('police_stations AS s', 'si.station_id', '=', 's.id')
+        $query = DB::table('police_users AS pu')
+            ->leftJoin('salary_increments AS si', 'pu.id', '=', 'si.police_id')
+            ->leftJoin('police_stations AS s', 'pu.police_station_id', '=', 's.id')
             ->leftJoin('districts AS d', 'si.district_id', '=', 'd.id')
             ->leftJoin('states AS st', 'd.state_id', '=', 'st.id')
             ->leftJoin('cities AS c', 'pu.city_id', '=', 'c.id')
@@ -247,7 +250,7 @@ public function salaryIncrementHistory($id)
                 'si.increment_date',
                 'si.increment_type',
                 'si.new_salary',
-
+                 'pu.id AS police_user_id',
                 'si.level',
                 'si.grade_pay',
                 'si.increased_amount',
@@ -258,7 +261,8 @@ public function salaryIncrementHistory($id)
                 's.name AS station_name',
                 'd.district_name',
                 'st.state_name',
-                'c.city_name'
+                'c.city_name',
+                DB::raw('COALESCE(si.present_days, NULL) as present_days'),
             )
             ->where('pu.id', $id); // Only fetch increments for this officer
 

@@ -10,7 +10,7 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <div class="app-content" >
+    <div class="app-content">
 
         <!-- Flash Messages -->
         @if (session('success'))
@@ -62,13 +62,15 @@
     <!-- Scripts -->
     <script>
         $(document).ready(function() {
+            console.log('Document ready - initializing Sewa Pustika page');
+
             const spinnerHtml = `
-        <div class="p-5 text-center">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">लोड होत आहे...</span>
-            </div>
-        </div>
-    `;
+                <div class="p-5 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">लोड होत आहे...</span>
+                    </div>
+                </div>
+            `;
 
             // Auto-hide alerts
             setTimeout(function() {
@@ -90,10 +92,10 @@
                     },
                     error: function() {
                         $('#sewaPustikaModalBody').html(`
-                    <div class="p-5 text-danger text-center">
-                        डेटा लोड करण्यात अडचण आली.
-                    </div>
-                `);
+                            <div class="p-5 text-danger text-center">
+                                डेटा लोड करण्यात अडचण आली.
+                            </div>
+                        `);
                     }
                 });
             }
@@ -112,20 +114,32 @@
             // AJAX search function
             function performSearch() {
                 let keyword = $('#searchKeyword').val();
-                let stationName = $('#searchDesignation').val(); // get selected station name
+                let stationName = $('#searchDesignation').val();
+
+                $('#policeTable').html(`
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">लोड होत आहे...</span>
+                        </div>
+                    </div>
+                `);
 
                 $.ajax({
                     url: "{{ route('sevapustika.search') }}",
                     type: "GET",
                     data: {
                         keyword: keyword,
-                        designation: stationName // send the station name as designation
+                        designation: stationName
                     },
                     success: function(response) {
                         $('#policeTable').html(response);
                     },
                     error: function() {
-                        alert("डेटा लोड करण्यात अडचण आली");
+                        $('#policeTable').html(`
+                            <div class="alert alert-danger text-center">
+                                डेटा लोड करण्यात अडचण आली. कृपया पुन्हा प्रयत्न करा.
+                            </div>
+                        `);
                     }
                 });
             }
@@ -139,41 +153,18 @@
             // Trigger search on search button click
             $('#searchButton').click(performSearch);
 
-            // Handle pagination clicks via AJAX
-            $(document).on('click', '.pagination a', function(e) {
-                e.preventDefault();
-                let url = $(this).attr('href');
-                let keyword = $('#searchKeyword').val();
-                let designation = $('#searchDesignation').val();
-
-                $.ajax({
-                    url: url,
-                    data: {
-                        keyword: keyword,
-                        designation: designation
-                    },
-                    success: function(response) {
-                        $('#policeTable').html(response);
-                    }
-                });
-            });
-
             // Delegated event for modal edit buttons
-            $(document).on('click', '.menuBtn', function() {
+            $(document).on('click', '.menuBtn', function(e) {
+                e.preventDefault();
                 let url = $(this).data('url');
                 openModal(url);
             });
-        });
 
-
-        //station list
-
-        $(document).ready(function() {
+            // Load station list
             $.get("{{ route('get.stations') }}", function(stations) {
                 const select = $('#searchDesignation');
                 select.empty();
                 select.append('<option value="">सर्व ठाणे</option>');
-
                 stations.forEach(name => {
                     select.append(`<option value="${name}">${name}</option>`);
                 });

@@ -14,19 +14,24 @@
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>.profile-pic {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid #ddd;
-    display: flex;               /* Center the icon */
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;         /* light background */
-    color: #2c3e50;              /* icon color */
-    font-size: 40px;             /* icon size */
-}
-</style>
+    <style>
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: flex;
+            /* Center the icon */
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            /* light background */
+            color: #2c3e50;
+            /* icon color */
+            font-size: 40px;
+            /* icon size */
+        }
+    </style>
 </head>
 
 <body>
@@ -34,18 +39,18 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">
-             <div class="dash-img">
- <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
-    <i class="fa-solid fa-user logo-icon"></i>
-</a>
+            <div class="dash-img">
+                <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+                    <i class="fa-solid fa-user logo-icon"></i>
+                </a>
 
-<div class="profile-pic">
-    <img src="{{ asset('img/police image.png') }}" alt="Profile Picture">
-</div>
+                <div class="profile-pic">
+                    <img src="{{ asset('img/police image.png') }}" alt="Profile Picture">
+                </div>
 
-<a href="{{ route('police_profile.index', Session::get('user.id')) }}">
-    <i class="fa-solid fa-gear logo-icon"></i>
-</a>
+                <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+                    <i class="fa-solid fa-gear logo-icon"></i>
+                </a>
 
             </div><br>
 
@@ -156,8 +161,7 @@
 
                 <!-- Logout Icon -->
                 <img src="{{ asset('img/logOutIcon.jpeg') }}" alt="Logout"
-                    style="width:24px; height:24px; cursor:pointer;"
-                    onclick="confirmLogout(event)">
+                    style="width:24px; height:24px; cursor:pointer;" onclick="confirmLogout(event)">
 
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                     @csrf
@@ -165,14 +169,14 @@
             </div>
         </header>
 
-        <main >
+        <main>
             @yield('data')
         </main>
     </div>
 
     <!-- JS -->
     <script>
-        (function () {
+        (function() {
             // Check if already initialized
             if (window.sidebarInitialized) return;
             window.sidebarInitialized = true;
@@ -232,7 +236,8 @@
                     document.querySelectorAll('.nav-group-header').forEach(other => {
                         if (other !== header) {
                             other.classList.remove('open-header');
-                            if (other.nextElementSibling) other.nextElementSibling.classList.remove('open');
+                            if (other.nextElementSibling) other.nextElementSibling.classList
+                                .remove('open');
                             const otherArrow = other.querySelector('.arrow');
                             if (otherArrow) {
                                 otherArrow.classList.remove('fa-chevron-up');
@@ -246,7 +251,8 @@
             // Highlight active link
             document.querySelectorAll('.nav a, .submenu a, .nav-submenu a').forEach(link => {
                 link.addEventListener('click', () => {
-                    document.querySelectorAll('.submenu a, .nav-submenu a').forEach(l => l.classList.remove('active'));
+                    document.querySelectorAll('.submenu a, .nav-submenu a').forEach(l => l.classList
+                        .remove('active'));
                     link.classList.add('active');
                 });
             });
@@ -270,7 +276,8 @@
                         langDropdown.classList.remove('show');
 
                         langMenu.querySelectorAll('div').forEach(div => {
-                            div.style.display = div.dataset.lang === langCode ? 'none' : 'block';
+                            div.style.display = div.dataset.lang === langCode ? 'none' :
+                            'block';
                         });
                     });
                 });
@@ -289,7 +296,7 @@
             }
 
             // Logout confirmation
-            window.confirmLogout = function (event) {
+            window.confirmLogout = function(event) {
                 event.preventDefault();
                 Swal.fire({
                     title: 'Logout?',
@@ -308,4 +315,5 @@
         })();
     </script>
 </body>
+
 </html>
