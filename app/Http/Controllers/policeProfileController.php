@@ -18,7 +18,7 @@ class policeProfileController extends Controller
             $user = Session::get('user');
 
             if (!$user) {
-                Log::warning('Access denied: user not logged in');
+                Log::warning('Access denied: user not logged in, plz login first...');
                 return redirect('/')->with('error', 'Please login first.');
             }
 
