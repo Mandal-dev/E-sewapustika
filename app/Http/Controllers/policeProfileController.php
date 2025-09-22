@@ -48,7 +48,6 @@ class policeProfileController extends Controller
                 )
                 ->where('t4.is_delete', 'No');
 
-
             Log::info('Base query prepared');
 
             // Role-based access
