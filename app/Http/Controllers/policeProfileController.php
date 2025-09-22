@@ -171,6 +171,7 @@ public function index($id)
         }
     }
 
+
     public function punishmentHistory($id)
     {
         try {
@@ -200,8 +201,8 @@ public function index($id)
     public function rewardsHistory($id)
     {
         try {
-            $rewards = DB::table('police_users AS pu')
-                ->leftjoin('police_rewards AS pp', 'pu.id', '=', 'pp.police_id')
+            $rewards =  DB::table('police_rewards AS pp')
+                ->join('police_users AS pu', 'pp.police_id', '=', 'pu.id')
                 ->leftJoin('reward_reviews AS t6', 'pp.id', '=', 't6.reward_id')
                 ->select(
                     'pp.id',
@@ -235,9 +236,9 @@ public function salaryIncrementHistory($id)
                 ->with('increments', collect([]));
         }
 
-        $query = DB::table('police_users AS pu')
-            ->leftJoin('salary_increments AS si', 'pu.id', '=', 'si.police_id')
-            ->leftJoin('police_stations AS s', 'pu.police_station_id', '=', 's.id')
+        $query = DB::table('salary_increments AS si')
+            ->leftJoin('police_users AS pu', 'si.police_id', '=', 'pu.id')
+            ->leftJoin('police_stations AS s', 'si.station_id', '=', 's.id')
             ->leftJoin('districts AS d', 'si.district_id', '=', 'd.id')
             ->leftJoin('states AS st', 'd.state_id', '=', 'st.id')
             ->leftJoin('cities AS c', 'pu.city_id', '=', 'c.id')
