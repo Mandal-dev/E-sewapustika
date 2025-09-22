@@ -92,7 +92,7 @@
                                 </td>
 
                                 <td>
-                                    @if (in_array($designation, ['Head_Person']))
+                                      @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
                                         <button class="btn btn-sm btn-warning"
                                             onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
                                             <i class="fas fa-edit"></i> शिक्षा जोडा
@@ -125,7 +125,7 @@
                                 <div class="right-col text-start mb-2">
 
                                     <p>
-                                        @if (in_array($designation, ['Head_Person']))
+                                        @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
                                             <button class="add-btn btn-sm btn-warning"
                                                 onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
                                                 <i class="fas fa-plus"></i> शिक्षा जोडा

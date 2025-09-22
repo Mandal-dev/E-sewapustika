@@ -56,7 +56,7 @@
                             <span class="text-muted">नाही</span>
                         @endif
                     </td>
-                    @if ($designation === 'Head_Person')
+                    @if ($designation === 'Head_Person' || $designation === 'Account_Department')
                         <td class="text-center">
                             <button class="btn btn-primary btn-sm" onclick="openModal('{{ route('salary_increment.add', $item->police_user_id) }}')" title="Add Increment" style="padding: 6px 10px; border-radius: 50%;">
                                 <i class="fas fa-plus"></i>
@@ -67,6 +67,7 @@
             @empty
                 <tr>
                     <td colspan="14" class="text-center text-muted">कोणतीही नोंद सापडली नाही</td>
+
                 </tr>
             @endforelse
         </tbody>
@@ -80,7 +81,7 @@
             <!-- Card Header -->
             <div class="card-header d-flex justify-content-between align-items-center" style="background: rgb(233, 245, 255); border-radius: 0.75rem 0.75rem 0 0;">
                 <span><strong>#{{ $index + 1 }} - {{ $item->police_name ?? '--' }}</strong></span>
-                @if ($designation === 'Head_Person')
+                 @if ($designation === 'Head_Person' || $designation === 'Account_Department')
                     <button class="btn btn-primary btn-sm" onclick="openModal('{{ route('salary_increment.add', $item->police_user_id) }}')" title="Add Increment" style="padding: 4px 8px; border-radius: 50%;">
                         <i class="fas fa-plus"></i>
                     </button>

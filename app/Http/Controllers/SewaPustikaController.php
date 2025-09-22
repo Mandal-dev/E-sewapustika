@@ -71,6 +71,9 @@ class SewaPustikaController extends Controller
                 case 'Head_Person':
                     $query->where('t4.district_id', $user['district_id']);
                     break;
+                case 'Sewapustika_Department':
+                    $query->where('t4.district_id', $user['district_id']);
+                    break;
 
                 case 'Admin':
                     // no extra filter
@@ -132,6 +135,9 @@ class SewaPustikaController extends Controller
                 break;
 
             case 'Head_Person':
+                $query->where('t4.district_id', $user['district_id']);
+                break;
+            case 'Sewapustika_Department':
                 $query->where('t4.district_id', $user['district_id']);
                 break;
 
@@ -201,6 +207,9 @@ class SewaPustikaController extends Controller
                 if ($police->police_station_id == $user['police_station_id']) $authorized = true;
                 break;
             case 'Head_Person':
+                if ($police->district_id == $user['district_id']) $authorized = true;
+                break;
+            case 'Sewapustika_Department':
                 if ($police->district_id == $user['district_id']) $authorized = true;
                 break;
             case 'Admin':
@@ -279,123 +288,125 @@ class SewaPustikaController extends Controller
         ]);
     }
 
-public function search(Request $request)
-{
-    try {
-        // Get logged-in user
-        $user = Session::get('user');
-        if (!$user) {
+    public function search(Request $request)
+    {
+        try {
+            // Get logged-in user
+            $user = Session::get('user');
+            if (!$user) {
+                if ($request->ajax()) {
+                    return response()->json(['error' => 'Unauthorized'], 401);
+                }
+                return redirect('/login');
+            }
+
+            $perPage = 10;
+            $keyword = $request->input('keyword'); // search keyword
+            $station = $request->input('designation'); // selected station name
+
+            // Latest sewa_pustika per police user
+            $latestPustika = DB::table('sewa_pustikas as sp')
+                ->select('sp.id', 'sp.police_id', 'sp.sewa_pustika_status', 'sp.sewapusticapath')
+                ->whereIn('sp.id', function ($query) {
+                    $query->selectRaw('MAX(id)')
+                        ->from('sewa_pustikas')
+                        ->groupBy('police_id');
+                });
+
+            // Base query
+            $query = DB::table('police_users as t4')
+                ->leftJoin('districts as t2', 't4.district_id', '=', 't2.id')
+                ->leftJoin('states as t1', 't2.state_id', '=', 't1.id')
+                ->leftJoin('cities as t3', 't4.city_id', '=', 't3.id')
+                ->leftJoin('police_stations as t6', 't4.police_station_id', '=', 't6.id')
+                ->leftJoinSub($latestPustika, 't5', function ($join) {
+                    $join->on('t4.id', '=', 't5.police_id');
+                })
+                ->select(
+                    't1.state_name',
+                    't1.id as state_id',
+                    't2.id as district_id',
+                    't2.district_name',
+                    't3.id as city_id',
+                    't3.city_name',
+                    't4.id as police_user_id',
+                    't4.police_name',
+                    't4.buckle_number',
+                    't4.designation_type',
+                    't6.name as police_station_name',
+                    't5.sewa_pustika_status',
+                    't5.sewapusticapath',
+                    't4.post',
+                    't4.mobile'
+                )
+                ->where('t4.is_delete', 'No');
+
+            // If a station is selected, filter by station
+            if (!empty($station)) {
+                $query->where('t6.name', $station);
+            } else {
+                // Role-based filters
+                switch ($user['designation_type']) {
+                    case 'Police':
+                        if ($request->ajax()) {
+                            return response()->json(['error' => 'Access denied.'], 403);
+                        }
+                        return redirect()->back()->with('error', 'Access denied.');
+                    case 'Station_Head':
+                        $myStationId = DB::table('police_users')->where('id', $user['id'])->value('police_station_id');
+                        $query->where('t4.police_station_id', $myStationId);
+                        break;
+                    case 'Head_Person':
+                        $query->where('t4.district_id', $user['district_id']);
+
+                        break;
+                    case 'Sewapustika_Department':
+                        $query->where('t4.district_id', $user['district_id']);
+                        break;
+                    case 'Admin':
+                        // Admin sees all stations
+                        break;
+                    default:
+                        if ($request->ajax()) {
+                            return response()->json(['error' => 'Unauthorized access.'], 403);
+                        }
+                        return redirect()->back()->with('error', 'Unauthorized access.');
+                }
+            }
+
+            // Keyword search
+            if (!empty($keyword)) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('t4.police_name', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t4.buckle_number', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t4.designation_type', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t3.city_name', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t2.district_name', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t1.state_name', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t6.name', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t4.post', 'LIKE', "%{$keyword}%")
+                        ->orWhere('t4.mobile', 'LIKE', "%{$keyword}%");
+                });
+            }
+
+            // Pagination
+            $polices = $query->orderBy('t4.id', 'desc')
+                ->paginate($perPage)
+                ->appends(['keyword' => $keyword, 'designation' => $station]);
+
+            // AJAX response
             if ($request->ajax()) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return view('sewa_pustika.search_table', compact('polices'))->render();
             }
-            return redirect('/login');
-        }
 
-        $perPage = 10;
-        $keyword = $request->input('keyword'); // search keyword
-        $station = $request->input('designation'); // selected station name
-
-        // Latest sewa_pustika per police user
-        $latestPustika = DB::table('sewa_pustikas as sp')
-            ->select('sp.id', 'sp.police_id', 'sp.sewa_pustika_status', 'sp.sewapusticapath')
-            ->whereIn('sp.id', function ($query) {
-                $query->selectRaw('MAX(id)')
-                    ->from('sewa_pustikas')
-                    ->groupBy('police_id');
-            });
-
-        // Base query
-        $query = DB::table('police_users as t4')
-            ->leftJoin('districts as t2', 't4.district_id', '=', 't2.id')
-            ->leftJoin('states as t1', 't2.state_id', '=', 't1.id')
-            ->leftJoin('cities as t3', 't4.city_id', '=', 't3.id')
-            ->leftJoin('police_stations as t6', 't4.police_station_id', '=', 't6.id')
-            ->leftJoinSub($latestPustika, 't5', function ($join) {
-                $join->on('t4.id', '=', 't5.police_id');
-            })
-            ->select(
-                't1.state_name',
-                't1.id as state_id',
-                't2.id as district_id',
-                't2.district_name',
-                't3.id as city_id',
-                't3.city_name',
-                't4.id as police_user_id',
-                't4.police_name',
-                't4.buckle_number',
-                't4.designation_type',
-                't6.name as police_station_name',
-                't5.sewa_pustika_status',
-                't5.sewapusticapath',
-                't4.post',
-                't4.mobile'
-            )
-            ->where('t4.is_delete', 'No');
-
-        // If a station is selected, filter by station
-        if (!empty($station)) {
-            $query->where('t6.name', $station);
-        } else {
-            // Role-based filters
-            switch ($user['designation_type']) {
-                case 'Police':
-                    if ($request->ajax()) {
-                        return response()->json(['error' => 'Access denied.'], 403);
-                    }
-                    return redirect()->back()->with('error', 'Access denied.');
-                case 'Station_Head':
-                    $myStationId = DB::table('police_users')->where('id', $user['id'])->value('police_station_id');
-                    $query->where('t4.police_station_id', $myStationId);
-                    break;
-                case 'Head_Person':
-                    $query->where('t4.district_id', $user['district_id']);
-                    break;
-                case 'Admin':
-                    // Admin sees all stations
-                    break;
-                default:
-                    if ($request->ajax()) {
-                        return response()->json(['error' => 'Unauthorized access.'], 403);
-                    }
-                    return redirect()->back()->with('error', 'Unauthorized access.');
+            // Normal page load
+            return view('sewa_pustika.search_table', compact('polices'));
+        } catch (\Exception $e) {
+            Log::error('Sewa Pustika Search Error: ' . $e->getMessage());
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
             }
+            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
-
-        // Keyword search
-        if (!empty($keyword)) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('t4.police_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t4.buckle_number', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t4.designation_type', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t3.city_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t2.district_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t1.state_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t6.name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t4.post', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t4.mobile', 'LIKE', "%{$keyword}%");
-            });
-        }
-
-        // Pagination
-        $polices = $query->orderBy('t4.id', 'desc')
-            ->paginate($perPage)
-            ->appends(['keyword' => $keyword, 'designation' => $station]);
-
-        // AJAX response
-        if ($request->ajax()) {
-            return view('sewa_pustika.search_table', compact('polices'))->render();
-        }
-
-        // Normal page load
-        return view('sewa_pustika.search_table', compact('polices'));
-    } catch (\Exception $e) {
-        Log::error('Sewa Pustika Search Error: ' . $e->getMessage());
-        if ($request->ajax()) {
-            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
-        }
-        return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
     }
-}
-
-
 }

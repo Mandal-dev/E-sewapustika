@@ -1,5 +1,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+@php
+    $designation = Session::get('user.designation_type');
+@endphp
 <!-- Desktop Table -->
 <div class="table-responsive d-none d-md-block" style="max-height:400px;overflow-y:auto;padding:10px;">
     <table class="table table-bordered align-middle my-rounded-table">
@@ -31,10 +33,12 @@
                         @endif
                     </td>
                     <td>
-                        <button class="action-btn menuBtn"
-                            data-url="{{ route('sewa_pustika.addshow', $police->police_user_id) }}">
-                            <i class="fas fa-plus"></i> Add
-                        </button>
+                        @if ($designation === 'Head_Person' || $designation === 'Sewapustika_Department')
+                            <button class="action-btn menuBtn"
+                                data-url="{{ route('sewa_pustika.addshow', $police->police_user_id) }}">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        @endif
 
                     </td>
                 </tr>
@@ -88,11 +92,13 @@
                     <div class="col-6 text-end">{{ $police->district_name ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6"><strong>Action:</strong></div>
-                    <div class="col-6 text-end"> <button class="action-btn menuBtn"
-                            data-url="{{ route('sewa_pustika.addshow', $police->police_user_id) }}">
-                            <i class="fas fa-plus"></i> Add
-                        </button></div>
+                    @if ($designation === 'Head_Person' || $designation === 'Sewapustika_Department')
+                        <div class="col-6"><strong>Action:</strong></div>
+                        <div class="col-6 text-end"> <button class="action-btn menuBtn"
+                                data-url="{{ route('sewa_pustika.addshow', $police->police_user_id) }}">
+                                <i class="fas fa-plus"></i> Add
+                            </button></div>
+                    @endif
 
                 </div>
             </div>

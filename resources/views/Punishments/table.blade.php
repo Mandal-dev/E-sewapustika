@@ -1,6 +1,9 @@
 <div class="table-responsive" style="max-height:400px; overflow-y:auto; padding:10px;">
     <table class="table table-bordered align-middle my-rounded-table">
         <thead class="table-light">
+            @php
+    $designation = Session::get('user.designation_type');
+@endphp
             <tr>
                 <th>क्रमांक</th>
                 <th>अधिकाऱ्याचे नाव</th>
@@ -31,7 +34,7 @@
                         @endif
                     </td>
                     <td>
-                        @if(Session::get('user.designation_type') === 'Head_Person')
+                          @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
                             <button class="btn btn-sm btn-warning" onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
                                 <i class="fas fa-edit"></i> शिक्षा जोडा
                             </button>

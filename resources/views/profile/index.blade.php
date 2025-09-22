@@ -4,13 +4,34 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/new_profile.css') }}">
 
+    @php
+        $designation = Session::get('user.designation_type');
+
+        // Determine default tab based on designation
+        $defaultTab = 'sewa_pustika'; // fallback
+        switch ($designation) {
+            case 'Rewards_Department':
+                $defaultTab = 'bakshish';
+                break;
+            case 'Account_Department':
+                $defaultTab = 'vetanwadh';
+                break;
+            case 'Sewapustika_Department':
+                $defaultTab = 'sewa_pustika';
+                break;
+            case 'Punishment_Department':
+                $defaultTab = 'shiksha';
+                break;
+        }
+    @endphp
+
     <!-- Officer Profile Card -->
     <div class="officer-card">
         <!-- Edit Button -->
-        <a onclick="openModal('{{  route('police.edit', $police->police_user_id ?? 0) }}')" class="edit-btn" title="Edit Profile">
+        <a onclick="openModal('{{ route('police.edit', $police->police_user_id ?? 0) }}')" class="edit-btn"
+            title="Edit Profile">
             <span class="material-icons">edit</span>
         </a>
-
 
         <img src="{{ asset('img/default_img.png') }}" alt="Officer">
         <div class="officer-info">
@@ -55,12 +76,30 @@
     <!-- Tabs -->
     <div class="tabs-container mt-4 card">
         <div class="tab-nav tabs">
-            <button class="tab-button active" data-tab="sewa_pustika">{{ __('messages.sewa_pustika') }}</button>
-            <button class="tab-button" data-tab="vetanwadh">{{ __('messages.vetanwadh') }}</button>
-            <button class="tab-button" data-tab="bakshish">{{ __('messages.bakshish') }}</button>
-            <button class="tab-button" data-tab="shiksha">{{ __('messages.shiksha') }}</button>
-            <button class="tab-button" data-tab="raja">{{ __('messages.raja') }}</button>
-            <button class="tab-button" data-tab="help">{{ __('messages.help') }}</button>
+            @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
+                <button class="tab-button" data-tab="sewa_pustika">{{ __('messages.sewa_pustika') }}</button>
+                <button class="tab-button" data-tab="vetanwadh">{{ __('messages.vetanwadh') }}</button>
+                <button class="tab-button" data-tab="bakshish">{{ __('messages.bakshish') }}</button>
+                <button class="tab-button" data-tab="shiksha">{{ __('messages.shiksha') }}</button>
+                <button class="tab-button" data-tab="raja">{{ __('messages.raja') }}</button>
+                <button class="tab-button" data-tab="help">{{ __('messages.help') }}</button>
+            @endif
+
+            @if ($designation === 'Rewards_Department')
+                <button class="tab-button" data-tab="bakshish">{{ __('messages.bakshish') }}</button>
+            @endif
+
+            @if ($designation === 'Account_Department')
+                <button class="tab-button" data-tab="vetanwadh">{{ __('messages.vetanwadh') }}</button>
+            @endif
+
+            @if ($designation === 'Sewapustika_Department')
+                <button class="tab-button" data-tab="sewa_pustika">{{ __('messages.sewa_pustika') }}</button>
+            @endif
+
+            @if ($designation === 'Punishment_Department')
+                <button class="tab-button" data-tab="shiksha">{{ __('messages.shiksha') }}</button>
+            @endif
         </div>
 
         <!-- Table -->
@@ -101,83 +140,92 @@
     <script src="{{ asset('js/table-scroll.js') }}"></script>
 
     <script>
-    $(document).ready(function() {
-        // Auto-hide alerts
-        setTimeout(() => $('.alert').fadeOut('slow'), 4000);
+        $(document).ready(function() {
+            // Auto-hide alerts
+            setTimeout(() => $('.alert').fadeOut('slow'), 4000);
 
-        // Modal open function
-        window.openModal = function(url) {
-            const modalElement = document.getElementById('sewaPustikaModal');
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show();
+            // Modal open function
+            window.openModal = function(url) {
+                const modalElement = document.getElementById('sewaPustikaModal');
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
 
-            $('#sewaPustikaModalBody').html(`
-                <div class="p-5 text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">लोड होत आहे...</span>
+                $('#sewaPustikaModalBody').html(`
+                    <div class="p-5 text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">लोड होत आहे...</span>
+                        </div>
                     </div>
-                </div>
-            `);
+                `);
 
-            // Optional: Load content
-            $.get(url, function(response) {
-                $('#sewaPustikaModalBody').html(response);
-            }).fail(function() {
-                $('#sewaPustikaModalBody').html(
-                    '<div class="p-4 text-center text-danger">डेटा लोड करण्यात अडचण आली.</div>'
-                );
-            });
-        }
-                    $(document).on('click', '.menuBtn', function(e) {
-                e.preventDefault();
-                let url = $(this).data('url');
-                openModal(url);
-            });
-
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const policeId = {{ $police->police_user_id ?? 0 }};
-
-        function loadingTable() {
-            return `<tr><td colspan="10" class="text-center">
-                <div class="spinner-border text-primary" role="status"></div>
-            </td></tr>`;
-        }
-
-
-        function loadTabData(tab) {
-            $('#table_body').html(loadingTable());
-            $('#table_head').html('<th>Loading...</th>');
-
-            let url = '';
-            switch (tab) {
-                case 'sewa_pustika': url = `/police/sewa-pustika/${policeId}`; break;
-                case 'shiksha': url = `/punishments/history/${policeId}`; break;
-                case 'bakshish': url = `/rewards/history/${policeId}`; break;
-                case 'vetanwadh': url = `/salary_increment/history/${policeId}`; break;
-                case 'raja': url = `/leave/history/${policeId}`; break;
-                case 'help': url = `/issues/history/${policeId}`; break;
+                $.get(url, function(response) {
+                    $('#sewaPustikaModalBody').html(response);
+                }).fail(function() {
+                    $('#sewaPustikaModalBody').html(
+                        '<div class="p-4 text-center text-danger">डेटा लोड करण्यात अडचण आली.</div>'
+                    );
+                });
             }
 
-            $.get(url, function(response) {
-                $('#police_data_table').html(response);
-            }).fail(function() {
-                $('#table_body').html(
-                    `<tr><td colspan="10" class="text-center text-danger">डेटा लोड करण्यात अडचण आली.</td></tr>`
-                );
-            });
-        }
+            // Tab handling
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const policeId = {{ $police->police_user_id ?? 0 }};
+            const defaultTab = "{{ $defaultTab }}";
 
-        // Load default tab
-        loadTabData('sewa_pustika');
+            function loadingTable() {
+                return `<tr><td colspan="10" class="text-center">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </td></tr>`;
+            }
 
-        // Tab click
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                tabButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                loadTabData(btn.dataset.tab);
+            function loadTabData(tab) {
+                $('#table_body').html(loadingTable());
+                $('#table_head').html('<th>Loading...</th>');
+
+                let url = '';
+                switch (tab) {
+                    case 'sewa_pustika':
+                        url = `/police/sewa-pustika/${policeId}`;
+                        break;
+                    case 'shiksha':
+                        url = `/punishments/history/${policeId}`;
+                        break;
+                    case 'bakshish':
+                        url = `/rewards/history/${policeId}`;
+                        break;
+                    case 'vetanwadh':
+                        url = `/salary_increment/history/${policeId}`;
+                        break;
+                    case 'raja':
+                        url = `/leave/history/${policeId}`;
+                        break;
+                    case 'help':
+                        url = `/issues/history/${policeId}`;
+                        break;
+                }
+
+                $.get(url, function(response) {
+                    $('#police_data_table').html(response);
+                }).fail(function() {
+                    $('#table_body').html(
+                        `<tr><td colspan="10" class="text-center text-danger">डेटा लोड करण्यात अडचण आली.</td></tr>`
+                    );
+                });
+            }
+
+            // Load default tab for user
+            loadTabData(defaultTab);
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tab-button[data-tab="${defaultTab}"]`)?.classList.add('active');
+
+            // Tab click
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    loadTabData(btn.dataset.tab);
+                });
             });
         });
-    });
     </script>
 @endsection

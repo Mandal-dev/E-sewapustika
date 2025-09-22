@@ -59,7 +59,7 @@
 
         <!-- Gender -->
         <div class="row">
-                    <div class="col-md-6 mb-3 text-start">
+            <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">ठाणे नाव <span class="text-danger">*</span></label>
                 <select name="station_id" id="stationSelect" class="form-select" required>
                     <option value="">-- ठाणे निवडा --</option>
@@ -122,8 +122,13 @@
                     <option value="Head_Person">SP</option>
                     <option value="Station_Head">Station Head</option>
                     <option value="Police">Police</option>
+                    <option value="Account_Department">Account Department</option>
+                    <option value="Rewards_Department">Rewards Department</option>
+                    <option value="Sewapustika_Department">Sewapustika Department</option>
+                    <option value="Punishment_Department">Punishment Department</option>
                 </select>
             </div>
+
         </div>
 
         <!-- Religion, Category, Sub-caste -->

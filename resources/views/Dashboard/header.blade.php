@@ -103,17 +103,45 @@
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
                 <div class="nav-submenu">
-                    <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
-                            class="fas fa-book"></i> सेवा पुस्तिका</a>
-                    <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item"><i
-                            class="fas fa-chart-line"></i> वेतनवाढ</a>
-                    <a href="{{ route('punishments.index') }}" class="nav-item submenu-item"><i
-                            class="fas fa-exclamation-triangle"></i> शिक्षा</a>
-                    <a href="{{ route('rewards.index') }}" class="nav-item submenu-item"><i class="fas fa-trophy"></i>
-                        बक्षीस</a>
+                    @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
+                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-book"></i> सेवा पुस्तिका</a>
+                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-chart-line"></i> वेतनवाढ</a>
+                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-exclamation-triangle"></i> शिक्षा</a>
+                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-trophy"></i>
+                            बक्षीस</a>
 
-                    <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
-                            class="fas fa-comment"></i> पुरस्काराची स्थिती</a>
+                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-comment"></i> पुरस्काराची स्थिती</a>
+                    @endif
+
+                    @if ($designation === 'Rewards_Department')
+                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-trophy"></i> बक्षीस
+                        </a>
+                    @endif
+
+                    @if ($designation === 'Sewapustika_Department')
+                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-book"></i> सेवा पुस्तिका
+                        </a>
+                    @endif
+
+                    @if ($designation === 'Punishment_Department')
+                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-exclamation-triangle"></i> शिक्षा
+                        </a>
+                    @endif
+
+                    @if ($designation === 'Account_Department')
+                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-chart-line"></i> वेतनवाढ
+                        </a>
+                    @endif
+
                 </div>
             </div>
         </nav>
@@ -277,7 +305,7 @@
 
                         langMenu.querySelectorAll('div').forEach(div => {
                             div.style.display = div.dataset.lang === langCode ? 'none' :
-                            'block';
+                                'block';
                         });
                     });
                 });

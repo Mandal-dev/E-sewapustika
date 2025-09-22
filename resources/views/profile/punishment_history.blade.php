@@ -43,7 +43,7 @@
 
                     </td>
                     <td>
-                        @if (Session::get('user.designation_type') === 'Head_Person')
+                        @if ($designation === 'Head_Person' || $designation ===)
                             <button class="btn btn-primary btn-sm"
                                 onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
                                 <i class="fas fa-plus"></i> शिक्षा जोडा

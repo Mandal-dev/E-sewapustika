@@ -24,37 +24,55 @@
         </td>
         <td>
             @if (strtolower($police->reward_status) === 'approved')
-                <span class="badge bg-success">मंजूर</span>
+                <span class="badge bg-success text-white" style="cursor:pointer"
+                    data-variable="{{ $police->gadget_number ?? 'No information' }}" data-label="Gadget Number:"
+                    data-title="मंजूर">
+                    मंजूर
+                </span>
             @elseif (strtolower($police->reward_status) === 'rejected')
-                <span class="badge bg-danger">नाकारले</span>
+                <span class="badge bg-danger text-white" style="cursor:pointer"
+                    data-variable="{{ $police->reject_reason ?? 'No reason provided' }}" data-label="नाकारले कारण:"
+                    data-title="नाकारले">
+                    नाकारले
+                </span>
             @else
-                <span class="badge bg-warning text-dark">प्रलंबित</span>
-            @endif
-        </td>
-        <td>
-            <button class="btn btn-sm btn-warning"
-                onclick="openModal('{{ route('rewards.add', $police->police_user_id) }}')">
-                <i class="fas fa-edit"></i> बक्षीस जोडा
-            </button>
-            @if ($designation === 'Head_Person')
-                @if ($police->reward_id)
-                    @if (strtolower($police->reward_status) === 'pending')
-                        <button class="btn btn-sm btn-success"
-                            onclick="openModal('{{ route('aprove.rewards.show', $police->reward_id) }}')">
-                            <i class="fas fa-check-circle"></i> मंजूर करा
-                        </button>
-                    @endif
-                @elseif(strtolower($police->reward_status) === 'rejected')
-                    <button class="btn btn-sm btn-danger"
-                        onclick="viewRejectReason({{ json_encode($police->reject_reason ?? 'No reason provided') }})">
-                        <i class="fas fa-eye"></i> कारण पहा
-                    </button>
-                @endif
+                <span class="badge bg-warning text-dark" style="cursor:pointer" data-variable="Reward is still pending"
+                    data-label="Status:" data-title="प्रलंबित">
+                    प्रलंबित
+                </span>
             @endif
 
-            <a href="{{ route('police_profile.index', $police->police_user_id) }}" class="btn btn-sm btn-info">
-                <i class="fas fa-eye"></i>
-            </a>
+
+
+        </td>
+        <td>
+
+
+            <div class="action-buttons d-flex align-items-center gap-2">
+                <!-- Add Reward Button -->
+                <button class="btn btn-sm btn-success d-flex align-items-center"
+                    onclick="openModal('{{ route('rewards.add', $police->police_user_id) }}')">
+                    <i class="fas fa-plus me-1"></i>
+                    बक्षीस जोडा
+                </button>
+
+                <!-- Approve Button (Head Person only, pending reward) -->
+                @if ($designation === 'Head_Person' && $police->reward_id && strtolower($police->reward_status) === 'pending')
+                    <button class="btn btn-sm btn-warning d-flex align-items-center"
+                        onclick="openModal('{{ route('aprove.rewards.show', $police->reward_id) }}')">
+                        <i class="fas fa-check me-1"></i>
+                        मंजूर करा
+                    </button>
+                @endif
+
+                <!-- View Profile Button -->
+                <a class="btn btn-sm btn-info d-flex align-items-center"
+                    href="{{ route('police_profile.index', $police->police_user_id) }}">
+                    <i class="fas fa-eye me-1"></i>
+                    पहा
+                </a>
+            </div>
+
         </td>
     </tr>
 @empty
@@ -62,21 +80,74 @@
         <td colspan="10" class="text-center">कोणतीही नोंद सापडली नाही</td>
     </tr>
 @endforelse
+
+<!-- Modal for reject reason -->
+<div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"> <!-- center modal vertically -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectReasonModalTitle">कारण</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="rejectReasonModalBody">
+                <!-- Reason will be injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    function openModal(url) {
-        // Show modal first
+    function openModal(content) {
         var modal = new bootstrap.Modal(document.getElementById('dynamicModal'));
         modal.show();
 
-        // Load content via AJAX
-        fetch(url)
-            .then(response => response.text())
-            .then(html => {
-                document.querySelector("#dynamicModal .modal-body").innerHTML = html;
-            })
-            .catch(() => {
-                document.querySelector("#dynamicModal .modal-body").innerHTML =
-                    '<div class="alert alert-danger">Unable to load content.</div>';
-            });
+        let modalBody = document.querySelector("#dynamicModal .modal-body");
+
+        // Check if content looks like a URL (starts with http or /)
+        if (typeof content === 'string' && (content.startsWith('http') || content.startsWith('/'))) {
+            // Load via fetch
+            fetch(content)
+                .then(response => response.text())
+                .then(html => {
+                    modalBody.innerHTML = html;
+                })
+                .catch(() => {
+                    modalBody.innerHTML =
+                        '<div class="alert alert-danger">Unable to load content.</div>';
+                });
+        } else {
+            // Show plain text (reason)
+            modalBody.innerHTML = `<p class="text-danger fw-bold">${content}</p>`;
+        }
     }
+</script>
+<script>
+    function openReasonModal(title, label, variable, status) {
+        var modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
+        modal.show();
+
+        document.getElementById('rejectReasonModalTitle').innerText = title;
+
+        // Set color based on status
+        let color = 'black'; // default
+        if (status === 'approved') color = 'green';
+        else if (status === 'rejected') color = 'red';
+        else if (status === 'pending') color = 'orange';
+
+        document.getElementById('rejectReasonModalBody').innerHTML =
+            `<p>${label} <span style="color:${color}; font-weight:bold;">${variable}</span></p>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('span[data-variable]').forEach(function(el) {
+            el.addEventListener('click', function() {
+                let title = this.getAttribute('data-title') || 'कारण';
+                let label = this.getAttribute('data-label') || '';
+                let variable = this.getAttribute('data-variable') || '';
+                let status = this.classList.contains('bg-success') ? 'approved' :
+                    this.classList.contains('bg-danger') ? 'rejected' : 'pending';
+                openReasonModal(title, label, variable, status);
+            });
+        });
+    });
 </script>

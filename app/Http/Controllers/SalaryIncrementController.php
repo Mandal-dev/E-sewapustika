@@ -82,6 +82,10 @@ class SalaryIncrementController extends Controller
                     $query->where('t4.district_id', $user['district_id']);
                     break;
 
+                case 'Account_Department':
+                    $query->where('t4.district_id', $user['district_id']);
+                    break;
+
                 case 'Admin':
                     // Admin can see all users — no additional filter needed
                     break;
@@ -159,6 +163,9 @@ class SalaryIncrementController extends Controller
                 $query->where('t4.police_station_id', $myStationId);
                 break;
             case 'Head_Person':
+                $query->where('t4.district_id', $user['district_id']);
+                break;
+            case 'Account_Department':
                 $query->where('t4.district_id', $user['district_id']);
                 break;
             case 'Admin':
