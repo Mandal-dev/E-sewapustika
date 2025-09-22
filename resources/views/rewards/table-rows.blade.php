@@ -46,7 +46,7 @@
                     @endif
                 @elseif(strtolower($police->reward_status) === 'rejected')
                     <button class="btn btn-sm btn-danger"
-                        onclick="viewRejectReason({{ json_encode($police->reason ?? 'No reason provided') }})">
+                        onclick="viewRejectReason({{ json_encode($police->reject_reason ?? 'No reason provided') }})">
                         <i class="fas fa-eye"></i> कारण पहा
                     </button>
                 @endif
