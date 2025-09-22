@@ -132,7 +132,6 @@
     <h2>Reward Approval</h2>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-
 <!-- Form Start -->
 <form action="{{ route('reward.review.store') }}" method="POST">
     @csrf
