@@ -99,36 +99,7 @@ class MainController extends Controller
                     return back()->with('error', 'District not found in session.');
                 }
 
-                $total_police = DB::table('police_users')
-                    ->where('district_id', $user['district_id'])
-                    ->count();
-
-                $total_police_thane = DB::table('police_stations')
-                    ->where('district_id', $user['district_id'])
-                    ->count();
-
-                $total_pustika = DB::table('sewa_pustikas')
-                    ->where('district_id', $user['district_id'])
-                    ->distinct('police_id')
-                    ->count('police_id');
-
-                $total_punishments = DB::table('police_punishments')
-                    ->where('district_id', $user['district_id'])
-                    ->distinct('police_id')
-                    ->count('police_id');
-
-                $total_salary_increments = DB::table('salary_increments')
-                    ->where('district_id', $user['district_id'])
-                    ->distinct('police_id')
-                    ->count('police_id');
-
-                return view('Dashboard.dashboard', compact(
-                    'total_police',
-                    'total_pustika',
-                    'total_punishments',
-                    'total_salary_increments',
-                    'total_police_thane'
-                ));
+                return redirect()->route('police.list.index');
             }
 
             // ========================= DEPARTMENT-SPECIFIC =========================
@@ -171,108 +142,108 @@ class MainController extends Controller
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
-public function dashboard_cards()
-{
-    $user = Session::get('user');
-    if (!$user) {
-        return redirect('/login')->with('error', 'Session expired. Please login again.');
+    public function dashboard_cards()
+    {
+        $user = Session::get('user');
+        if (!$user) {
+            return redirect('/login')->with('error', 'Session expired. Please login again.');
+        }
+
+        $districtId = $user['district_id'];
+
+        // Salary Increment
+        $salary = DB::table('police_users AS t4')
+            ->leftJoin('salary_increments AS s', 't4.id', '=', 's.police_id')
+            ->leftJoin('salary_reviews AS r', 's.id', '=', 'r.salary_id')
+            ->where('t4.district_id', $districtId)
+            ->select(
+                DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
+                DB::raw('COUNT(DISTINCT s.id) AS total_uploaded'),
+                DB::raw('SUM(CASE WHEN r.review_status = "approved" THEN 1 ELSE 0 END) AS approved'),
+                DB::raw('SUM(CASE WHEN r.review_status = "rejected" THEN 1 ELSE 0 END) AS rejected'),
+                DB::raw('SUM(CASE WHEN s.id IS NOT NULL AND r.id IS NULL THEN 1 ELSE 0 END) AS pending')
+            )
+            ->first();
+
+        // Reward
+        $reward = DB::table('police_users AS t4')
+            ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
+            ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
+            ->where('t4.district_id', $districtId)
+            ->select(
+                DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
+                DB::raw('COUNT(DISTINCT t5.id) AS total_uploaded'),
+                DB::raw('SUM(CASE WHEN t6.review_status = "Approved" THEN 1 ELSE 0 END) AS approved'),
+                DB::raw('SUM(CASE WHEN t6.review_status = "Rejected" THEN 1 ELSE 0 END) AS rejected'),
+                DB::raw('SUM(CASE WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN 1 ELSE 0 END) AS pending')
+            )
+            ->first();
+
+        // Punishments
+        $punishment = DB::table('police_users AS t4')
+            ->leftJoin('police_punishments AS p', 't4.id', '=', 'p.police_id')
+            ->leftJoin('punishment_reviews AS r', 'p.id', '=', 'r.punishment_id')
+            ->where('t4.district_id', $districtId)
+            ->select(
+                DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
+                DB::raw('COUNT(DISTINCT p.id) AS total_uploaded'),
+                DB::raw('SUM(CASE WHEN r.review_status = "approved" THEN 1 ELSE 0 END) AS approved'),
+                DB::raw('SUM(CASE WHEN r.review_status = "rejected" THEN 1 ELSE 0 END) AS rejected'),
+                DB::raw('SUM(CASE WHEN p.id IS NOT NULL AND r.id IS NULL THEN 1 ELSE 0 END) AS pending')
+            )
+            ->first();
+
+        // Sewa Pustika
+        $sewaPustika = DB::table('police_users AS t4')
+            ->leftJoin('sewa_pustikas AS sp', 't4.id', '=', 'sp.police_id')
+            ->leftJoin('sewapushtika_review AS r', 'sp.id', '=', 'r.sewapustika_id')
+            ->where('t4.district_id', $districtId)
+            ->select(
+                DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
+                DB::raw('COUNT(DISTINCT sp.id) AS total_uploaded'),
+                DB::raw('SUM(CASE WHEN r.review_status = "approved" THEN 1 ELSE 0 END) AS approved'),
+                DB::raw('SUM(CASE WHEN r.review_status = "rejected" THEN 1 ELSE 0 END) AS rejected'),
+                DB::raw('SUM(CASE WHEN sp.id IS NOT NULL AND r.id IS NULL THEN 1 ELSE 0 END) AS pending')
+            )
+            ->first();
+
+        $cards = [
+            [
+                'title' => 'Salary Increment',
+                'total_police' => $salary->total_police,
+                'total_uploaded' => $salary->total_uploaded,
+                'approved' => $salary->approved,
+                'rejected' => $salary->rejected,
+                'pending' => $salary->pending
+            ],
+            [
+                'title' => 'Rewards',
+                'total_police' => $reward->total_police,
+                'total_uploaded' => $reward->total_uploaded,
+                'approved' => $reward->approved,
+                'rejected' => $reward->rejected,
+                'pending' => $reward->pending
+            ],
+            [
+                'title' => 'Punishments',
+                'total_police' => $punishment->total_police,
+                'total_uploaded' => $punishment->total_uploaded,
+                'approved' => $punishment->approved,
+                'rejected' => $punishment->rejected,
+                'pending' => $punishment->pending
+            ],
+            [
+                'title' => 'Sewa Pustika',
+                'total_police' => $sewaPustika->total_police,
+                'total_uploaded' => $sewaPustika->total_uploaded,
+                'approved' => $sewaPustika->approved,
+                'rejected' => $sewaPustika->rejected,
+                'pending' => $sewaPustika->pending
+            ]
+        ];
+
+        return view('cards.dashboard_card', compact('cards'));
     }
-
-    $districtId = $user['district_id'];
-
-    // Salary Increment
-    $salary = DB::table('police_users AS t4')
-        ->leftJoin('salary_increments AS s', 't4.id', '=', 's.police_id')
-        ->leftJoin('salary_reviews AS r', 's.id', '=', 'r.salary_id')
-        ->where('t4.district_id', $districtId)
-        ->select(
-            DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
-            DB::raw('COUNT(DISTINCT s.id) AS total_uploaded'),
-            DB::raw('SUM(CASE WHEN r.review_status = "approved" THEN 1 ELSE 0 END) AS approved'),
-            DB::raw('SUM(CASE WHEN r.review_status = "rejected" THEN 1 ELSE 0 END) AS rejected'),
-            DB::raw('SUM(CASE WHEN s.id IS NOT NULL AND r.id IS NULL THEN 1 ELSE 0 END) AS pending')
-        )
-        ->first();
-
-    // Reward
-    $reward = DB::table('police_users AS t4')
-        ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
-        ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
-        ->where('t4.district_id', $districtId)
-        ->select(
-            DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
-            DB::raw('COUNT(DISTINCT t5.id) AS total_uploaded'),
-            DB::raw('SUM(CASE WHEN t6.review_status = "Approved" THEN 1 ELSE 0 END) AS approved'),
-            DB::raw('SUM(CASE WHEN t6.review_status = "Rejected" THEN 1 ELSE 0 END) AS rejected'),
-            DB::raw('SUM(CASE WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN 1 ELSE 0 END) AS pending')
-        )
-        ->first();
-
-    // Punishments
-    $punishment = DB::table('police_users AS t4')
-        ->leftJoin('police_punishments AS p', 't4.id', '=', 'p.police_id')
-        ->leftJoin('punishment_reviews AS r', 'p.id', '=', 'r.punishment_id')
-        ->where('t4.district_id', $districtId)
-        ->select(
-            DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
-            DB::raw('COUNT(DISTINCT p.id) AS total_uploaded'),
-            DB::raw('SUM(CASE WHEN r.review_status = "approved" THEN 1 ELSE 0 END) AS approved'),
-            DB::raw('SUM(CASE WHEN r.review_status = "rejected" THEN 1 ELSE 0 END) AS rejected'),
-            DB::raw('SUM(CASE WHEN p.id IS NOT NULL AND r.id IS NULL THEN 1 ELSE 0 END) AS pending')
-        )
-        ->first();
-
-    // Sewa Pustika
-    $sewaPustika = DB::table('police_users AS t4')
-        ->leftJoin('sewa_pustikas AS sp', 't4.id', '=', 'sp.police_id')
-        ->leftJoin('sewapushtika_review AS r', 'sp.id', '=', 'r.sewapustika_id')
-        ->where('t4.district_id', $districtId)
-        ->select(
-            DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
-            DB::raw('COUNT(DISTINCT sp.id) AS total_uploaded'),
-            DB::raw('SUM(CASE WHEN r.review_status = "approved" THEN 1 ELSE 0 END) AS approved'),
-            DB::raw('SUM(CASE WHEN r.review_status = "rejected" THEN 1 ELSE 0 END) AS rejected'),
-            DB::raw('SUM(CASE WHEN sp.id IS NOT NULL AND r.id IS NULL THEN 1 ELSE 0 END) AS pending')
-        )
-        ->first();
-
-    $cards = [
-        [
-            'title' => 'Salary Increment',
-            'total_police' => $salary->total_police,
-            'total_uploaded' => $salary->total_uploaded,
-            'approved' => $salary->approved,
-            'rejected' => $salary->rejected,
-            'pending' => $salary->pending
-        ],
-        [
-            'title' => 'Rewards',
-            'total_police' => $reward->total_police,
-            'total_uploaded' => $reward->total_uploaded,
-            'approved' => $reward->approved,
-            'rejected' => $reward->rejected,
-            'pending' => $reward->pending
-        ],
-        [
-            'title' => 'Punishments',
-            'total_police' => $punishment->total_police,
-            'total_uploaded' => $punishment->total_uploaded,
-            'approved' => $punishment->approved,
-            'rejected' => $punishment->rejected,
-            'pending' => $punishment->pending
-        ],
-        [
-            'title' => 'Sewa Pustika',
-            'total_police' => $sewaPustika->total_police,
-            'total_uploaded' => $sewaPustika->total_uploaded,
-            'approved' => $sewaPustika->approved,
-            'rejected' => $sewaPustika->rejected,
-            'pending' => $sewaPustika->pending
-        ]
-    ];
-
-    return view('cards.dashboard_card', compact('cards'));
-}
 
     public function newDashboard()
     {
