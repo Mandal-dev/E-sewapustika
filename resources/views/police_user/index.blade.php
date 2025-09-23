@@ -9,7 +9,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS (only if not already loaded in layout) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    @php
+        $designation = Session::get('user.designation_type');
+    @endphp
     <div class="app-content p-3">
         @if (session('success'))
             <div class="alert alert-success">
@@ -25,7 +27,11 @@
 
         <!-- Header -->
 
-
+        @if ($designation === 'Head_Person' || $designation === 'Sewapustika_Department')
+            <div class="show-cards">
+                <!-- Reward cards will be loaded here via AJAX -->
+            </div>
+        @endif
         <!-- Flash Messages -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -190,6 +196,25 @@
                 let query = $('#searchInput').val();
                 let designation = $('#designationFilter').val();
                 loadTable(query, designation);
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ route('dashboard.cards') }}",
+
+                data: {
+                    _token: "{{ csrf_token() }}" // Include CSRF token for POST
+                },
+                success: function(response) {
+                    // Inject the returned view HTML into the div
+                    $('.show-cards').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    $('.show-cards').html('<p>Failed to load reward cards.</p>');
+                }
             });
         });
     </script>

@@ -18,12 +18,12 @@
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Police Name</label>
                 <input type="text" name="police_name" class="form-control"
-                       value="{{ old('police_name', $police->police_name ?? '') }}" required>
+                    value="{{ old('police_name', $police->police_name ?? '') }}" required>
             </div>
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Buckle Number</label>
                 <input type="text" name="buckle_number" class="form-control"
-                       value="{{ old('buckle_number', $police->buckle_number ?? '') }}">
+                    value="{{ old('buckle_number', $police->buckle_number ?? '') }}">
             </div>
         </div>
 
@@ -33,15 +33,18 @@
                 <label class="form-label fw-semibold">Gender</label>
                 <select name="gender" class="form-select" required>
                     <option value="">-- Select --</option>
-                    <option value="Male" {{ old('gender', $police->gender ?? '') == 'Male' ? 'selected' : '' }}>Male</option>
-                    <option value="Female" {{ old('gender', $police->gender ?? '') == 'Female' ? 'selected' : '' }}>Female</option>
-                    <option value="Other" {{ old('gender', $police->gender ?? '') == 'Other' ? 'selected' : '' }}>Other</option>
+                    <option value="Male" {{ old('gender', $police->gender ?? '') == 'Male' ? 'selected' : '' }}>Male
+                    </option>
+                    <option value="Female" {{ old('gender', $police->gender ?? '') == 'Female' ? 'selected' : '' }}>
+                        Female</option>
+                    <option value="Other" {{ old('gender', $police->gender ?? '') == 'Other' ? 'selected' : '' }}>Other
+                    </option>
                 </select>
             </div>
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Mobile</label>
                 <input type="text" name="mobile" class="form-control"
-                       value="{{ old('mobile', $police->mobile ?? '') }}">
+                    value="{{ old('mobile', $police->mobile ?? '') }}">
             </div>
         </div>
 
@@ -50,7 +53,7 @@
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Email</label>
                 <input type="email" name="email" class="form-control"
-                       value="{{ old('email', $police->email ?? '') }}">
+                    value="{{ old('email', $police->email ?? '') }}">
             </div>
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Religion</label>
@@ -72,17 +75,22 @@
                 <label class="form-label fw-semibold">Category</label>
                 <select name="caste" id="casteSelect" class="form-select" required>
                     <option value="">-- Category निवडा --</option>
-                    <option value="General" {{ old('caste', $police->caste ?? '') == 'General' ? 'selected' : '' }}>General</option>
-                    <option value="OBC" {{ old('caste', $police->caste ?? '') == 'OBC' ? 'selected' : '' }}>OBC</option>
-                    <option value="SC" {{ old('caste', $police->caste ?? '') == 'SC' ? 'selected' : '' }}>SC</option>
-                    <option value="ST" {{ old('caste', $police->caste ?? '') == 'ST' ? 'selected' : '' }}>ST</option>
-                    <option value="Others" {{ old('caste', $police->caste ?? '') == 'Others' ? 'selected' : '' }}>Others</option>
+                    <option value="General" {{ old('caste', $police->caste ?? '') == 'General' ? 'selected' : '' }}>
+                        General</option>
+                    <option value="OBC" {{ old('caste', $police->caste ?? '') == 'OBC' ? 'selected' : '' }}>OBC
+                    </option>
+                    <option value="SC" {{ old('caste', $police->caste ?? '') == 'SC' ? 'selected' : '' }}>SC
+                    </option>
+                    <option value="ST" {{ old('caste', $police->caste ?? '') == 'ST' ? 'selected' : '' }}>ST
+                    </option>
+                    <option value="Others" {{ old('caste', $police->caste ?? '') == 'Others' ? 'selected' : '' }}>
+                        Others</option>
                 </select>
             </div>
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Sub Caste</label>
                 <input type="text" name="category" class="form-control" placeholder="Sub Caste"
-                       value="{{ old('category', $police->category ?? '') }}">
+                    value="{{ old('category', $police->category ?? '') }}">
             </div>
         </div>
 
@@ -93,7 +101,8 @@
                 <select name="state_id" class="form-select">
                     <option value="">-- Select State --</option>
                     @foreach ($states as $st)
-                        <option value="{{ $st->id }}" {{ old('state_id', $police->state_id ?? '') == $st->id ? 'selected' : '' }}>
+                        <option value="{{ $st->id }}"
+                            {{ old('state_id', $police->state_id ?? '') == $st->id ? 'selected' : '' }}>
                             {{ $st->state_name }}
                         </option>
                     @endforeach
@@ -104,7 +113,8 @@
                 <select name="district_id" class="form-select">
                     <option value="">-- Select District --</option>
                     @foreach ($districts as $d)
-                        <option value="{{ $d->id }}" {{ old('district_id', $police->district_id ?? '') == $d->id ? 'selected' : '' }}>
+                        <option value="{{ $d->id }}"
+                            {{ old('district_id', $police->district_id ?? '') == $d->id ? 'selected' : '' }}>
                             {{ $d->district_name }}
                         </option>
                     @endforeach
@@ -119,7 +129,8 @@
                 <select name="city_id" class="form-select">
                     <option value="">-- Select City --</option>
                     @foreach ($cities as $c)
-                        <option value="{{ $c->id }}" {{ old('city_id', $police->city_id ?? '') == $c->id ? 'selected' : '' }}>
+                        <option value="{{ $c->id }}"
+                            {{ old('city_id', $police->city_id ?? '') == $c->id ? 'selected' : '' }}>
                             {{ $c->city_name }}
                         </option>
                     @endforeach
@@ -130,7 +141,8 @@
                 <select name="station_id" class="form-select">
                     <option value="">-- Select Station --</option>
                     @foreach ($stations as $ps)
-                        <option value="{{ $ps->id }}" {{ old('station_id', $police->police_station_id ?? '') == $ps->id ? 'selected' : '' }}>
+                        <option value="{{ $ps->id }}"
+                            {{ old('station_id', $police->police_station_id ?? '') == $ps->id ? 'selected' : '' }}>
                             {{ $ps->name }}
                         </option>
                     @endforeach
@@ -145,7 +157,8 @@
                 <select name="designation_id" class="form-select">
                     <option value="">-- Select Designation --</option>
                     @foreach ($designations as $des)
-                        <option value="{{ $des->id }}" {{ old('designation_id', $police->designation_id ?? '') == $des->id ? 'selected' : '' }}>
+                        <option value="{{ $des->id }}"
+                            {{ old('designation_id', $police->designation_id ?? '') == $des->id ? 'selected' : '' }}>
                             {{ $des->designation_name }}
                         </option>
                     @endforeach
@@ -155,9 +168,27 @@
                 <label class="form-label fw-semibold">Designation Type</label>
                 <select name="designation_type" class="form-select" required>
                     <option value="">-- पद निवडा --</option>
-                    <option value="Head_Person" {{ old('designation_type', $police->designation_type ?? '') == 'Head_Person' ? 'selected' : '' }}>SP</option>
-                    <option value="Station_Head" {{ old('designation_type', $police->designation_type ?? '') == 'Station_Head' ? 'selected' : '' }}>Station Head</option>
-                    <option value="Police" {{ old('designation_type', $police->designation_type ?? '') == 'Police' ? 'selected' : '' }}>Police</option>
+                    <option value="Head_Person"
+                        {{ old('designation_type', $police->designation_type ?? '') == 'Head_Person' ? 'selected' : '' }}>
+                        SP</option>
+                    <option value="Station_Head"
+                        {{ old('designation_type', $police->designation_type ?? '') == 'Station_Head' ? 'selected' : '' }}>
+                        Station Head</option>
+                    <option value="Police"
+                        {{ old('designation_type', $police->designation_type ?? '') == 'Police' ? 'selected' : '' }}>
+                        Police</option>
+                    <option value="Account_Department"
+                        {{ old('designation_type', $police->designation_type ?? '') == 'Account_Department' ? 'selected' : '' }}>
+                        Account Department</option>
+                    <option value="Rewards_Department"
+                        {{ old('designation_type', $police->designation_type ?? '') == 'Rewards_Department' ? 'selected' : '' }}>
+                        Rewards Department</option>
+                    <option value="Sewapustika_Department"
+                        {{ old('designation_type', $police->designation_type ?? '') == 'Sewapustika_Department' ? 'selected' : '' }}>
+                        Sewapustika Department</option>
+                    <option value="Punishment_Department"
+                        {{ old('designation_type', $police->designation_type ?? '') == 'Punishment_Department' ? 'selected' : '' }}>
+                        Punishment Department</option>
                 </select>
             </div>
         </div>
@@ -167,12 +198,12 @@
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Joining Date</label>
                 <input type="date" name="joining_date" class="form-control"
-                       value="{{ old('joining_date', $police->joining_date ?? '') }}">
+                    value="{{ old('joining_date', $police->joining_date ?? '') }}">
             </div>
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Retirement Date</label>
                 <input type="date" name="retirement_date" class="form-control"
-                       value="{{ old('retirement_date', $police->retirement_date ?? '') }}">
+                    value="{{ old('retirement_date', $police->retirement_date ?? '') }}">
             </div>
         </div>
 
@@ -189,7 +220,7 @@
             <div class="col-md-6 mb-3 text-start">
                 <label class="form-label fw-semibold">Pincode</label>
                 <input type="text" name="pincode" class="form-control"
-                       value="{{ old('pincode', $police->pincode ?? '') }}">
+                    value="{{ old('pincode', $police->pincode ?? '') }}">
             </div>
         </div>
 

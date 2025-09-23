@@ -182,6 +182,8 @@ Route::middleware(['setlang'])->group(function () {
 
         Route::get('/sewa-pustika-cards', [SewaPustikaController::class, 'sewa_pustika_cards'])
      ->name('sewa.pustika.cards');
+          Route::get('/dashboard-cards', [MainController::class, 'dashboard_cards'])
+     ->name('dashboard.cards');
 });
 
 Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp.resend');

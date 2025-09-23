@@ -250,7 +250,7 @@
         $(document).ready(function() {
             // AJAX call to load salary increment cards
             $.ajax({
-                url: "{{ route('salary.increment.cards') }}", // route defined in web.php
+                url: "{{ route('punishments.cards') }}", // route defined in web.php
                 type: "GET",
                 success: function(response) {
                     // Inject returned HTML into the div

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Session;
 class MainController extends Controller
 {
 
-    public function dashboard_old()
+    public function dashboard()
     {
         $user = Session::get('user'); // get logged in user session
 
@@ -171,7 +171,7 @@ class MainController extends Controller
             return back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
-public function dashboard()
+public function dashboard_cards()
 {
     $user = Session::get('user');
     if (!$user) {
@@ -271,7 +271,7 @@ public function dashboard()
         ]
     ];
 
-    return view('Dashboard.dashboard', compact('cards'));
+    return view('cards.dashboard_card', compact('cards'));
 }
 
     public function newDashboard()
