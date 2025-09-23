@@ -90,7 +90,7 @@ public function index()
         // Pagination
         $polices = $query->orderBy('t4.id', 'desc')->paginate($perPage);
 
-        return view('punishments.index', compact('polices'));
+        return view('Punishments.index', compact('polices'));
     } catch (\Exception $e) {
         $emptyPaginator = new LengthAwarePaginator([], 0, 10, 1, [
             'path' => request()->url(),

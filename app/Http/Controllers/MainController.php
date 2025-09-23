@@ -274,8 +274,6 @@ public function dashboard()
     return view('Dashboard.dashboard', compact('cards'));
 }
 
-
-
     public function newDashboard()
     {
         return view('Dashboard.manu');
