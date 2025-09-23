@@ -112,7 +112,7 @@ class MainController extends Controller
             } elseif ($user['designation_type'] === 'Rewards_Department') {
                 return redirect()->route('rewards.index');
             }
-
+//hello
             // ========================= ADMIN / OTHERS =========================
             else {
                 $total_police = DB::table('police_users')->count();
