@@ -4,6 +4,7 @@
     <!-- Bootstrap + Custom CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sewa_pustika.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -11,7 +12,9 @@
     <!-- jQuery + Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+@php
+    $designation = Session::get('user.designation_type');
+@endphp
     <div class="app-content">
 
         <!-- Flash Messages -->
@@ -27,25 +30,25 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-
-        <!-- Search Section -->
-        <div class="search-section p-3 d-flex flex-wrap align-items-center gap-2 mb-2"
-            style="background: #fff; border-radius: 8px;">
-            <input type="text" id="searchInput" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक"
-                style="min-width: 220px; flex: 1;" value="{{ $search ?? '' }}">
-            <select id="designationFilter" class="form-select" style="width: 180px;">
-                <option value="">सर्व वेतनवाढ जोडा</option>
-                <option value="Police">पोलीस अधीक्षक</option>
-                <option value="Inspector">निरीक्षक</option>
-            </select>
-            <button id="searchBtn" class="btn btn-success"><i class="fas fa-search"></i> शोधा</button>
-        </div>
+        @if ($designation === 'Head_Person' || $designation === 'Account_Department')
+            <div class="show-cards">
+                <!-- Salary increment cards will load here via AJAX -->
+            </div>
+                <br>
+        @endif
 
         <!-- Table Section -->
         <div class="table-section p-3" style="background: #fff; border-radius: 8px;">
-            <h5 class="mb-2 fw-semibold">वेतनवाढ यादी</h5>
-            <p class="text-muted mb-3">एकूण नोंदी: {{ count($polices) }}</p>
 
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-semibold mb-0">बक्षीस यादी</h5>
+
+                <div class="search-container position-relative" style="width: 300px;">
+                    <input type="text" id="searchInput" class="form-control ps-4"
+                        placeholder="नाव, ठाणे किंवा बकल क्रमांक">
+                    <i class="fas fa-search search-icon position-absolute"></i>
+                </div>
+            </div>
             <div class="table-responsive" style="max-height:400px;overflow-y:auto;padding:10px;">
                 <table class="table table-bordered align-middle my-rounded-table">
                     <thead class="table-light">
@@ -97,11 +100,19 @@
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-1">
                                         <!-- Edit Icon -->
-                                        @if ($designation === 'Head_Person')
+                                        @if ($designation === 'Head_Person' || $designation === 'Account_Department')
                                             <button class="btn btn-primary btn-sm"
                                                 onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')"
                                                 title="Edit" style="padding: 6px 10px; border-radius: 50%;">
                                                 <i class="fas fa-plus"></i>
+                                            </button>
+                                        @endif
+                                        @if ($designation === 'Head_Person' && $police->salary_increment_id && strtolower($police->salary_status) === 'pending')
+                                            <button class="btn btn-sm btn-warning "
+                                                style="padding: 6px 10px; border-radius: 50%;"
+                                                onclick="openModal('{{ route('salary.approval.show', $police->salary_increment_id) }}')">
+                                                <i class="fas fa-check me-1"></i>
+
                                             </button>
                                         @endif
 
@@ -131,13 +142,20 @@
 
                                 <div class="right-col text-start mb-2">
                                     <div class="action-buttons">
-                                        @if ($designation === 'Head_Person')
+                                        @if ($designation === 'Head_Person' || $designation === 'Account_Department')
                                             <button class="add-btn btn-sm btn-warning mb-2"
                                                 onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
                                                 <i class="fas fa-plus"></i>Increment
                                             </button>
                                         @endif
+                                        @if ($designation === 'Head_Person' && $police->salary_increment_id && strtolower($police->salary_status) === 'pending')
+                                            <button class="btn btn-sm btn-warning "
+                                                style="padding: 6px 10px; border-radius: 50%;"
+                                                onclick="openModal('{{ route('salary.approval.show', $police->salary_increment_id) }}')">
+                                                <i class="fas fa-check me-1"></i>
 
+                                            </button>
+                                        @endif
                                         <a class="view-btn btn-sm btn-info mb-2"
                                             href="{{ route('police_profile.index', $police->police_user_id) }}">
                                             <i class="fas fa-eye"></i>
@@ -229,7 +247,8 @@
                         if (isNaN(presentDays) || presentDays < 180) {
                             e.preventDefault();
                             alert(
-                                "वेतनवाढसाठी उपस्थित दिवस कमीत कमी 180 असणे आवश्यक आहे.\nAttendance is too low for salary increment.");
+                                "वेतनवाढसाठी उपस्थित दिवस कमीत कमी 180 असणे आवश्यक आहे.\nAttendance is too low for salary increment."
+                            );
                             return false;
                         }
                     });
@@ -272,6 +291,27 @@
 
             $('#searchInput').on('keyup', performSearch);
             $('#searchBtn').on('click', performSearch);
+        });
+    </script>
+    <!-- jQuery (if not already included) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // AJAX call to load salary increment cards
+            $.ajax({
+                url: "{{ route('salary.increment.cards') }}", // route defined in web.php
+                type: "GET",
+                success: function(response) {
+                    // Inject returned HTML into the div
+                    $('.show-cards').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading salary cards:", error);
+                    $('.show-cards').html(
+                        '<p class="text-danger">Unable to load salary increment cards.</p>');
+                }
+            });
         });
     </script>
 @endsection

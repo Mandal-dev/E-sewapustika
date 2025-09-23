@@ -53,7 +53,7 @@
                 <button class="btn btn-sm btn-success d-flex align-items-center"
                     onclick="openModal('{{ route('rewards.add', $police->police_user_id) }}')">
                     <i class="fas fa-plus me-1"></i>
-                    बक्षीस जोडा
+
                 </button>
 
                 <!-- Approve Button (Head Person only, pending reward) -->
@@ -61,7 +61,7 @@
                     <button class="btn btn-sm btn-warning d-flex align-items-center"
                         onclick="openModal('{{ route('aprove.rewards.show', $police->reward_id) }}')">
                         <i class="fas fa-check me-1"></i>
-                        मंजूर करा
+
                     </button>
                 @endif
 
@@ -69,7 +69,7 @@
                 <a class="btn btn-sm btn-info d-flex align-items-center"
                     href="{{ route('police_profile.index', $police->police_user_id) }}">
                     <i class="fas fa-eye me-1"></i>
-                    पहा
+
                 </a>
             </div>
 

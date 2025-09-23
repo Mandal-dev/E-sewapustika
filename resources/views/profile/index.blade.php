@@ -227,5 +227,32 @@
                 });
             });
         });
+
+        function openModal(url) {
+            const modalElement = document.getElementById('sewaPustikaModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            $('#sewaPustikaModalBody').html(spinnerHtml);
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(response) {
+                    $('#sewaPustikaModalBody').html(response);
+                },
+                error: function() {
+                    $('#sewaPustikaModalBody').html(`
+                            <div class="p-5 text-danger text-center">
+                                डेटा लोड करण्यात अडचण आली.
+                            </div>
+                        `);
+                }
+            });
+        }
+        $(document).on('click', '.menuBtn', function(e) {
+            e.preventDefault();
+            let url = $(this).data('url');
+            openModal(url);
+        });
     </script>
 @endsection

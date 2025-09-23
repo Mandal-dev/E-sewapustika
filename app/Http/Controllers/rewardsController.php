@@ -107,6 +107,34 @@ class rewardsController extends Controller
             ]);
         }
     }
+public function reward_cards()
+{
+    $user = Session::get('user');
+
+    $counts = DB::table('police_users AS t4')
+        ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
+        ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
+        ->where('t4.district_id', $user['district_id'])
+        ->select(
+            DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
+            DB::raw('COUNT(DISTINCT t5.id) AS total_uploaded'),
+            DB::raw('SUM(CASE WHEN t6.review_status = "Approved" THEN 1 ELSE 0 END) AS approved'),
+            DB::raw('SUM(CASE WHEN t6.review_status = "Rejected" THEN 1 ELSE 0 END) AS rejected'),
+            DB::raw('SUM(CASE WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN 1 ELSE 0 END) AS pending')
+        )
+        ->first();
+
+    $stats = [
+        'title' => 'Reward',
+        'total_police' => $counts->total_police,
+        'total_uploaded' => $counts->total_uploaded,
+        'approved' => $counts->approved,
+        'rejected' => $counts->rejected,
+        'pending' => $counts->pending
+    ];
+
+    return view('cards.rewards_cards', ['stats' => $stats]);
+}
 
 
     public function aproveReward($rewardId)

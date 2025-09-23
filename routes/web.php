@@ -156,8 +156,32 @@ Route::middleware(['setlang'])->group(function () {
     Route::post('/logout', [LoginUserController::class, 'logout'])->name('logout');
 
     // web.php
-Route::get('/get-stations-by-user', [MainController::class, 'getStationsByUser'])->name('get.stations');
+    Route::get('/get-stations-by-user', [MainController::class, 'getStationsByUser'])->name('get.stations');
+    //cards
+    Route::post('/reward-review/cards', [rewardsController::class, 'reward_cards'])->name('reward.cards');
+    Route::get('/salary-approval/{id}', [SalaryIncrementController::class, 'show'])
+        ->name('salary.approval.show');
+    Route::post('/salary-increment/approve', [SalaryIncrementController::class, 'approveSalaryIncrementStore'])
+        ->name('salary.increment.approve');
 
+
+    Route::get('/salary-increment-cards', [SalaryIncrementController::class, 'salary_increment_cards'])
+        ->name('salary.increment.cards');
+
+    // Show punishment details / approval form
+    Route::get('/punishments/{id}', [punishmentsController::class, 'show'])
+        ->name('punishments.show');
+
+    // Store punishment approval/rejection
+    Route::post('/punishments/approve', [punishmentsController::class, 'approvePunishmentStore'])
+        ->name('punishments.approve.store');
+
+    // Punishment summary cards (for AJAX)
+    Route::get('/punishments/cards', [punishmentsController::class, 'punishment_cards'])
+        ->name('punishments.cards');
+
+        Route::get('/sewa-pustika-cards', [SewaPustikaController::class, 'sewa_pustika_cards'])
+     ->name('sewa.pustika.cards');
 });
 
 Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp.resend');

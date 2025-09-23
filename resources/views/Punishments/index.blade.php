@@ -4,7 +4,7 @@
     <!-- Bootstrap + Custom CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sewa_pustika.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- jQuery (required for AJAX) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS Bundle (Modal needs this) -->
@@ -33,7 +33,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-
+        @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
+            <div class="show-cards">
+                <!-- Salary increment cards will load here via AJAX -->
+            </div>
+        @endif
         <!-- Search Section -->
         <div class="search-section p-3 d-flex flex-wrap align-items-center gap-2 mb-2"
             style="background: #fff; border-radius: 8px;">
@@ -91,19 +95,30 @@
                                     @endif
                                 </td>
 
-                                <td>
-                                      @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
-                                        <button class="btn btn-sm btn-warning"
+                                <td class="d-flex flex-wrap gap-1">
+                                    <!-- Add Punishment Button -->
+                                    @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
+                                        <button class="btn btn-sm btn-primary d-flex align-items-center"
                                             onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
-                                            <i class="fas fa-edit"></i> शिक्षा जोडा
+                                            <i class="fas fa-plus me-1"></i>
                                         </button>
                                     @endif
-                                    <a href="{{ route('police_profile.index', $police->police_user_id) }}"
-                                        class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
 
+                                    <!-- Approve Punishment Button -->
+                                    @if ($designation === 'Head_Person' && $police->punishment_id && strtolower($police->punishment_status) === 'pending')
+                                        <button class="btn btn-sm btn-success d-flex align-items-center"
+                                            onclick="openModal('{{ route('punishments.show', $police->punishment_id) }}')">
+                                            <i class="fas fa-check me-1"></i>
+                                        </button>
+                                    @endif
+
+                                    <!-- View Profile Button -->
+                                    <a href="{{ route('police_profile.index', $police->police_user_id) }}"
+                                        class="btn btn-sm btn-info d-flex align-items-center">
+                                        <i class="fas fa-eye me-1"></i>
+                                    </a>
                                 </td>
+
                             </tr>
 
                             <!-- Mobile Card View -->
@@ -227,6 +242,26 @@
             setTimeout(function() {
                 $('.alert').fadeOut('slow');
             }, 4000);
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function() {
+            // AJAX call to load salary increment cards
+            $.ajax({
+                url: "{{ route('salary.increment.cards') }}", // route defined in web.php
+                type: "GET",
+                success: function(response) {
+                    // Inject returned HTML into the div
+                    $('.show-cards').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading salary cards:", error);
+                    $('.show-cards').html(
+                        '<p class="text-danger">Unable to load salary increment cards.</p>');
+                }
+            });
         });
     </script>
 @endsection

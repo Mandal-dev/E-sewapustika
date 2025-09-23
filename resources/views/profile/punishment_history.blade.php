@@ -43,7 +43,7 @@
 
                     </td>
                     <td>
-                        @if ($designation === 'Head_Person' || $designation ===)
+                        @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
                             <button class="btn btn-primary btn-sm"
                                 onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
                                 <i class="fas fa-plus"></i> शिक्षा जोडा
@@ -93,7 +93,7 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col-6"><strong>शिक्षा जोडा:</strong>
-                        @if (Session::get('user.designation_type') === 'Head_Person')
+                        @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
                             <button class="btn btn-primary btn-sm"
                                 onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
                                 <i class="fas fa-plus"></i> शिक्षा जोडा

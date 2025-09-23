@@ -409,4 +409,36 @@ class SewaPustikaController extends Controller
             return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
         }
     }
+
+
+public function sewa_pustika_cards()
+{
+    $user = Session::get('user');
+
+    $counts = DB::table('police_users AS t4')
+        ->leftJoin('sewa_pustikas AS sp', 't4.id', '=', 'sp.police_id')
+        ->leftJoin('sewapushtika_review AS r', 'sp.id', '=', 'r.sewapustika_id') // updated table & column
+        ->where('t4.district_id', $user['district_id'])
+        ->select(
+            DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
+            DB::raw('COUNT(DISTINCT sp.id) AS total_uploaded'),
+            DB::raw('SUM(CASE WHEN r.review_status = "approved" THEN 1 ELSE 0 END) AS approved'),
+            DB::raw('SUM(CASE WHEN r.review_status = "rejected" THEN 1 ELSE 0 END) AS rejected'),
+            DB::raw('SUM(CASE WHEN sp.id IS NOT NULL AND r.id IS NULL THEN 1 ELSE 0 END) AS pending')
+        )
+        ->first();
+
+    $stats = [
+        'title'          => 'Sewa Pustika',
+        'total_police'   => $counts->total_police,
+        'total_uploaded' => $counts->total_uploaded,
+        'approved'       => $counts->approved,
+        'rejected'       => $counts->rejected,
+        'pending'        => $counts->pending,
+    ];
+
+    return view('cards.sewa_pustika_cards', ['stats' => $stats]);
+}
+
+
 }

@@ -26,11 +26,18 @@
             @endif
         </td>
         <td>
-            @if ($designation === 'Head_Person')
+          @if ($designation === 'Head_Person' || $designation === 'Account_Department')
                 <button class="btn btn-sm btn-warning"
                     onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
                     <i class="fas fa-plus"></i> वेतनवाढ जोडा
                 </button>
+            @endif
+               @if ($designation === 'Head_Person' && $police->salary_increment_id && strtolower($police->salary_status) === 'pending')
+                 <button class="btn btn-sm btn-warning d-flex align-items-center"
+                        onclick="openModal('{{ route('salary.approval.show', $police->salary_increment_id) }}')">
+                        <i class="fas fa-check me-1"></i>
+                        मंजूर करा
+                    </button>
             @endif
 
             <a href="{{ route('police_profile.index', $police->police_user_id) }}" class="btn btn-sm btn-info">
@@ -69,13 +76,19 @@
         </div>
 
         <div class="action-buttons">
-            @if ($designation === 'Head_Person')
+           @if ($designation === 'Head_Person' || $designation === 'Account_Department')
                 <button class="btn btn-sm btn-warning mb-2"
                     onclick="openModal('{{ route('salary_increment.add', $police->police_user_id) }}')">
                     <i class="fas fa-plus"></i> Add Increment
                 </button>
             @endif
-
+           @if ($designation === 'Head_Person' && $police->salary_increment_id && strtolower($police->salary_status) === 'pending')
+                 <button class="btn btn-sm btn-warning d-flex align-items-center"
+                        onclick="openModal('{{ route('salary.approval.show', $police->salary_increment_id) }}')">
+                        <i class="fas fa-check me-1"></i>
+                        मंजूर करा
+                    </button>
+            @endif
             <a class="btn btn-sm btn-info mb-2" href="{{ route('police_profile.index', $police->police_user_id) }}">
                 <i class="fas fa-eye"></i>
             </a>

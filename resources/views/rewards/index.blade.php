@@ -1,10 +1,13 @@
 @extends('Dashboard.header')
 
 @section('data')
+@php
+    $designation = Session::get('user.designation_type');
+@endphp
     <!-- Bootstrap + Custom CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sewa_pustika.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- jQuery + Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -25,25 +28,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
-
-        <!-- Search Section -->
-        <div class="search-section p-3 d-flex flex-wrap align-items-center gap-2 mb-2"
-            style="background:#fff; border-radius:8px;">
-            <input type="text" id="searchKeyword" class="form-control" placeholder="नाव, ठाणे किंवा बकल क्रमांक"
-                style="min-width:220px; flex:1;">
-            <select id="searchDesignation" class="form-select" style="width:180px;">
-                <option value="">सर्व बक्षीस जोडा</option>
-                <option value="Police">पोलीस</option>
-                <option value="Station_Head">स्टेशन हेड</option>
-                <option value="Head_Person">हेड पर्सन</option>
-                <option value="Admin">ॲडमिन</option>
-            </select>
-            <button class="btn btn-success" id="searchBtn"><i class="fas fa-search"></i> शोधा</button>
-        </div>
-
+        @if ($designation === 'Head_Person' || $designation === 'Rewards_Department')
+            <div class="show-cards">
+                <!-- Reward cards will be loaded here via AJAX -->
+            </div>
+        @endif
+        <br>
         <!-- Table Section (Desktop) -->
         <div class="table-section d-none d-md-block" id="rewardTableWrapper">
-            <h5 class="mb-2 fw-semibold">बक्षीस यादी</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-semibold mb-0">बक्षीस यादी</h5>
+
+                <div class="search-container position-relative" style="width: 300px;">
+                    <input type="text" id="searchKeyword" class="form-control ps-4"
+                        placeholder="नाव, ठाणे किंवा बकल क्रमांक">
+                    <i class="fas fa-search search-icon position-absolute"></i>
+                </div>
+            </div>
+
             <div class="table-responsive" style="max-height:400px; overflow-y:auto; padding:10px;">
                 <table class="table table-bordered align-middle my-rounded-table">
                     <thead class="table-light">
@@ -203,5 +205,25 @@
                 $('#sewaPustikaModalBody').html(res);
             });
         }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ route('reward.cards') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}" // Include CSRF token for POST
+                },
+                success: function(response) {
+                    // Inject the returned view HTML into the div
+                    $('.show-cards').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    $('.show-cards').html('<p>Failed to load reward cards.</p>');
+                }
+            });
+        });
     </script>
 @endsection

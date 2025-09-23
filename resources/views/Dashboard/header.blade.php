@@ -35,7 +35,9 @@
 </head>
 
 <body>
-
+    @php
+        $designation = Session::get('user.designation_type');
+    @endphp
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">

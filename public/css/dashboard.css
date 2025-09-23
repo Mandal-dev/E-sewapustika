@@ -26,11 +26,16 @@
     flex-direction: column;
     justify-content: space-between;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: 0.2s;
+    transition: all 0.3s ease;
+    height: 100px;
+
+    border-left: 5px solid #135186;
 }
 
 .stat-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    border-left-color: #ea580c;
 }
 
 .stat-card-header {
@@ -43,17 +48,42 @@
     font-size: 0.9rem;
     color: #666;
     font-weight: 500;
+    padding-bottom: 5px !important;
 }
 
 .stat-card-icon i {
     font-size: 1.5rem;
     color: #14649a;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-card-icon i {
+    transform: rotate(10deg) scale(1.2);
 }
 
 .stat-card-value {
     font-size: 1.5rem;
     font-weight: bold;
     margin-top: 10px;
+    padding-right: 40px !important;
+    transition: color 0.3s ease;
+}
+
+.stat-card:hover .stat-card-value {
+    color: #ea580c;
+}
+
+.stat-card-footer {
+    gap: 15px !important;
+}
+
+.stat-card-footer img {
+    border-radius: 1.5rem;
+    margin-bottom: 5px !important;
+}
+
+.arr {
+    padding-top: 10px !important;
 }
 
 /* ------------------------
@@ -65,13 +95,19 @@
     gap: 20px;
 }
 
-/* Content Card */
 .content-card {
     background: #fff;
-    border: 1px solid #ddd;
     border-radius: 1.5rem;
     padding: 20px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    height: 392px;
+    width: 531px;
+    outline: 1px solid #b0b0b0;
+    transition: all 0.3s ease;
+}
+
+.content-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .content-card h3 {
@@ -80,23 +116,277 @@
     color: #333;
 }
 
-/* Activity Items */
+/* ------------------------
+   REPORT DOUGHNUT / PIE CHART
+---------------------------*/
+.report-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 16px;
+    width: 320px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.report-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.report-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.report-card-arrow {
+    font-size: 20px;
+    color: #777;
+    cursor: pointer;
+}
+
+.report-card-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chart-container {
+    width: 120px;
+    height: 120px;
+}
+
+.report-status {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 14px;
+    color: #444;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.status-dot.approved { background: #27496d; }
+.status-dot.rejected { background: #4a90e2; }
+.status-dot.pending { background: #7f9eb2; }
+
+.status-value {
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.report-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 100px !important;
+    padding-right: 20px !important;
+}
+
+.report-btn {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 2px solid black;
+    border-radius: 6px;
+    background: white;
+    text-decoration: none;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.report-btn:hover {
+    background: #eee;
+}
+
+#rewardChart {
+    width: 220px !important;
+    height: 220px !important;
+}
+
+/* ------------------------
+   RECENT CARD
+---------------------------*/
+.recent-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 350px;
+    font-family: Arial, sans-serif;
+    transition: all 0.3s ease;
+}
+
+.recent-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.recent-card-header {
+    display: flex;
+    align-items: center;
+    gap: 160px !important;
+    padding-left: 50px !important;
+    margin-bottom: 5px !important;
+    font-size: 32px !important;
+}
+
+.recent-card-header h3 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.view-all-btn {
+    border: 1px solid black;
+    background: white;
+    padding: 4px 10px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 13px;
+    height: 27px;
+    width: 71px;
+}
+
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 500px;
+    padding: 30px !important;
+}
+
+.recent-item {
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.recent-item:hover {
+    background: #e6f0fa;
+    transform: translateX(5px);
+}
+
+.recent-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.recent-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.view-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s ease;
+}
+
+.view-btn:hover {
+    background: #0056b3;
+}
+
+/* ------------------------
+   ACTIVITY CARD
+---------------------------*/
+.activity-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    width: 300px;
+    background: #fff;
+    font-family: Arial, sans-serif;
+    height: 250px;
+    transition: all 0.3s ease;
+}
+
+.activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.activity-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-left: 20px !important;
+}
+
+.recent-activities {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .activity-item {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 10px;
 }
 
 .activity-dot {
-    width: 10px;
-    height: 10px;
-    background: #14649a;
+    width: 8px;
+    height: 8px;
+    background: #4a90e2;
     border-radius: 50%;
-    margin-top: 5px;
+    margin-top: 6px;
 }
 
-/* Quick Action Buttons */
+.activity-text span {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.activity-text small {
+    font-size: 12px;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.activity-text small i {
+    font-size: 12px;
+    color: #777;
+}
+
+/* ------------------------
+   QUICK ACTION BUTTONS
+---------------------------*/
 .quick-action-btn {
     display: flex;
     align-items: center;
@@ -136,4 +426,20 @@
     .content-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.search-container input {
+    height: 40px;
+    padding-left: 35px; /* Space for icon */
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+}
+
+.search-icon {
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+    font-size: 16px;
 }

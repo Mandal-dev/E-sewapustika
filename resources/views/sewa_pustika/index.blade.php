@@ -4,14 +4,16 @@
     <!-- Bootstrap + Custom CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/sewa_pustika.css') }}">
-
+ <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <!-- jQuery (required for AJAX) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <div class="app-content">
-
+    @php
+        $designation = Session::get('user.designation_type');
+    @endphp
         <!-- Flash Messages -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -25,7 +27,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-
+        @if ($designation === 'Head_Person' || $designation === 'Sewapustika_Department')
+            <div class="show-cards">
+                <!-- Reward cards will be loaded here via AJAX -->
+            </div>
+        @endif
         <!-- Search Section -->
         <div class="search-section p-3 d-flex flex-wrap align-items-center gap-2 mb-2"
             style="background: #fff; border-radius: 8px;">
@@ -168,6 +174,25 @@
                 stations.forEach(name => {
                     select.append(`<option value="${name}">${name}</option>`);
                 });
+            });
+        });
+    </script>
+        <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "{{ route('sewa.pustika.cards') }}",
+
+                data: {
+                    _token: "{{ csrf_token() }}" // Include CSRF token for POST
+                },
+                success: function(response) {
+                    // Inject the returned view HTML into the div
+                    $('.show-cards').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                    $('.show-cards').html('<p>Failed to load reward cards.</p>');
+                }
             });
         });
     </script>
