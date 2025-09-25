@@ -223,9 +223,7 @@ public function index()
         }
 
         // Only Head_Person can access
-        if ($user['designation_type'] !== 'Head_Person') {
-            return response()->json(['error' => 'आपल्याला ही क्रिया करण्याची परवानगी नाही.'], 403);
-        }
+   
 
         // Get police user only if in the same district
         $police = DB::table('police_users AS t4')

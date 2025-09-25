@@ -247,6 +247,11 @@
    RESPONSIVE DESIGN
 ---------------------------*/
 @media (max-width: 768px) {
+    #mainContent{
+         padding-right: 34px;
+    }
+
+
     .content-grid {
         grid-template-columns: 1fr;
     }

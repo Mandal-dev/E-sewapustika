@@ -3,7 +3,7 @@
 -----------------------------------*/
 .officer-card {
   width: 100%;
-  max-width: 1210px;
+  max-width: 1410px !important;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -152,6 +152,10 @@
   box-shadow: 0 3px 8px rgba(0,0,0,0.25);
   text-align: center !important;
   height: 40px;
+}
+
+.tabs button.active:hover{
+  color: black !important;
 }
 
 .tabs button:hover {
@@ -369,17 +373,38 @@ table button:hover {
 
 /* ✅ Mobile (≤ 768px) */
 @media (max-width: 768px) {
+
+
+
+  #mainContent{
+      padding-right: 34px;
+  }
+
+
+
   .officer-card {
-    flex-direction: column;      /* stack vertically */
+    position: relative;     /* stack vertically */
     align-items: center;         /* center image */
     text-align: center;          /* center text */
     padding: 15px;
   }
 
+  .tabs {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 2rem;
+  padding: 1rem;
+  position: relative !important;
+    top: auto !important;
+    z-index: auto !important;
+}
+
   .officer-card img {
-    margin-bottom: 15px;         /* space below image */
-    width: 110px;
-    height: 110px;
+    margin: 0 auto 15px auto; /* Center image with spacing below */
+    display: block;
   }
 
   .officer-info {
