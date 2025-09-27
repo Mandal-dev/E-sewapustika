@@ -41,7 +41,7 @@
         <div class="table-section p-3" style="background: #fff; border-radius: 8px;">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-semibold mb-0">बक्षीस यादी</h5>
+                <h5 class="fw-semibold mb-0">वेतनवाढ यादी</h5>
 
                 <div class="search-container position-relative" style="width: 300px;">
                     <input type="text" id="searchInput" class="form-control ps-4"

@@ -1,12 +1,5 @@
 <div class="stats-grid">
-    <!-- Total Police -->
-    <div class="stat-card">
-        <div class="stat-card-header">
-            <div class="stat-card-title">एकूण पोलीस</div>
-            <div class="stat-card-icon"><i class="fas fa-user-shield"></i></div>
-        </div>
-        <div class="stat-card-value">{{ $stats['total_police'] ?? 0 }}</div>
-    </div>
+   
 
     <!-- Total Rewards Uploaded -->
     <div class="stat-card">

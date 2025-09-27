@@ -525,6 +525,11 @@
 
 @media (max-width: 768px) {
 
+
+ #mainContent{
+         padding-right: 34px;
+    }
+
      table.my-rounded-table {
     display: none; /* hide the table layout */
   }
