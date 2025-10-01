@@ -74,11 +74,11 @@
             <div class="stat-card">
                 <!-- Header -->
                 <div class="stat-card-header">
-                    <div class="stat-card-title">{{ $card['title'] }}</div>
+                    <div class="stat-card-title">{{ __('messages.' . strtolower(str_replace(' ', '_', $card['title']))) }}</div>
                     <div class="stat-card-icon">
                         @if ($card['title'] == 'Salary Increment')
                             <i class="fas fa-upload"></i>
-                        @elseif($card['title'] == 'Rewards')
+                        @elseif($card['title'] == 'Reward')
                             <i class="fas fa-gift"></i>
                         @elseif($card['title'] == 'Punishments')
                             <i class="fas fa-gavel"></i>
@@ -89,21 +89,21 @@
                 </div>
                 <!-- Body with chart + stats -->
                 <div class="stat-card-body">
-
                     <div class="stat-values"><br>
                         <div><span></span></div>
                         <div><span></span></div><br>
-                        <div><span>अपलोड:</span><span>{{ $card['total_uploaded'] ?? 0 }}</span></div>
+                        <div><span>{{ __('messages.uploaded') }}:</span><span>{{ $card['total_uploaded'] ?? 0 }}</span></div>
 
-                        <div><span>Approved:</span><span class="text-success">{{ $card['approved'] ?? 0 }}</span></div>
-                        <div><span>Rejected:</span><span class="text-danger">{{ $card['rejected'] ?? 0 }}</span></div>
-                        <div><span>Pending:</span><span class="text-warning">{{ $card['pending'] ?? 0 }}</span></div>
+                        <div><span>{{ __('messages.approved') }}:</span><span class="text-success">{{ $card['approved'] ?? 0 }}</span></div>
+                        <div><span>{{ __('messages.rejected') }}:</span><span class="text-danger">{{ $card['rejected'] ?? 0 }}</span></div>
+                        <div><span>{{ __('messages.pending') }}:</span><span class="text-warning">{{ $card['pending'] ?? 0 }}</span></div>
                     </div>
                 </div>
             </div>
         @endforeach
     </div>
 </div>
+
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

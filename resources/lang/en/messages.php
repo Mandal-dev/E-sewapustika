@@ -1,5 +1,66 @@
 <?php
 return [
+
+
+
+
+    'religion' => 'Religion',
+    'select_religion' => '-- Select Religion --',
+    'category' => 'Category',
+    'select_category' => '-- Select Category --',
+    'general' => 'General',
+    'obc' => 'OBC',
+    'sc' => 'SC',
+    'st' => 'ST',
+    'others' => 'Others',
+    'sub_caste' => 'Sub Caste',
+    'joining_date' => 'Joining Date',
+    'retirement_date' => 'Retirement Date',
+    'address' => 'Address',
+    'pincode' => 'Pincode',
+    'submit' => 'Submit',
+    'cancel' => 'Cancel',
+    'close' => 'Close',
+
+
+
+    'station_name' => 'Station Name',
+    'select_station' => '-- Select Station --',
+    'gender' => 'Gender',
+    'select_gender' => '-- Select Gender --',
+    'male' => 'Male',
+    'female' => 'Female',
+    'other' => 'Other',
+    'police_name' => 'Police Name',
+    'email' => 'Email',
+    'mobile' => 'Mobile Number',
+    'buckle_number' => 'Buckle Number',
+    'designation' => 'Designation',
+    'select_designation' => '-- Select Designation --',
+    'designation_type' => 'Designation Type',
+    'select_designation_type' => '-- Select Designation Type --',
+    'sp' => 'SP',
+    'station_head' => 'Station Head',
+    'police' => 'Police',
+    'account_department' => 'Account Department',
+    'rewards_department' => 'Rewards Department',
+    'sewapustika_department' => 'Sewapustika Department',
+    'punishment_department' => 'Punishment Department',
+
+
+
+
+    //Pilice List
+
+    'add_punishment' => 'Add Punishment',
+    'role' => 'Role',
+    'add_reward' => 'Add Reward',
+    'add_increment' => 'Add Increment',
+    'reason' => 'Reason',
+    'add' => 'Add',
+    'post' => 'Post',
+
+
     'dashboard' => 'Dashboard',
     'manage_masters' => 'Manage Masters',
     'district_management' => 'District Management',
@@ -7,8 +68,8 @@ return [
     'station_management' => 'Police Station Management',
     'police_user_management' => 'Police User Management',
 
-    'police_info' => 'Police Information',
-    'sewa_pustika' => 'Service Book',
+    'police_information' => 'Police Information',
+    'service_book' => 'Service Book',
     'salary_increment' => 'Salary Increment',
     'punishment' => 'Punishment',
     'reward' => 'Reward',
@@ -27,6 +88,7 @@ return [
     'district' => 'District',
     'state' => 'State',
     'city' => 'City',
+
 
     // Tabs
     'sewa_pustika' => 'Service Book',
@@ -51,16 +113,56 @@ return [
     'view' => 'View',
     'not_available' => 'Not Available',
     'no_records' => 'No records found',
+    'details' => 'Details',
+    'police_name' => 'Police Name',
+    'buckle_no' => 'Buckle Number',
+    'designation' => 'Designation',
+    'post' => 'Post',
+    'state' => 'State',
+    'district' => 'District',
+    'city' => 'City',
+    'punishment_date' => 'Punishment Date',
+    'type' => 'Type',
+    'reason' => 'Reason',
+    'action' => 'Action',
+    'approve' => 'Approve',
+    'reject' => 'Reject',
+    'remark' => 'Remark',
+    'enter_remark' => 'Enter remark',
+    'remark_help' => 'Please enter appropriate remark based on your selection',
+    'gadget_number' => 'Gadget Number',
+    'enter_gadget_number' => 'Enter gadget number',
+    'gadget_help' => 'Please enter the gadget number for approval',
+    'reject_reason' => 'Reject Reason',
+    'enter_reject_reason' => 'Enter rejection reason',
+    'reject_help' => 'Please provide reason for rejection',
+    'submit' => 'Submit',
+    'close' => 'Close',
+    'na' => 'N/A',
+    'no_document' => 'No document',
+    'download'    => 'Download',
 
     // Rewards Table
     'serial'       => 'Sr. No.',
     'reward_date'  => 'Reward Date',
     'reward_type'  => 'Reward Type',
-    'reward_reason'=> 'Reason',
+    'reward_reason' => 'Reason',
     'document'     => 'Document',
     'view'         => 'View',
     'none'         => 'None',
     'no_record'    => 'No record found',
+    'reward_document' => 'Reward Document',
+    'reward_type' => 'Reward Type',
+    'select_reward' => '-- Select Reward --',
+    'certificate_of_appreciation' => 'Certificate of Appreciation',
+    'cash_reward' => 'Cash Reward',
+    'medal' => 'Medal',
+    'other' => 'Other',
+    'reason_optional' => 'Reason (Optional)',
+    'enter_reward_reason' => 'Enter reason for reward...',
+    'submit' => 'Submit',
+    'cancel' => 'Cancel',
+    'upload_reward' => 'Upload Reward',
 
     // -------------------------------
     // Salary Increment Modal (NEW)
@@ -91,8 +193,87 @@ return [
     // Buttons
     'submit' => 'Submit',
     'cancel' => 'Cancel',
-        'buckle_number' => 'Buckle Number',
+    'buckle_number' => 'Buckle Number',
     'police_name'   => 'Police Name',
     'present_days' => 'Present Days',
 
+
+
+    //Station Table
+
+    'country_name' => 'Country Name',
+    'select_country' => '-- Select Country --',
+    'state_name' => 'State Name',
+    'select_state' => '-- Select State --',
+    'district' => 'District',
+    'select_district' => '-- Select District --',
+    'city' => 'City',
+    'select_city' => '-- Select City --',
+    'police_station_name' => 'Police Station Name',
+    'status' => 'Status',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'submit' => 'Submit',
+    'cancel' => 'Cancel',
+    'search_placeholder' => 'Name, Station or Buckle Number',
+    'station' => 'Station',
+    'add_station' => 'Add Station',
+    'country' => 'Country',
+    'division' => 'Division',
+    'city' => 'City',
+    'station_name' => 'Station Name',
+    'status' => 'Status',
+    'action' => 'Action',
+    'edit' => 'Edit',
+    'state' => 'State',
+    'district' => 'District',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'no_records_found' => 'No records found',
+    'close' => 'Close',
+    'modal_title_add_station' => 'Add Station',
+    'modal_close' => 'Close',
+    'modal_loading' => 'Loading...',
+    'modal_load_error' => 'Failed to load data.',
+    'station_list_title' => 'Police Station List',
+    'total_records' => 'Total Records',
+    'sn' => 'S.N.',
+    // Flash messages
+    'flash_success' => 'Success:', // यशस्वी:
+    'flash_error' => 'Error:', // चूक:
+    // Search bar
+    'search_placeholder' => 'Name, Station or Buckle No', // नाव, ठाणे किंवा बकल क्रमांक
+    'search_button' => 'Search', // शोधा
+    // Search bar
+    'search_placeholder' => 'Name, Station or Buckle No', // नाव, ठाणे किंवा बकल क्रमांक
+    'search_button' => 'Search', // शोधा
+    'no_document' => 'N/A', // नाही
+    'add_punishment' => 'Add Punishment', // शिक्षा जोडा
+    'approve_punishment' => 'Approve', // मान्यता द्या
+    'view_profile' => 'View Profile', // प्रोफाइल पहा
+    'view_pdf' => 'View PDF',
+    'no_police_found' => 'No police found',
+    'showing_records' => 'Showing :start to :end of :total records (Page :current of :last)',
+    'reward_list' => 'Reward List',
+    'document'    => 'Document',
+
+    //Cards
+
+    'uploaded' => 'Uploaded',
+    'approved' => 'Approved',
+    'rejected' => 'Rejected',
+    'pending' => 'Pending',
+
+
+
+    //Other
+
+    'loading' => 'Loading...',
+    'select' => '-- Select --',
+    'select_country' => '-- Select Country --',
+    'select_state' => '-- Select State --',
+    'select_district' => '-- Select District --',
+    'select_city' => '-- Select City --',
+    'success' => 'Success',
+    'error' => 'Error',
 ];

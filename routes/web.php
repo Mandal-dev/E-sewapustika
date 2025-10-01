@@ -13,7 +13,8 @@ use App\Http\Controllers\PoliceProfileController;
 use App\Http\Controllers\LoginUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PayMatrixImportController;
-
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -130,7 +131,7 @@ Route::middleware(['setlang'])->group(function () {
     Route::get('/police-user/all_list', [PoliceUsersController::class, 'indexTable'])->name('police_users.list.table');
     Route::get('/sewapustika/search', [SewaPustikaController::class, 'search'])->name('sevapustika.search');
     Route::get('/salaryincrement/search', [SalaryIncrementController::class, 'search'])->name('SalaryIncrement.search');
-    Route::get('/punishment/search', [punishmentsController::class, 'search'])->name('punishments.search');
+    Route::get('/punishment/search/user', [punishmentsController::class, 'search'])->name('punishments.search');
     Route::get('/reward/search', [rewardsController::class, 'search'])->name('rewards.search');
 
 
@@ -176,14 +177,13 @@ Route::middleware(['setlang'])->group(function () {
     Route::post('/punishments/approve', [punishmentsController::class, 'approvePunishmentStore'])
         ->name('punishments.approve.store');
 
-    // Punishment summary cards (for AJAX)
-    Route::get('/punishments/cards', [punishmentsController::class, 'punishment_cards'])
-        ->name('punishments.cards');
 
-        Route::get('/sewa-pustika-cards', [SewaPustikaController::class, 'sewa_pustika_cards'])
-     ->name('sewa.pustika.cards');
-          Route::get('/dashboard-cards', [MainController::class, 'dashboard_cards'])
-     ->name('dashboard.cards');
+    Route::post('/punishments/card', [punishmentsController::class, 'punishment_cards'])->name('punishments.cards');
+
+    Route::get('/sewa-pustika-cards', [SewaPustikaController::class, 'sewa_pustika_cards'])
+        ->name('sewa.pustika.cards');
+    Route::get('/dashboard-cards', [MainController::class, 'dashboard_cards'])
+        ->name('dashboard.cards');
 });
 
 Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp.resend');
@@ -191,11 +191,25 @@ Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp
 Route::get('/', [LoginUserController::class, 'showLoginPage'])->name('login.page');
 Route::post('/login', [LoginUserController::class, 'login'])->name('login.user');
 
-Route::get('/otp', [LoginUserController::class, 'showOtpPage'])->name('otp.page'); // added
+Route::get('/otp', [LoginUserController::class, 'showOtpPage'])->name('otp.page'); //
 Route::post('/verify-otp', [LoginUserController::class, 'verifyOtp'])->name('login.verifyOtp');
 
-Route::post('/set-language', function (\Illuminate\Http\Request $request) {
+Route::post('/set-language', function (Request $request) {
     $locale = $request->input('locale', 'en');
-    session(['locale' => $locale]);
+
+    // allow only English or Marathi
+    if (!in_array($locale, ['en', 'mr'])) {
+        $locale = 'en'; // fallback
+    }
+
+    // remove old value if exists
+    Session::forget('locale');
+
+    // set new locale
+    Session::put('locale', $locale);
+
+    // apply for current request
+    app()->setLocale($locale);
+
     return redirect()->back();
-});
+})->name('set-language');

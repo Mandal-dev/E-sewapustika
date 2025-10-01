@@ -695,3 +695,49 @@
         width: 100% !important;
     }
 }
+
+
+/* -------------------------------
+   MOBILE SPECIFIC STYLES
+--------------------------------*/
+@media (max-width: 768px) {
+
+    /* Hide the upper two divs (header and search-section) */
+    .page-header,
+    .search-section {
+        display: none !important;
+    }
+
+    /* Make app content full width */
+    .app-content {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Stack elements vertically if needed */
+    .d-flex.justify-content-between {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+
+    /* Make search container full width if it exists elsewhere */
+    .search-container {
+        width: 100% !important;
+    }
+
+    .search-container input {
+        width: 100% !important;
+    }
+
+    /* Mobile table -> cards (already in your code) */
+    table.my-rounded-table {
+        display: none !important;
+    }
+
+    .officer-card {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+}

@@ -40,114 +40,120 @@
     @endphp
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-            <div class="dash-img">
-                <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
-                    <i class="fa-solid fa-user logo-icon"></i>
-                </a>
-
-                <div class="profile-pic">
-                    <img src="{{ asset('img/police image.png') }}" alt="Profile Picture">
-                </div>
-
-                <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
-                    <i class="fa-solid fa-gear logo-icon"></i>
-                </a>
-
-            </div><br>
-
-            <h1>{{ Session::get('user.name', 'Maharashtra') }}</h1>
-            <p>
-                {{ Session::get('user.designation_type', 'Police') }}
-                &nbsp;
-                {{ Session::get('user.district_name', 'Admin System') }}
-            </p>
-        </div>
-        <nav class="nav">
-            <a href="{{ route('dashboard') }}" class="active dash-btn">
-                <span class="db material-icons" style="color:white">grid_view</span> Dashboard
+    <div class="sidebar-header">
+        <div class="dash-img">
+            <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+                <i class="fa-solid fa-user logo-icon"></i>
             </a>
 
-            @php
-                $designation = Session::get('user.designation_type');
-            @endphp
+            <div class="profile-pic">
+                <img src="{{ asset('img/police image.png') }}" alt="{{ __('messages.profile_picture') }}">
+            </div>
 
-            @if (in_array($designation, ['Admin', 'Head_Person']))
-                <div class="nav-group">
-                    <div class="nav-group-header">
-                        <i class="fas fa-users"></i>
-                        <span>Manage Masters</span>
-                        <i class="fas fa-chevron-down arrow"></i>
-                    </div>
-                    <div class="nav-submenu">
-                        @if (in_array($designation, ['Admin']))
-                            <a href="{{ route('districts.index') }}" class="nav-item submenu-item">
-                                <i class="fas fa-map-marker-alt"></i> जिल्हा व्यवस्थापन
-                            </a>
-                            <a href="{{ route('city.index') }}" class="nav-item submenu-item">
-                                <i class="fas fa-city"></i> शहर व्यवस्थापन
-                            </a>
-                        @endif
-                        <a href="{{ route('station.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-building"></i> विभाग
-                        </a>
-                        <a href="{{ route('police.list.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-user-shield"></i> पोलीस वापरकर्ता व्यवस्थापन
-                        </a>
-                    </div>
-                </div>
-            @endif
+            <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+                <i class="fa-solid fa-gear logo-icon"></i>
+            </a>
+        </div><br>
 
+        <h1>{{ Session::get('user.name', __('messages.maharashtra')) }}</h1>
+        <p>
+            {{ Session::get('user.designation_type', __('messages.police')) }}
+            &nbsp;
+            {{ Session::get('user.district_name', __('messages.admin_system')) }}
+        </p>
+    </div>
+
+    <nav class="nav">
+        <!-- Dashboard -->
+        <a href="{{ route('dashboard') }}" class="active dash-btn">
+            <span class="db material-icons" style="color:white">grid_view</span> {{ __('messages.dashboard') }}
+        </a>
+
+        @php
+            $designation = Session::get('user.designation_type');
+        @endphp
+
+        <!-- Manage Masters -->
+        @if (in_array($designation, ['Admin', 'Head_Person']))
             <div class="nav-group">
                 <div class="nav-group-header">
-                    <i class="fas fa-clipboard-list"></i>
-                    <span>Police Information</span>
+                    <i class="fas fa-users"></i>
+                    <span>{{ __('messages.manage_masters') }}</span>
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
                 <div class="nav-submenu">
-                    @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
-                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-book"></i> सेवा पुस्तिका</a>
-                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-chart-line"></i> वेतनवाढ</a>
-                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-exclamation-triangle"></i> शिक्षा</a>
-                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-trophy"></i>
-                            बक्षीस</a>
-
-                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-comment"></i> पुरस्काराची स्थिती</a>
-                    @endif
-
-                    @if ($designation === 'Rewards_Department')
-                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-trophy"></i> बक्षीस
+                    @if (in_array($designation, ['Admin']))
+                        <a href="{{ route('districts.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-map-marker-alt"></i> {{ __('messages.district_management') }}
+                        </a>
+                        <a href="{{ route('city.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-city"></i> {{ __('messages.city_management') }}
                         </a>
                     @endif
-
-                    @if ($designation === 'Sewapustika_Department')
-                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-book"></i> सेवा पुस्तिका
-                        </a>
-                    @endif
-
-                    @if ($designation === 'Punishment_Department')
-                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-exclamation-triangle"></i> शिक्षा
-                        </a>
-                    @endif
-
-                    @if ($designation === 'Account_Department')
-                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-chart-line"></i> वेतनवाढ
-                        </a>
-                    @endif
-
+                    <a href="{{ route('station.index') }}" class="nav-item submenu-item">
+                        <i class="fas fa-building"></i> {{ __('messages.station_management') }}
+                    </a>
+                    <a href="{{ route('police.list.index') }}" class="nav-item submenu-item">
+                        <i class="fas fa-user-shield"></i> {{ __('messages.police_user_management') }}
+                    </a>
                 </div>
             </div>
-        </nav>
-    </aside>
+        @endif
+
+
+            <div class="nav-group">
+    <div class="nav-group-header">
+        <i class="fas fa-clipboard-list"></i>
+        <span>{{ __('messages.police_information') }}</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </div>
+    <div class="nav-submenu">
+        @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
+            <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-book"></i> {{ __('messages.service_book') }}
+            </a>
+            <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-chart-line"></i> {{ __('messages.salary_increment') }}
+            </a>
+            <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-exclamation-triangle"></i> {{ __('messages.punishment') }}
+            </a>
+            <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-trophy"></i> {{ __('messages.reward') }}
+            </a>
+            <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-comment"></i> {{ __('messages.reward_status') }}
+            </a>
+        @endif
+
+        @if ($designation === 'Rewards_Department')
+            <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-trophy"></i> {{ __('messages.reward') }}
+            </a>
+        @endif
+
+        @if ($designation === 'Sewapustika_Department')
+            <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-book"></i> {{ __('messages.service_book') }}
+            </a>
+        @endif
+
+        @if ($designation === 'Punishment_Department')
+            <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-exclamation-triangle"></i> {{ __('messages.punishment') }}
+            </a>
+        @endif
+
+        @if ($designation === 'Account_Department')
+            <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
+                <i class="fas fa-chart-line"></i> {{ __('messages.salary_increment') }}
+            </a>
+        @endif
+    </div>
+</div>
+</nav>
+</aside>
+
 
     <!-- Backdrop -->
     <div id="backdrop"></div>
@@ -155,24 +161,18 @@
     <!-- Main Content -->
     <div id="mainContent">
         <header>
-            <button id="menuBtn"><span class="dashboard-text material-icons">menu</span> Dashboard</button>
+            <button id="menuBtn"><span class="dashboard-text material-icons">menu</span>{{ __('messages.dashboard') }}
+        </button></button>
 
             <!-- Right: Icons -->
             <div style="display: flex; align-items: center; padding-right: 48px; gap: 16px;">
                 <!-- Language Selector -->
                 <div class="lang-dropdown">
-                    <div style="display:flex; align-items:center; gap:6px; cursor:pointer; position:relative;"
-                        class="lang-toggle" onclick="toggleLanguageForm()">
-
+                    <div style="display:flex; align-items:center; gap:6px; position:relative;">
                         <img src="{{ asset('img/languageIcon.png') }}" alt="Language" class="lang-icon"
                             style="width:24px; height:24px;">
 
-                        <span class="selected-lang">
-                            {{ app()->getLocale() == 'mr' ? 'मराठी' : 'English' }}
-                        </span>
-
-                        <form id="languageForm" method="POST" action="{{ url('set-language') }}"
-                            style="display:none; position:absolute; top:30px; right:0; background:#fff; padding:6px; border:1px solid #ccc; border-radius:6px; z-index:1000;">
+                        <form id="languageForm" method="POST" action="{{ route('set-language') }}">
                             @csrf
                             <select name="locale" onchange="this.form.submit()"
                                 style="padding:4px 8px; border-radius:4px; border:1px solid #ccc; cursor:pointer;">
@@ -183,6 +183,7 @@
                             </select>
                         </form>
                     </div>
+
                     <div class="lang-menu">
                         <div data-lang="mr" data-label="मराठी">मराठी</div>
                         <div data-lang="en" data-label="English">English</div>

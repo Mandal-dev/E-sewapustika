@@ -29,8 +29,9 @@
 <!-- Approval Form -->
 <form id="punishmentApprovalForm" action="{{ route('punishments.approve.store') }}" method="POST">
     @csrf
-    <input type="hidden" name="punishment_id" value="{{ $punishment->id ?? '' }}">
+    <input type="hidden" name="punishment_id" value="{{ $punishment->punishment_id ?? '' }}">
 
+    <!-- ✅ Action -->
     <div class="mb-3">
         <label class="form-label">Action</label><br>
         <div class="form-check form-check-inline">
@@ -43,14 +44,11 @@
         </div>
     </div>
 
-    <!-- Dynamic Remark Field -->
+    <!-- ✅ Remark (Single Field, Optional) -->
     <div class="mb-3">
-        <label for="remark" class="form-label" id="remark_label">Remark</label>
-        <input type="text" name="remark" id="remark" class="form-control"
-               placeholder="Enter remark" required>
-        <small class="form-text text-muted" id="remark_help">
-            Please enter appropriate remark based on your selection
-        </small>
+        <label for="remark" class="form-label">Remark (optional)</label>
+        <input type="text" name="remark" id="remark" class="form-control" placeholder="Enter remark (if any)">
+        <small class="form-text text-muted">You can provide a remark for both approval and rejection.</small>
     </div>
 
     <div class="text-end">
@@ -59,36 +57,3 @@
     </div>
 </form>
 
-<!-- JavaScript for dynamic label update -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const statusApprove = document.getElementById('status_approve');
-    const statusReject = document.getElementById('status_reject');
-    const remarkLabel = document.getElementById('remark_label');
-    const remarkInput = document.getElementById('remark');
-    const remarkHelp = document.getElementById('remark_help');
-
-    function updateRemarkField() {
-        if (statusApprove.checked) {
-            remarkLabel.textContent = 'Gadget Number';
-            remarkInput.placeholder = 'Enter gadget number';
-            remarkHelp.textContent = 'Please enter the gadget number for approval';
-        } else if (statusReject.checked) {
-            remarkLabel.textContent = 'Reject Reason';
-            remarkInput.placeholder = 'Enter rejection reason';
-            remarkHelp.textContent = 'Please provide reason for rejection';
-        } else {
-            remarkLabel.textContent = 'Remark';
-            remarkInput.placeholder = 'Enter remark';
-            remarkHelp.textContent = 'Please enter appropriate remark based on your selection';
-        }
-    }
-
-    // Add event listeners
-    statusApprove.addEventListener('change', updateRemarkField);
-    statusReject.addEventListener('change', updateRemarkField);
-
-    // Initialize
-    updateRemarkField();
-});
-</script>
