@@ -162,6 +162,8 @@ Route::middleware(['setlang'])->group(function () {
     Route::post('/reward-review/cards', [rewardsController::class, 'reward_cards'])->name('reward.cards');
     Route::get('/salary-approval/{id}', [SalaryIncrementController::class, 'show'])
         ->name('salary.approval.show');
+         Route::get('/sewapustika-approval/{id}', [SewaPustikaController::class, 'show'])
+        ->name('sewapustika.approval.show');
     Route::post('/salary-increment/approve', [SalaryIncrementController::class, 'approveSalaryIncrementStore'])
         ->name('salary.increment.approve');
 
@@ -176,7 +178,8 @@ Route::middleware(['setlang'])->group(function () {
     // Store punishment approval/rejection
     Route::post('/punishments/approve', [punishmentsController::class, 'approvePunishmentStore'])
         ->name('punishments.approve.store');
-
+Route::post('/sewapustika/approve', [SewaPustikaController::class, 'storeAprove'])
+    ->name('sewapustika.approve.store');
 
     Route::post('/punishments/card', [punishmentsController::class, 'punishment_cards'])->name('punishments.cards');
 

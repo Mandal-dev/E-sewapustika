@@ -75,10 +75,11 @@ return [
     'police_info' => 'पोलीस माहिती',
     'sewa_pustika' => 'सेवा पुस्तिका',
     'salary_increment' => 'वेतनवाढ',
-    'punishment' => 'शिक्षा',
-    'reward' => 'बक्षीस',
+    'punishments' => 'शिक्षा',
+    'rewards' => 'बक्षीस',
     'reward_status' => 'बक्षिसाची स्थिती',
-
+   'punishment' => 'शिक्षा',
+    'reward' => 'बक्षीस',
     'logout' => 'लॉगआउट',
 
     // प्रोफाइल

@@ -71,10 +71,11 @@ return [
     'police_information' => 'Police Information',
     'service_book' => 'Service Book',
     'salary_increment' => 'Salary Increment',
-    'punishment' => 'Punishment',
-    'reward' => 'Reward',
+    'punishments' => 'Punishment',
+    'rewards' => 'Reward',
     'reward_status' => 'Reward Status',
-
+ 'punishment' => 'Punishment',
+    'reward' => 'Reward',
     'logout' => 'Logout',
 
     // Profile
