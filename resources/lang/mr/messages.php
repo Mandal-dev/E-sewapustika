@@ -1,6 +1,6 @@
 <?php
 return [
-     'religion' => 'धर्म',
+    'religion' => 'धर्म',
     'select_religion' => '-- धर्म निवडा --',
     'category' => 'वर्ग',
     'select_category' => '-- वर्ग निवडा --',
@@ -20,15 +20,15 @@ return [
     'download_template' => 'टेम्पलेट डाउनलोड',
     'add_officer' => 'पोलीस जोडा',
     'excel_upload' => 'एक्सेल अपलोड',
-     'download_template' => 'टेम्पलेट डाउनलोड',
-     'upload_template_note' => 'कृपया <b>टेम्पलेट</b> वापरूनच डेटा अपलोड करा.',
-     'document'    => 'कागदपत्र',
-     'no_document' => 'नाही',
-     'download'    => 'डाउनलोड करा',
+    'download_template' => 'टेम्पलेट डाउनलोड',
+    'upload_template_note' => 'कृपया <b>टेम्पलेट</b> वापरूनच डेटा अपलोड करा.',
+    'document'    => 'कागदपत्र',
+    'no_document' => 'नाही',
+    'download'    => 'डाउनलोड करा',
 
 
 
-     'station_name' => 'ठाण्याचे नाव',
+    'station_name' => 'ठाण्याचे नाव',
     'select_station' => '-- ठाणे निवडा --',
     'gender' => 'लिंग',
     'select_gender' => '-- लिंग निवडा --',
@@ -61,7 +61,7 @@ return [
     'add' => 'जोडा',
     'post' => 'पद',
 
-
+    'salary_increment_list' => 'वेतनवाढ यादी',
 
     'police_information' => 'पोलीस माहिती',
     'service_book' => 'सेवा पुस्तिका',
@@ -71,14 +71,14 @@ return [
     'city_management' => 'शहर व्यवस्थापन',
     'station_management' => 'पोलीस ठाणे व्यवस्थापन',
     'police_user_management' => 'पोलीस वापरकर्ता व्यवस्थापन',
-
+    'department' => 'विभाग',
     'police_info' => 'पोलीस माहिती',
     'sewa_pustika' => 'सेवा पुस्तिका',
     'salary_increment' => 'वेतनवाढ',
     'punishments' => 'शिक्षा',
     'rewards' => 'बक्षीस',
     'reward_status' => 'बक्षिसाची स्थिती',
-   'punishment' => 'शिक्षा',
+    'punishment' => 'शिक्षा',
     'reward' => 'बक्षीस',
     'logout' => 'लॉगआउट',
 
@@ -105,6 +105,10 @@ return [
     // Table
     'loading' => 'लोड करत आहे...',
     'load_error' => 'डेटा लोड करण्यात अडचण आली.',
+    'total_uploaded_salary' => 'एकूण अपलोड वेतन',
+    'total_uploaded_sewa' => 'अपलोड सेवा पुस्तिका',
+    'total_uploaded_rewards' => 'एकूण अपलोड बक्षीस',
+    'total_uploaded_education' => 'एकूण अपलोड शिक्षा',
 
     // Punishments Table
     'sr_no' => 'क्रमांक',
@@ -144,19 +148,19 @@ return [
     'close' => 'बंद करा',
     'na' => 'N/A',
     'flash_success' => 'यशस्वी:',
-'flash_error' => 'चूक:',
-'select_all_punishments' => 'सर्व शिक्षा जोडा',
-'select_superintendent' => 'पोलीस अधीक्षक',
-'select_superintendent' => 'पोलीस अधीक्षक',
-'select_inspector' => 'निरीक्षक',
-'search_button' => 'शोधा',
- 'table_document' => 'Document', // दस्तऐवज
+    'flash_error' => 'चूक:',
+    'select_all_punishments' => 'सर्व शिक्षा जोडा',
+    'select_superintendent' => 'पोलीस अधीक्षक',
+    'select_superintendent' => 'पोलीस अधीक्षक',
+    'select_inspector' => 'निरीक्षक',
+    'search_button' => 'शोधा',
+    'table_document' => 'Document', // दस्तऐवज
     'table_action' => 'Action', // क्रिया
     'view_pdf' => 'पाहा / View PDF',
     'no_police_found' => 'कोणताही पोलीस सापडला नाही',
-'showing_records' => 'दर्शवित आहे :start ते :end, एकूण :total नोंदी (पृष्ठ :current / :last)',
-'upload_reward' => 'बक्षीस अपलोड करा',
-
+    'showing_records' => 'दर्शवित आहे :start ते :end, एकूण :total नोंदी (पृष्ठ :current / :last)',
+    'upload_reward' => 'बक्षीस अपलोड करा',
+    'mobile_no' => 'मोबाईल नं.',
     // Rewards Table
     'serial'       => 'क्रमांक',
     'reward_date'  => 'बक्षीस दिल्याची तारीख',
@@ -167,15 +171,15 @@ return [
     'none'         => 'नाही',
     'no_record'    => 'कोणतीही नोंद सापडली नाही',
     'reward_type' => 'बक्षीस प्रकार',
-'select_reward' => 'बक्षीस निवडा',
-'certificate_of_appreciation' => 'प्रशंसापत्र',
-'cash_reward' => 'रोख बक्षीस',
-'medal' => 'पदक',
-'enter_reward_reason' => 'बक्षीस देण्यामागील कारण लिहा...',
-'submit' => 'सबमिट करा',
-'cancel' => 'रद्द करा',
-'no_police_found' => 'कोणताही पोलीस सापडला नाही',
-'reward_list' => 'बक्षीस यादी',
+    'select_reward' => 'बक्षीस निवडा',
+    'certificate_of_appreciation' => 'प्रशंसापत्र',
+    'cash_reward' => 'रोख बक्षीस',
+    'medal' => 'पदक',
+    'enter_reward_reason' => 'बक्षीस देण्यामागील कारण लिहा...',
+    'submit' => 'सबमिट करा',
+    'cancel' => 'रद्द करा',
+    'no_police_found' => 'कोणताही पोलीस सापडला नाही',
+    'reward_list' => 'बक्षीस यादी',
 
 
     // -------------------------------
@@ -253,9 +257,13 @@ return [
     'station_list_title' => 'पोलीस ठाण्यांची यादी',
     'total_records' => 'एकूण नोंदी',
     'sn' => 'क्रमांक',
-
-
-
+    'sewa_pustika_pdf' => 'सेवा पुस्तिका (PDF)',
+    'update_sewa_pustika' => 'सेवा पुस्तिका अपडेट करा',
+    'view_download' => 'पाहा / डाउनलोड करा',
+    'remark_note' => 'आपण मंजुरीसाठी किंवा नाकारण्यासाठी टीप देऊ शकता.',
+    'remark_optional' => 'टीप (ऐच्छिक)',
+    'review_status' => 'पुनरावलोकन स्थिती',
+    'police_station' => 'पोलीस ठाणे',
     //Cards
     'uploaded' => 'अपलोड',
     'approved' => 'मान्य',

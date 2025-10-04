@@ -91,9 +91,7 @@
     }
 </style>
 
-<!-- Modal Form -->
-<form id="rewardForm" method="POST" action="{{ route('salary.increment.approve') }}">
-    @csrf
+
     <div class="modal-header">
         <h5 class="modal-title">Reward Approval</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -115,7 +113,7 @@
                     </div>
                 </div>
             </div>
-<input type="hidden" name="salary_id" value="{{ $salary->salary_id }}">
+            <input type="hidden" name="salary_id" value="{{ $salary->salary_id }}">
 
             <!-- Salary Increment Details -->
             <div class="col-md-6">
@@ -129,81 +127,46 @@
                         <p><b>Grade Pay:</b> {{ $salary->grade_pay }}</p>
                         <p><b>Increase:</b> <span class="text-success">₹{{ $salary->increased_amount }}</span></p>
                         <p><b>Present Days:</b> {{ $salary->present_days ?? '--' }}</p>
-                        @if($salary->increment_documents)
+                        @if ($salary->increment_documents)
                             <p><b>Documents:</b>
-                                <a href="{{ asset('uploads/salary_docs/' . $salary->increment_documents) }}" target="_blank" class="link-primary">View</a>
+                                <a href="{{ route('salary_increment.view', $salary->increment_documents) }}"
+                                    target="_blank" class="link-primary">View</a>
                             </p>
                         @endif
                     </div>
                 </div>
+
             </div>
-        </div>
 
-        <!-- Review & Actions -->
-        <div class="card shadow-sm mt-3">
-            <div class="card-header"><strong>Review & Actions</strong></div>
-            <div class="card-body">
-                <div class="form-group radio-group">
-                    <label><input type="radio" name="status" value="Approved" required> Approve</label>
-                    <label><input type="radio" name="status" value="Rejected"> Reject</label>
-                </div>
+                <!-- Approval Form -->
+                <form id="salaryApprovalForm" action="{{ route('salary.increment.approve') }}" method="POST" class="mt-4">
+                    @csrf
+                    <input type="hidden" name="salary_id" value="{{ $salary->salary_id }}">
 
-                <!-- Gadget number (for approved) -->
-                <div class="form-group" id="gadget_field" style="display:none;">
-                    <label>Add Gadget Number</label>
-                    <input type="text" name="gadget_no" class="form-control" placeholder="Enter gadget number">
-                </div>
+                    <!-- Action Radios -->
+                    <div class="mb-3">
+                        <label class="form-label">Action</label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="status" id="status_approve" value="Approved" required>
+                            <label class="form-check-label" for="status_approve">Approve</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="status" id="status_reject" value="Rejected">
+                            <label class="form-check-label" for="status_reject">Reject</label>
+                        </div>
+                    </div>
 
-                <!-- Reject reason -->
-                <div class="form-group" id="remark_field" style="display:none;">
-                    <label>Reject Reason</label>
-                    <input type="text" name="remark" class="form-control" placeholder="Enter rejection reason">
-                </div>
-            </div>
-        </div>
-    </div>
+                    <!-- Remark -->
+                    <div class="mb-3">
+                        <label for="remark" class="form-label">Remark (optional)</label>
+                        <input type="text" name="remark" id="remark" class="form-control" placeholder="Enter remark (if any)">
+                        <small class="form-text text-muted">You can provide a remark for both approval and rejection.</small>
+                    </div>
 
-    <!-- Modal Footer -->
-    <div class="modal-footer">
-        <button type="submit" class="btn btn-submit">Submit</button>
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-    </div>
-</form>
-
-<script>
-    (function() {
-        const form = document.getElementById('rewardForm');
-        const gadgetField = document.getElementById('gadget_field');
-        const remarkField = document.getElementById('remark_field');
-        const radios = form.querySelectorAll('input[name="status"]');
-
-        function toggleFields() {
-            const selected = form.querySelector('input[name="status"]:checked');
-            if(!selected) return;
-
-            if(selected.value === 'Approved') {
-                gadgetField.style.display = 'block';
-                remarkField.style.display = 'none';
-                gadgetField.querySelector('input').required = true;
-                remarkField.querySelector('input').required = false;
-            } else if(selected.value === 'Rejected') {
-                gadgetField.style.display = 'none';
-                remarkField.style.display = 'block';
-                gadgetField.querySelector('input').required = false;
-                remarkField.querySelector('input').required = true;
-            }
-        }
-
-        radios.forEach(radio => {
-            radio.addEventListener('change', toggleFields);
-        });
-
-        // Reset on modal close
-        document.querySelector('.btn-close').addEventListener('click', () => {
-            gadgetField.style.display = 'none';
-            remarkField.style.display = 'none';
-            gadgetField.querySelector('input').value = '';
-            remarkField.querySelector('input').value = '';
-        });
-    })();
-</script>
+                    <!-- Form Buttons -->
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                < /form>
+   </div>

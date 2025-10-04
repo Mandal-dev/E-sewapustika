@@ -59,8 +59,12 @@ return [
     'reason' => 'Reason',
     'add' => 'Add',
     'post' => 'Post',
+    'total_uploaded_salary' => 'Total Uploaded Salary',
+    'total_uploaded_sewa' => 'Total Sewa Pustika Uploaded',
+    'total_uploaded_rewards' => 'Total Rewards Uploaded',
+    'total_uploaded_education' => 'Total Uploaded Punishment',
 
-
+    'salary_increment_list' => 'Salary Increment List',
     'dashboard' => 'Dashboard',
     'manage_masters' => 'Manage Masters',
     'district_management' => 'District Management',
@@ -74,10 +78,20 @@ return [
     'punishments' => 'Punishment',
     'rewards' => 'Reward',
     'reward_status' => 'Reward Status',
- 'punishment' => 'Punishment',
+    'punishment' => 'Punishment',
     'reward' => 'Reward',
     'logout' => 'Logout',
+    'department' => 'Department',
+    'mobile_no' => 'Mobile No.',
+    'update_sewa_pustika' => 'Update Sewa Pustika',
+    'sewa_pustika_pdf' => 'Sewa Pustika (PDF)',
 
+
+    'view_download' => 'View / Download',
+    'remark_note' => 'You can provide a remark for both approval and rejection.',
+    'remark_optional' => 'Remark (optional)',
+    'review_status' => 'Review Status',
+    'police_station' => 'Police Station',
     // Profile
     'edit_profile' => 'Edit Profile',
     'not_available' => 'Not available',

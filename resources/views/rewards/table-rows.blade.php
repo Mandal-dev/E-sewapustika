@@ -14,13 +14,14 @@
         <td>{{ $police->reason ?? '--' }}</td>
         <td>
             @if ($police->rewards_documents)
-                <a href="{{ asset('uploads/rewards/' . $police->rewards_documents) }}" target="_blank"
+                <a href="{{ route('rewards.view', $police->rewards_documents) }}" target="_blank"
                     class="btn btn-sm btn-danger">
                     <i class="fas fa-file-pdf"></i> पहा
                 </a>
             @else
                 <span class="text-muted">नाही</span>
             @endif
+
         </td>
         <td>
             @if (strtolower($police->reward_status) === 'approved')
