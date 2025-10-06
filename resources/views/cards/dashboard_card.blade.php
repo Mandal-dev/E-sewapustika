@@ -67,18 +67,41 @@
         color: #fff !important;
     }
 </style>
-
 <div class="dashboard-content">
     <div class="stats-grid">
         @foreach ($cards as $index => $card)
-            <div class="stat-card">
+            @php
+                $cardRoute = '';
+                switch ($card['title']) {
+                    case 'Salary Increment':
+                        $cardRoute = route('salary_increment.index');
+                        break;
+                    case 'Rewards':
+                        $cardRoute = route('rewards.index');
+                        break;
+                    case 'Punishments':
+                        $cardRoute = route('punishments.index');
+                        break;
+                    case 'Sewa Pustika':
+                        $cardRoute = route('sewa_pustika.index');
+                        break;
+                }
+            @endphp
+
+            <div
+                class="stat-card"
+                @if($cardRoute)
+                    onclick="window.location='{{ $cardRoute }}'"
+                    style="cursor: pointer;"
+                @endif
+            >
                 <!-- Header -->
                 <div class="stat-card-header">
                     <div class="stat-card-title">{{ __('messages.' . strtolower(str_replace(' ', '_', $card['title']))) }}</div>
                     <div class="stat-card-icon">
                         @if ($card['title'] == 'Salary Increment')
                             <i class="fas fa-upload"></i>
-                        @elseif($card['title'] == 'Reward')
+                        @elseif($card['title'] == 'Rewards')
                             <i class="fas fa-gift"></i>
                         @elseif($card['title'] == 'Punishments')
                             <i class="fas fa-gavel"></i>
