@@ -11,12 +11,12 @@
         <table class="table table-bordered align-middle my-rounded-table">
             <thead class="table-light">
                 <tr>
-                    <th>क्रमांक</th>
-                    <th>नाव</th>
-                    <th>बकल क्रमांक</th>
-                    <th>पद</th>
-                    <th>ठाणे</th>
-                    <th>क्रिया</th> <!-- ✅ New column for actions -->
+                    <th>{{ __('messages.serial') }}</th>
+                    <th>{{ __('messages.officer_name') }}</th>
+                    <th>{{ __('messages.buckle_no') }}</th>
+                    <th>{{ __('messages.role') }}</th>
+                    <th>{{ __('messages.station') }}</th>
+                    <th>{{ __('messages.actions') }}</th> <!-- New column for actions -->
                 </tr>
             </thead>
 

@@ -4,7 +4,11 @@
 @endphp
 @forelse($polices as $index => $police)
     <tr>
-        <td>{{ $polices->firstItem() + $index }}</td>
+        <td>
+            {{ (is_object($polices) && method_exists($polices, 'firstItem') ? $polices->firstItem() : 0) + $index }}
+        </td>
+
+
         <td>{{ $police->police_name ?? '--' }}</td>
         <td>{{ $police->buckle_number ?? '--' }}</td>
         <td>{{ $police->role ?? '--' }}</td>
@@ -46,34 +50,28 @@
 
 
         </td>
-        <td>
 
-
-            <div class="action-buttons d-flex align-items-center gap-2">
-                <!-- Add Reward Button -->
-                <button class="btn btn-sm btn-success d-flex align-items-center"
-                    onclick="openModal('{{ route('rewards.add', $police->police_user_id) }}')">
-                    <i class="fas fa-plus me-1"></i>
-
+        <td class="text-center">
+            <div class="d-flex justify-content-center gap-1">
+                <!-- Add Button -->
+                <button class="btn btn-primary btn-sm menuBtn"
+                    onclick="openModal('{{ route('rewards.add', $police->police_user_id) }}')"
+                    title="{{ __('messages.add') }}" style="padding: 6px 10px; border-radius: 50%;">
+                    <i class="fas fa-plus"></i>
                 </button>
 
-                <!-- Approve Button (Head Person only, pending reward) -->
+                <!-- View Button -->
+                <a href="{{ route('police_profile.index', $police->police_user_id) }}" class="btn btn-info btn-sm"
+                    title="{{ __('messages.view_profile') }}" style="padding: 6px 10px; border-radius: 50%;">
+                    <i class="fas fa-eye"></i>
+                </a>
                 @if ($designation === 'Head_Person' && $police->reward_id && strtolower($police->reward_status) === 'pending')
-                    <button class="btn btn-sm btn-warning d-flex align-items-center"
+                    <button class="btn btn-sm btn-warning menuBtn" style="padding: 6px 10px; border-radius: 50%;"
                         onclick="openModal('{{ route('aprove.rewards.show', $police->reward_id) }}')">
                         <i class="fas fa-check me-1"></i>
-
                     </button>
                 @endif
-
-                <!-- View Profile Button -->
-                <a class="btn btn-sm btn-info d-flex align-items-center"
-                    href="{{ route('police_profile.index', $police->police_user_id) }}">
-                    <i class="fas fa-eye me-1"></i>
-
-                </a>
             </div>
-
         </td>
     </tr>
 @empty
@@ -96,32 +94,44 @@
         </div>
     </div>
 </div>
+<!-- ✅ Global Dynamic Modal -->
+<div class="modal fade" id="dynamicModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    function openModal(content) {
-        var modal = new bootstrap.Modal(document.getElementById('dynamicModal'));
+    window.openModal = function(url) {
+        const modalEl = document.getElementById('dynamicModal');
+
+        if (!modalEl) {
+            console.error("Modal element not found: #dynamicModal");
+            return;
+        }
+
+        const modal = new bootstrap.Modal(modalEl);
         modal.show();
 
-        let modalBody = document.querySelector("#dynamicModal .modal-body");
+        const modalBody = modalEl.querySelector('.modal-body');
+        modalBody.innerHTML = '<div class="p-5 text-center"><div class="spinner-border text-primary"></div></div>';
 
-        // Check if content looks like a URL (starts with http or /)
-        if (typeof content === 'string' && (content.startsWith('http') || content.startsWith('/'))) {
-            // Load via fetch
-            fetch(content)
-                .then(response => response.text())
-                .then(html => {
-                    modalBody.innerHTML = html;
-                })
-                .catch(() => {
-                    modalBody.innerHTML =
-                        '<div class="alert alert-danger">Unable to load content.</div>';
-                });
-        } else {
-            // Show plain text (reason)
-            modalBody.innerHTML = `<p class="text-danger fw-bold">${content}</p>`;
-        }
-    }
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                modalBody.innerHTML = html;
+            })
+            .catch(() => {
+                modalBody.innerHTML = '<div class="alert alert-danger">Failed to load content.</div>';
+            });
+    };
 </script>
+
 <script>
     function openReasonModal(title, label, variable, status) {
         var modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));

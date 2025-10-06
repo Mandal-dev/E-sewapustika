@@ -291,4 +291,58 @@ return [
     'select_city' => '-- Select City --',
     'success' => 'Success',
     'error' => 'Error',
+
+    // ===============================
+// दरवाढ तपशील
+// ===============================
+// ===============================
+// Salary Increment Details
+// ===============================
+'salary_increment_details' => 'Salary Increment Details',
+'police_details' => 'Police Details',
+'name' => 'Name',
+'date' => 'Date',
+'new_salary' => 'New Salary',
+'level' => 'Level',
+'increase' => 'Increase',
+'type' => 'Type',
+ 'list' => 'List',
+ 'reward_list' => 'Reward List',
+'serial_no' => 'Serial No.',
+'officer_name' => 'Officer Name',
+'buckle_no' => 'Buckle Number',
+'role' => 'Role',
+'reward_date' => 'Reward Date',
+'reward_type' => 'Type of Reward',
+'reward_reason' => 'Reason for Reward',
+'document' => 'Document',
+'status' => 'Status',
+'actions' => 'Actions',
+'name' => 'Name',
+'date' => 'Date',
+'type' => 'Type',
+'reason' => 'Reason',
+'approved' => 'Approved',
+'rejected' => 'Rejected',
+'pending' => 'Pending',
+'view' => 'View',
+'na' => 'N/A',
+'add_reward' => 'Add Reward',
+'success' => 'Success',
+'error' => 'Error',
+'search_placeholder' => 'Name, Station or Buckle Number',
+'loading' => 'Loading...',
+'no_records_found' => 'No records found',
+'failed_to_load' => 'Failed to load',
+    'reward_approval' => 'Reward Approval',
+    'add_gadget_no' => 'Add Gadget No.',
+    'remark_if_rejected' => 'Remark if Rejected',
+    'type_reason' => 'Type Reason',
+    'reward_reason_placeholder' => 'Enter the reason for reward',
+        'police_list'        => 'Police List',
+    'add_officer'        => 'Add Officer',
+    'add_police'         => 'Add Police',
+    'download_template'  => 'Download Template',
+
+
 ];

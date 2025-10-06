@@ -14,10 +14,10 @@
             @if ($police->punishment_documents)
                 <a href="{{ route('punishments.view', $police->punishment_documents) }}" target="_blank"
                     class="btn btn-sm btn-danger">
-                    <i class="fas fa-file-pdf"></i> पहा
+                    <i class="fas fa-file-pdf"></i> {{ __('messages.view') }}
                 </a>
             @else
-                <span class="text-muted">नाही</span>
+                <span class="text-muted">{{ __('messages.na') }}</span>
             @endif
         </td>
         <td>
@@ -27,51 +27,54 @@
 
             @if ($status === 'approved')
                 <span class="badge bg-success text-white status-badge" style="cursor:pointer"
-                    onclick="openReasonModal('मंजूर', 'टीप:', '{{ $police->remark ?? 'No remark provided' }}', 'approved')">
-                    मंजूर
+                    onclick="openReasonModal('{{ __('messages.approved') }}', '{{ __('messages.remark') }}:', '{{ $police->remark ?? __('messages.no_remark') }}', 'approved')">
+                    {{ __('messages.approved') }}
                 </span>
             @elseif ($status === 'rejected')
                 <span class="badge bg-danger text-white status-badge" style="cursor:pointer"
-                    onclick="openReasonModal('नाकारले', 'नाकारण्याचे कारण:', '{{ $police->remark ?? 'No remark provided' }}', 'rejected')">
-                    नाकारले
+                    onclick="openReasonModal('{{ __('messages.rejected') }}', '{{ __('messages.reject_reason') }}:', '{{ $police->remark ?? __('messages.no_remark') }}', 'rejected')">
+                    {{ __('messages.rejected') }}
                 </span>
             @elseif ($status === 'uploaded')
                 <span class="badge bg-info text-white status-badge" style="cursor:pointer"
-                    onclick="openReasonModal('अपलोड', 'स्थिती:', 'शिक्षा अपलोड झाली आहे, पण पुनरावलोकन अद्याप झाले नाही', 'uploaded')">
-                    अपलोड
+                    onclick="openReasonModal('{{ __('messages.uploaded') }}', '{{ __('messages.status') }}:', '{{ __('messages.uploaded_pending_review') }}', 'uploaded')">
+                    {{ __('messages.uploaded') }}
                 </span>
             @else
-                {{-- Pending --}}
                 <span class="badge bg-warning text-dark status-badge" style="cursor:pointer"
-                    onclick="openReasonModal('प्रलंबित', 'स्थिती:', 'शिक्षा अजून प्रलंबित आहे', 'pending')">
-                    प्रलंबित
+                    onclick="openReasonModal('{{ __('messages.pending') }}', '{{ __('messages.status') }}:', '{{ __('messages.pending_message') }}', 'pending')">
+                    {{ __('messages.pending') }}
                 </span>
             @endif
         </td>
-        <td class="d-flex flex-wrap gap-1">
-            @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
-                <button class="btn btn-sm btn-primary d-flex align-items-center"
-                    onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
-                    <i class="fas fa-plus me-1"></i>
+        <td class="text-center">
+            <div class="d-flex justify-content-center gap-1">
+                <!-- Add Button -->
+                <button class="btn btn-primary btn-sm menuBtn"
+                    onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')"
+                    title="{{ __('messages.add') }}" style="padding: 6px 10px; border-radius: 50%;">
+                    <i class="fas fa-plus"></i>
                 </button>
-            @endif
 
-            <a href="{{ route('police_profile.index', $police->police_user_id) }}"
-                class="btn btn-sm btn-info d-flex align-items-center">
-                <i class="fas fa-eye me-1"></i>
-            </a>
+                <!-- View Button -->
+                <a href="{{ route('police_profile.index', $police->police_user_id) }}" class="btn btn-info btn-sm"
+                    title="{{ __('messages.view_profile') }}" style="padding: 6px 10px; border-radius: 50%;">
+                    <i class="fas fa-eye"></i>
+                </a>
 
-            @if ($designation === 'Head_Person' && $police->punishment_id && $status === 'uploaded')
-                <button class="btn btn-sm btn-success d-flex align-items-center"
-                    onclick="openModal('{{ route('punishments.show', $police->punishment_id) }}')">
-                    <i class="fas fa-check me-1"></i>
-                </button>
-            @endif
+                @if ($designation === 'Head_Person' && $police->punishment_id && strtolower($police->punishment_status) === 'pending')
+                    <button class="btn btn-sm btn-warning menuBtn" style="padding: 6px 10px; border-radius: 50%;"
+                        onclick="openModal('{{ route('punishments.show', $police->punishment_id) }}')">
+                        <i class="fas fa-check me-1"></i>
+                    </button>
+                @endif
+            </div>
         </td>
+
     </tr>
 @empty
     <tr>
-        <td colspan="10" class="text-center">कोणतीही नोंद सापडली नाही</td>
+        <td colspan="10" class="text-center">{{ __('messages.no_records_found') }}</td>
     </tr>
 @endforelse
 
@@ -80,7 +83,7 @@
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="rejectReasonModalTitle">स्थिती</h5>
+                <h5 class="modal-title" id="rejectReasonModalTitle">{{ __('messages.status') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="rejectReasonModalBody"></div>
@@ -89,7 +92,6 @@
 </div>
 
 <script>
-    // Status modal
     function openReasonModal(title, label, variable, status) {
         const modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
         modal.show();

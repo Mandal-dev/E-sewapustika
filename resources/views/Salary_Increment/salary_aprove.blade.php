@@ -49,13 +49,6 @@
         background: #fafafa;
     }
 
-    .btn-submit {
-        background: #28a745;
-        color: #fff;
-        font-weight: 500;
-        border-radius: 6px;
-    }
-
     .btn-approve {
         background: #198754;
         color: #fff;
@@ -74,7 +67,7 @@
         filter: invert(1);
     }
 
-    /* Form fields for gadget/reject reason */
+    /* Form fields */
     .form-group {
         margin-top: 12px;
     }
@@ -90,83 +83,82 @@
         font-size: 14px;
     }
 </style>
+<div class="modal-header">
+    <h5 class="modal-title">{{ __('messages.salary_increment_details') }}</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
 
+<div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+    <div class="row g-3">
+        <!-- Police Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header"><strong>{{ __('messages.police_details') }}</strong></div>
+                <div class="card-body">
+                    <p><b>{{ __('messages.name') }}:</b> {{ $salary->police_name }}</p>
+                    <p><b>{{ __('messages.buckle_no') }}:</b> {{ $salary->buckle_number }}</p>
+                    <p><b>{{ __('messages.post') }}:</b> {{ $salary->post }}</p>
+                    <p><b>{{ __('messages.role') }}:</b> {{ $salary->role }}</p>
+                    <p><b>{{ __('messages.district') }}:</b> {{ $salary->district_name }}</p>
+                    <p><b>{{ __('messages.city') }}:</b> {{ $salary->city_name }}</p>
+                </div>
+            </div>
+        </div>
 
-    <div class="modal-header">
-        <h5 class="modal-title">Reward Approval</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- Salary Increment Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header"><strong>{{ __('messages.salary_increment_details') }}</strong></div>
+                <div class="card-body">
+                    <p><b>{{ __('messages.type') }}:</b> {{ $salary->increment_type }}</p>
+                    <p><b>{{ __('messages.date') }}:</b> {{ $salary->increment_date }}</p>
+                    <p><b>{{ __('messages.new_salary') }}:</b> <span class="text-success">₹{{ $salary->new_salary }}</span></p>
+                    <p><b>{{ __('messages.level') }}:</b> {{ $salary->level }}</p>
+                    <p><b>{{ __('messages.grade_pay') }}:</b> {{ $salary->grade_pay }}</p>
+                    <p><b>{{ __('messages.increase') }}:</b> <span class="text-success">₹{{ $salary->increased_amount }}</span></p>
+                    <p><b>{{ __('messages.present_days') }}:</b> {{ $salary->present_days ?? '--' }}</p>
+                    @if ($salary->increment_documents)
+                        <p><b>{{ __('messages.documents') }}:</b>
+                            <a href="{{ route('salary_increment.view', $salary->increment_documents) }}"
+                               target="_blank" class="link-primary">{{ __('messages.view') }}</a>
+                        </p>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-        <div class="row g-3">
-            <!-- Police Details -->
-            <div class="col-md-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header"><strong>Police Details</strong></div>
-                    <div class="card-body">
-                        <p><b>Name:</b> {{ $salary->police_name }}</p>
-                        <p><b>Buckle No:</b> {{ $salary->buckle_number }}</p>
-                        <p><b>Post:</b> {{ $salary->post }}</p>
-                        <p><b>Role:</b> {{ $salary->role }}</p>
-                        <p><b>District:</b> {{ $salary->district_name }}</p>
-                        <p><b>City:</b> {{ $salary->city_name }}</p>
-                    </div>
-                </div>
+    <!-- Approval Form -->
+    <form id="salaryApprovalForm" action="{{ route('salary.increment.approve') }}" method="POST" class="mt-4">
+        @csrf
+        <input type="hidden" name="salary_id" value="{{ $salary->salary_id }}">
+
+        <!-- Action Radios -->
+        <div class="mb-3">
+            <label class="form-label">{{ __('messages.action') }}</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status" id="status_approve" value="Approved" required>
+                <label class="form-check-label" for="status_approve">{{ __('messages.approve') }}</label>
             </div>
-            <input type="hidden" name="salary_id" value="{{ $salary->salary_id }}">
-
-            <!-- Salary Increment Details -->
-            <div class="col-md-6">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header"><strong>Salary Increment Details</strong></div>
-                    <div class="card-body">
-                        <p><b>Type:</b> {{ $salary->increment_type }}</p>
-                        <p><b>Date:</b> {{ $salary->increment_date }}</p>
-                        <p><b>New Salary:</b> <span class="text-success">₹{{ $salary->new_salary }}</span></p>
-                        <p><b>Level:</b> {{ $salary->level }}</p>
-                        <p><b>Grade Pay:</b> {{ $salary->grade_pay }}</p>
-                        <p><b>Increase:</b> <span class="text-success">₹{{ $salary->increased_amount }}</span></p>
-                        <p><b>Present Days:</b> {{ $salary->present_days ?? '--' }}</p>
-                        @if ($salary->increment_documents)
-                            <p><b>Documents:</b>
-                                <a href="{{ route('salary_increment.view', $salary->increment_documents) }}"
-                                    target="_blank" class="link-primary">View</a>
-                            </p>
-                        @endif
-                    </div>
-                </div>
-
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="status" id="status_reject" value="Rejected">
+                <label class="form-check-label" for="status_reject">{{ __('messages.reject') }}</label>
             </div>
+        </div>
 
-                <!-- Approval Form -->
-                <form id="salaryApprovalForm" action="{{ route('salary.increment.approve') }}" method="POST" class="mt-4">
-                    @csrf
-                    <input type="hidden" name="salary_id" value="{{ $salary->salary_id }}">
+        <!-- Remark -->
+        <div class="mb-3">
+            <label for="remark" class="form-label">{{ __('messages.remark_optional') }}</label>
+            <input type="text" name="remark" id="remark" class="form-control" placeholder="{{ __('messages.enter_remark') }}">
+            <small class="form-text text-muted">
+                {{ __('messages.remark_note') }}
+            </small>
+        </div>
 
-                    <!-- Action Radios -->
-                    <div class="mb-3">
-                        <label class="form-label">Action</label><br>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="status" id="status_approve" value="Approved" required>
-                            <label class="form-check-label" for="status_approve">Approve</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="status" id="status_reject" value="Rejected">
-                            <label class="form-check-label" for="status_reject">Reject</label>
-                        </div>
-                    </div>
-
-                    <!-- Remark -->
-                    <div class="mb-3">
-                        <label for="remark" class="form-label">Remark (optional)</label>
-                        <input type="text" name="remark" id="remark" class="form-control" placeholder="Enter remark (if any)">
-                        <small class="form-text text-muted">You can provide a remark for both approval and rejection.</small>
-                    </div>
-
-                    <!-- Form Buttons -->
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-success">Submit</button>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                < /form>
-   </div>
+        <!-- Buttons -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-success">{{ __('messages.submit') }}</button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('messages.close') }}</button>
+        </div>
+    </form>
+</div>

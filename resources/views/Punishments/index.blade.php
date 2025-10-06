@@ -19,14 +19,14 @@
         <!-- Flash Messages -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>यशस्वी:</strong> {{ session('success') }}
+                <strong>{{ __('messages.flash_success') }}</strong> {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>चूक:</strong> {{ session('error') }}
+                <strong>{{ __('messages.flash_error') }}</strong> {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -42,11 +42,11 @@
             <!-- Table Header & Search -->
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                 <div class="d-flex flex-wrap gap-2">
-                    <h5 class="mb-2 fw-semibold">शिक्षा यादी</h5>
+                    <h5 class="mb-2 fw-semibold">{{ __('messages.shiksha') }} {{ __('messages.list') ?? '' }}</h5>
                 </div>
 
                 <div class="search-container">
-                    <input type="text" id="searchKeyword" placeholder="नाव, ठाणे किंवा बकल क्रमांक">
+                    <input type="text" id="searchKeyword" placeholder="{{ __('messages.search_placeholder') }}">
                     <i class="fas fa-search search-icon"></i>
                 </div>
             </div>
@@ -57,15 +57,15 @@
                     <table class="table table-bordered align-middle my-rounded-table">
                         <thead class="table-light">
                             <tr>
-                                <th>क्रमांक</th>
-                                <th>अधिकाऱ्याचे नाव</th>
-                                <th>बकल क्रमांक</th>
-                                <th>शिक्षेची तारीख</th>
-                                <th>शिक्षेचे प्रकार</th>
-                                <th>शिक्षेचे कारण</th>
-                                <th>दस्तऐवज</th>
-                                <th>स्थिती</th>
-                                <th>क्रिया</th>
+                                <th>{{ __('messages.sr_no') }}</th>
+                                <th>{{ __('messages.officer_name') }}</th>
+                                <th>{{ __('messages.buckle_no') }}</th>
+                                <th>{{ __('messages.punishment_date') }}</th>
+                                <th>{{ __('messages.type') }}</th>
+                                <th>{{ __('messages.reason') }}</th>
+                                <th>{{ __('messages.documents') }}</th>
+                                <th>{{ __('messages.status') }}</th>
+                                <th>{{ __('messages.action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -82,59 +82,80 @@
                                         @if ($police->punishment_documents)
                                             <a href="{{ route('punishments.view', $police->punishment_documents) }}"
                                                 target="_blank" class="btn btn-sm btn-danger">
-                                                <i class="fas fa-file-pdf"></i> पहा
+                                                <i class="fas fa-file-pdf"></i> {{ __('messages.view') }}
                                             </a>
                                         @else
-                                            <span class="text-muted">नाही</span>
+                                            <span class="text-muted">{{ __('messages.no_document') }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         @php
-                                            $status = strtolower($police->custom_status); // Use custom_status
+                                            $status = strtolower($police->custom_status);
                                         @endphp
 
                                         @if ($status === 'approved')
                                             <span class="badge bg-success text-white status-badge" style="cursor:pointer"
-                                                data-variable="{{ $police->remark ?? 'No remark provided' }}"
-                                                data-label="टीप:" data-title="मंजूर">मंजूर</span>
+                                                data-variable="{{ $police->remark ?? __('messages.not_available') }}"
+                                                data-label="{{ __('messages.remark') }}"
+                                                data-title="{{ __('messages.approve') }}">
+                                                {{ __('messages.approved') }}
+                                            </span>
                                         @elseif ($status === 'rejected')
                                             <span class="badge bg-danger text-white status-badge" style="cursor:pointer"
-                                                data-variable="{{ $police->remark ?? 'No remark provided' }}"
-                                                data-label="नाकारण्याचे कारण:" data-title="नाकारले">नाकारले</span>
+                                                data-variable="{{ $police->remark ?? __('messages.not_available') }}"
+                                                data-label="{{ __('messages.reject_reason') }}"
+                                                data-title="{{ __('messages.reject') }}">
+                                                {{ __('messages.rejected') }}
+                                            </span>
                                         @elseif ($status === 'uploaded')
                                             <span class="badge bg-info text-white status-badge" style="cursor:pointer"
-                                                data-variable="शिक्षा अपलोड झाली आहे, पण पुनरावलोकन अद्याप झाले नाही"
-                                                data-label="स्थिती:" data-title="अपलोड">अपलोड</span>
+                                                data-variable="{{ __('messages.uploaded') }}"
+                                                data-label="{{ __('messages.status') }}"
+                                                data-title="{{ __('messages.uploaded') }}">
+                                                {{ __('messages.uploaded') }}
+                                            </span>
                                         @else
-                                            {{-- pending --}}
                                             <span class="badge bg-warning text-dark status-badge" style="cursor:pointer"
-                                                data-variable="शिक्षा अजून प्रलंबित आहे" data-label="स्थिती:"
-                                                data-title="प्रलंबित">प्रलंबित</span>
+                                                data-variable="{{ __('messages.pending') }}"
+                                                data-label="{{ __('messages.status') }}"
+                                                data-title="{{ __('messages.pending') }}">
+                                                {{ __('messages.pending') }}
+                                            </span>
                                         @endif
                                     </td>
 
-                                    <td class="d-flex flex-wrap gap-1">
-                                        @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
-                                            <button class="btn btn-sm btn-primary d-flex align-items-center"
-                                                onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
-                                                <i class="fas fa-plus me-1"></i>
+
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <!-- Add Button -->
+                                            <button class="btn btn-primary btn-sm menuBtn"
+                                                onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')"
+                                                title="{{ __('messages.add') }}"
+                                                style="padding: 6px 10px; border-radius: 50%;">
+                                                <i class="fas fa-plus"></i>
                                             </button>
-                                        @endif
-                                        <a href="{{ route('police_profile.index', $police->police_user_id) }}"
-                                            class="btn btn-sm btn-info d-flex align-items-center">
-                                            <i class="fas fa-eye me-1"></i>
-                                        </a>
-                                        @if ($designation === 'Head_Person' && $police->punishment_id && strtolower($police->punishment_status) === 'pending')
-                                            <button class="btn btn-sm btn-success d-flex align-items-center"
-                                                onclick="openModal('{{ route('punishments.show', $police->punishment_id) }}')">
-                                                <i class="fas fa-check me-1"></i>
-                                            </button>
-                                        @endif
+
+                                            <!-- View Button -->
+                                            <a href="{{ route('police_profile.index', $police->police_user_id) }}"
+                                                class="btn btn-info btn-sm" title="{{ __('messages.view_profile') }}"
+                                                style="padding: 6px 10px; border-radius: 50%;">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+
+                                            @if ($designation === 'Head_Person' && $police->punishment_id && strtolower($police->punishment_status) === 'pending')
+                                                <button class="btn btn-sm btn-warning menuBtn"
+                                                    style="padding: 6px 10px; border-radius: 50%;"
+                                                    onclick="openModal('{{ route('punishments.show', $police->punishment_id) }}')">
+                                                    <i class="fas fa-check me-1"></i>
+                                                </button>
+                                            @endif
+                                        </div>
                                     </td>
+
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">कोणतीही नोंद सापडली नाही</td>
+                                    <td colspan="9" class="text-center">{{ __('messages.no_records_found') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -146,47 +167,51 @@
             <div class="d-md-none">
                 @forelse($polices as $police)
                     <div class="officer-card p-3 mb-3 border rounded shadow-sm">
-                        <p><strong>Police Name:</strong> {{ $police->police_name }}</p>
-                        <p><strong>Buckle No:</strong> {{ $police->buckle_number }}</p>
-                        <p><strong>Punishment
-                                Date:</strong>{{ $police->punishment_given_date ? \Carbon\Carbon::parse($police->punishment_given_date)->format('d-m-Y') : '--' }}
+                        <p><strong>{{ __('messages.police_name') }}:</strong> {{ $police->police_name }}</p>
+                        <p><strong>{{ __('messages.buckle_no') }}:</strong> {{ $police->buckle_number }}</p>
+                        <p><strong>{{ __('messages.punishment_date') }}:</strong>
+                            {{ $police->punishment_given_date ? \Carbon\Carbon::parse($police->punishment_given_date)->format('d-m-Y') : '--' }}
                         </p>
-                        <p><strong>Type:</strong> {{ $police->punishment_type ?? '--' }}</p>
-                        <p><strong>Reason:</strong> {{ $police->reason ?? '--' }}</p>
+                        <p><strong>{{ __('messages.type') }}:</strong> {{ $police->punishment_type ?? '--' }}</p>
+                        <p><strong>{{ __('messages.reason') }}:</strong> {{ $police->reason ?? '--' }}</p>
                         <p>
                             @if ($police->punishment_documents)
                                 <a href="{{ route('punishments.view', $police->punishment_documents) }}" target="_blank"
                                     class="btn btn-sm btn-danger">
-                                    <i class="fas fa-file-pdf"></i> पहा
+                                    <i class="fas fa-file-pdf"></i> {{ __('messages.view') }}
                                 </a>
                             @else
-                                <span class="text-muted">नाही</span>
+                                <span class="text-muted">{{ __('messages.no_document') }}</span>
                             @endif
                         </p>
                         <div class="d-flex gap-2">
                             @if ($designation === 'Head_Person' || $designation === 'Punishment_Department')
                                 <button class="btn btn-sm btn-warning"
                                     onclick="openModal('{{ route('punishment.add', $police->police_user_id) }}')">
-                                    <i class="fas fa-plus"></i> शिक्षा जोडा
+                                    <i class="fas fa-plus"></i> {{ __('messages.add_punishment') }}
                                 </button>
                             @endif
                             <a href="{{ route('police_profile.index', $police->police_user_id) }}"
                                 class="btn btn-sm btn-info">
-                                <i class="fas fa-eye"></i> View
+                                <i class="fas fa-eye"></i> {{ __('messages.view_profile') }}
                             </a>
                         </div>
                     </div>
                 @empty
-                    <p class="text-center text-muted">कोणतीही नोंद सापडली नाही fgdfgfdg</p>
+                    <p class="text-center text-muted">{{ __('messages.no_records_found') }}</p>
                 @endforelse
             </div>
 
             <!-- Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div class="text-muted small">
-                    Showing {{ $polices->firstItem() }} to {{ $polices->lastItem() }}
-                    of {{ $polices->total() }} records
-                    (Page {{ $polices->currentPage() }} of {{ $polices->lastPage() }})
+                    {{ __('messages.showing_records', [
+                        'start' => $polices->firstItem(),
+                        'end' => $polices->lastItem(),
+                        'total' => $polices->total(),
+                        'current' => $polices->currentPage(),
+                        'last' => $polices->lastPage(),
+                    ]) }}
                 </div>
                 <div>
                     {!! $polices->links('pagination::bootstrap-5') !!}
@@ -200,7 +225,7 @@
                 <div class="modal-content">
                     <div id="sewaPustikaModalBody" class="p-4 text-center">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">लोड होत आहे...</span>
+                            <span class="visually-hidden">{{ __('messages.loading') }}</span>
                         </div>
                     </div>
                 </div>
@@ -212,7 +237,7 @@
             <div class="modal-dialog modal-md modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="rejectReasonModalTitle">स्थिती</h5>
+                        <h5 class="modal-title" id="rejectReasonModalTitle">{{ __('messages.status') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body" id="rejectReasonModalBody"></div>
@@ -220,6 +245,7 @@
             </div>
         </div>
     </div>
+
 
     <script>
         // Debounce function

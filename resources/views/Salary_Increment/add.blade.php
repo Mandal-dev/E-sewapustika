@@ -67,10 +67,10 @@
                 <div class="col-md-6">
                     <label>{{ __('messages.increment_type') }}</label>
                     <select name="increment_type" class="form-control" required>
-                        <option value="" disabled selected>{{ __('messages.increment_type') }}</option>
-                        <option value="दरवाढ">{{ __('messages.type_increment') }}</option>
-                        <option value="पदोन्नती">{{ __('messages.type_promotion') }}</option>
-                        <option value="इतर">{{ __('messages.type_other') }}</option>
+                        <option value="" disabled selected>{{ __('messages.select_increment_type') }}</option>
+                        <option value="Increment">{{ __('messages.type_increment') }}</option>
+                        <option value="Promotion">{{ __('messages.type_promotion') }}</option>
+                        <option value="Other">{{ __('messages.type_other') }}</option>
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -119,12 +119,14 @@
                 </div>
             </div>
 
-            {{-- ✅ Present Days --}}
+            {{-- Present Days --}}
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label>{{ __('messages.present_days') }}</label>
                     <input type="number" name="present_days" id="present_days" class="form-control" min="0" required>
-                    <small id="presentDaysError" class="text-danger d-none">Attendance is too low for salary increment (minimum 180 days required).</small>
+                    <small id="presentDaysError" class="text-danger d-none">
+                        {{ __('messages.attendance_error') }}
+                    </small>
                 </div>
             </div>
 
@@ -170,16 +172,16 @@
 
         $('#level_no_select, #grade_pay_select').change(fetchSalary);
 
-        // ✅ Attendance Validation
+        // Attendance Validation
         $('#salaryIncrementForm').on('submit', function (e) {
             let presentDays = parseInt($('#present_days').val()) || 0;
 
             if (presentDays < 180) {
                 e.preventDefault();
-                $('#presentDaysError').removeClass('d-none'); // show inline error
+                $('#presentDaysError').removeClass('d-none'); // show error
                 $('#present_days').addClass('is-invalid');
             } else {
-                $('#presentDaysError').addClass('d-none'); // hide error if valid
+                $('#presentDaysError').addClass('d-none'); // hide error
                 $('#present_days').removeClass('is-invalid');
             }
         });
