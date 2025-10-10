@@ -1,6 +1,15 @@
 @extends('Dashboard.header')
 
 @section('data')
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- App Content -->
     <div class="app-content" style="margin: 0; padding: 1rem;">
@@ -81,43 +90,6 @@
                                     </button>
                                 </td>
                             </tr>
-
-                            <!-- Mobile Card Row -->
-                            <div class="officer-card d-md-none">
-                                <div class="left-col">
-                                    <p class="state"><strong>State:</strong>{{ $station->state_name ?? 'N/A' }}</p>
-                                    <p><strong>District Name:</strong>{{ $station->district_name ?? 'N/A' }}</p>
-                                    <p><strong>City Name:</strong>{{ $station->city_name ?? 'N/A' }}</p>
-                                    <p><strong>Station Name:</strong>{{ $station->station_name ?? 'N/A' }}</p>
-                                </div>
-
-
-                                <div class="right-col text-start">
-
-
-
-                                    <!-- View button -->
-
-                                  <!-- Edit button -->
-                                    <button class="action-btn"
-                                        >
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-
-                                    <!-- Status (single row) -->
-                            <p class=" mb-2 d-flex align-items-center">
-                                Status:&nbsp;
-                                <span class="{{ $station->status == 'Active' ? 'text-success fw-bold' : 'text-danger' }} d-flex align-items-center">
-                                @if ($station->status == 'Active')
-                                    <i class="fas fa-circle me-1" style="font-size:8px;"></i> {{ $station->status }}
-                                     @else
-                                            {{ $station->status }}
-                                        @endif
-                                </span>
-                            </p>
-
-                                </div>
-
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center text-muted">नोंदी आढळल्या नाहीत</td>
