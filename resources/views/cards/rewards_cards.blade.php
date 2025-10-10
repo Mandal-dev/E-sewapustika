@@ -1,6 +1,6 @@
 <div class="stats-grid">
     <!-- Total Rewards Uploaded -->
-    <div class="stat-card">
+    <div class="stat-card status-filter" data-status="all">
         <div class="stat-card-header">
             <div class="stat-card-title">{{ __('messages.total_uploaded_rewards') }}</div>
             <div class="stat-card-icon"><i class="fas fa-upload"></i></div>
@@ -9,7 +9,7 @@
     </div>
 
     <!-- Approved -->
-    <div class="stat-card">
+    <div class="stat-card status-filter" data-status="approved">
         <div class="stat-card-header">
             <div class="stat-card-title">{{ __('messages.approved') }}</div>
             <div class="stat-card-icon"><i class="fas fa-circle-check"></i></div>
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Rejected -->
-    <div class="stat-card">
+    <div class="stat-card status-filter" data-status="rejected">
         <div class="stat-card-header">
             <div class="stat-card-title">{{ __('messages.rejected') }}</div>
             <div class="stat-card-icon"><i class="fas fa-circle-xmark"></i></div>
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Pending -->
-    <div class="stat-card">
+    <div class="stat-card status-filter" data-status="uploaded">
         <div class="stat-card-header">
             <div class="stat-card-title">{{ __('messages.pending') }}</div>
             <div class="stat-card-icon"><i class="fas fa-hourglass-half"></i></div>

@@ -2,13 +2,18 @@
 <html lang="en">
 
 <head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/table.css') }}">
-<link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
-<link rel="stylesheet" href="{{ asset('css/new_dashboard.css') }}">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maharashtra Police Admin Dashboard</title>
 
+    <!-- Google Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/new_dashboard.css') }}">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .profile-pic {
             width: 80px;
@@ -33,123 +38,116 @@
     @php
         $designation = Session::get('user.designation_type');
     @endphp
-
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
-    <div class="sidebar-header">
-        <div class="dash-img">
-            <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
-                <i class="fa-solid fa-user logo-icon"></i>
+        <div class="sidebar-header">
+            <div class="dash-img">
+                <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+                    <i class="fa-solid fa-user logo-icon"></i>
+                </a>
+
+                <div class="profile-pic">
+                    <img src="{{ asset('img/police image.png') }}" alt="Profile Picture">
+                </div>
+
+                <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
+                    <i class="fa-solid fa-gear logo-icon"></i>
+                </a>
+
+            </div><br>
+
+            <h1>{{ Session::get('user.name', 'Maharashtra') }}</h1>
+            <p>
+                {{ Session::get('user.designation_type', 'Police') }}
+                &nbsp;
+                {{ Session::get('user.district_name', 'Admin System') }}
+            </p>
+        </div>
+        <nav class="nav">
+            <a href="{{ route('dashboard') }}" class="active dash-btn">
+                <span class="db material-icons" style="color:white">grid_view</span> {{ __('messages.dashboard') }}
             </a>
 
-            <div class="profile-pic">
-                <img src="{{ asset('img/police image.png') }}" alt="{{ __('messages.profile_picture') }}">
-            </div>
+            @php
+                $designation = Session::get('user.designation_type');
+            @endphp
 
-            <a href="{{ route('police_profile.index', Session::get('user.id')) }}">
-                <i class="fa-solid fa-gear logo-icon"></i>
-            </a>
-        </div><br>
+            @if (in_array($designation, ['Admin', 'Head_Person']))
+                <div class="nav-group">
+                    <div class="nav-group-header">
+                        <i class="fas fa-users"></i>
+                        <span>Manage Masters</span>
+                        <i class="fas fa-chevron-down arrow"></i>
+                    </div>
+                    <div class="nav-submenu">
+                        @if (in_array($designation, ['Admin']))
+                            <a href="{{ route('districts.index') }}" class="nav-item submenu-item">
+                                <i class="fas fa-map-marker-alt"></i> जिल्हा व्यवस्थापन
+                            </a>
+                            <a href="{{ route('city.index') }}" class="nav-item submenu-item">
+                                <i class="fas fa-city"></i> शहर व्यवस्थापन
+                            </a>
+                        @endif
+                        <a href="{{ route('station.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-building"></i> विभाग
+                        </a>
+                        <a href="{{ route('police.list.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-user-shield"></i> पोलीस वापरकर्ता व्यवस्थापन
+                        </a>
+                    </div>
+                </div>
+            @endif
 
-        <h1>{{ Session::get('user.name', __('messages.maharashtra')) }}</h1>
-        <p>
-            {{ Session::get('user.designation_type', __('messages.police')) }}
-            &nbsp;
-            {{ Session::get('user.district_name', __('messages.admin_system')) }}
-        </p>
-    </div>
-
-    <nav class="nav">
-        <!-- Dashboard -->
-        <a href="{{ route('dashboard') }}" class="active dash-btn">
-            <span class="db material-icons" style="color:white">grid_view</span> {{ __('messages.dashboard') }}
-        </a>
-
-        @php
-            $designation = Session::get('user.designation_type');
-        @endphp
-
-        <!-- Manage Masters -->
-        @if (in_array($designation, ['Admin', 'Head_Person']))
             <div class="nav-group">
                 <div class="nav-group-header">
-                    <i class="fas fa-users"></i>
-                    <span>{{ __('messages.manage_masters') }}</span>
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Police Information</span>
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
                 <div class="nav-submenu">
-                    @if (in_array($designation, ['Admin']))
-                        <a href="{{ route('districts.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-map-marker-alt"></i> {{ __('messages.district_management') }}
-                        </a>
-                        <a href="{{ route('city.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-city"></i> {{ __('messages.city_management') }}
+                    @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
+                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-book"></i> सेवा पुस्तिका</a>
+                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-chart-line"></i> वेतनवाढ</a>
+                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-exclamation-triangle"></i> शिक्षा</a>
+                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-trophy"></i>
+                            बक्षीस</a>
+
+                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
+                                class="fas fa-comment"></i> पुरस्काराची स्थिती</a>
+                    @endif
+
+                    @if ($designation === 'Rewards_Department')
+                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-trophy"></i> बक्षीस
                         </a>
                     @endif
-                    <a href="{{ route('station.index') }}" class="nav-item submenu-item">
-                        <i class="fas fa-building"></i> {{ __('messages.station_management') }}
-                    </a>
-                    <a href="{{ route('police.list.index') }}" class="nav-item submenu-item">
-                        <i class="fas fa-user-shield"></i> {{ __('messages.police_user_management') }}
-                    </a>
+
+                    @if ($designation === 'Sewapustika_Department')
+                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-book"></i> सेवा पुस्तिका
+                        </a>
+                    @endif
+
+                    @if ($designation === 'Punishment_Department')
+                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-exclamation-triangle"></i> शिक्षा
+                        </a>
+                    @endif
+
+                    @if ($designation === 'Account_Department')
+                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-chart-line"></i> वेतनवाढ
+                        </a>
+                    @endif
+
                 </div>
             </div>
-        @endif
-
-
-            <div class="nav-group">
-    <div class="nav-group-header">
-        <i class="fas fa-clipboard-list"></i>
-        <span>{{ __('messages.police_information') }}</span>
-        <i class="fas fa-chevron-down arrow"></i>
-    </div>
-    <div class="nav-submenu">
-        @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
-            <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-book"></i> {{ __('messages.service_book') }}
-            </a>
-            <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-chart-line"></i> {{ __('messages.salary_increment') }}
-            </a>
-            <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-exclamation-triangle"></i> {{ __('messages.punishment') }}
-            </a>
-            <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-trophy"></i> {{ __('messages.reward') }}
-            </a>
-            <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-comment"></i> {{ __('messages.reward_status') }}
-            </a>
-        @endif
-
-        @if ($designation === 'Rewards_Department')
-            <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-trophy"></i> {{ __('messages.reward') }}
-            </a>
-        @endif
-
-        @if ($designation === 'Sewapustika_Department')
-            <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-book"></i> {{ __('messages.service_book') }}
-            </a>
-        @endif
-
-        @if ($designation === 'Punishment_Department')
-            <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-exclamation-triangle"></i> {{ __('messages.punishment') }}
-            </a>
-        @endif
-
-        @if ($designation === 'Account_Department')
-            <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
-                <i class="fas fa-chart-line"></i> {{ __('messages.salary_increment') }}
-            </a>
-        @endif
-    </div>
-</div>
-</nav>
-</aside>
-
+        </nav>
+    </aside>
 
     <!-- Backdrop -->
     <div id="backdrop"></div>
@@ -157,8 +155,7 @@
     <!-- Main Content -->
     <div id="mainContent">
         <header>
-            <button id="menuBtn"><span class="dashboard-text material-icons">menu</span>{{ __('messages.dashboard') }}
-        </button></button>
+            <button id="menuBtn"><span class="dashboard-text material-icons">menu</span> Dashboard</button>
 
             <!-- Right: Icons -->
             <div style="display: flex; align-items: center; padding-right: 48px; gap: 16px;">
