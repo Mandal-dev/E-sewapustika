@@ -107,34 +107,34 @@ class rewardsController extends Controller
             ]);
         }
     }
-public function reward_cards()
-{
-    $user = Session::get('user');
+    public function reward_cards()
+    {
+        $user = Session::get('user');
 
-    $counts = DB::table('police_users AS t4')
-        ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
-        ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
-        ->where('t4.district_id', $user['district_id'])
-        ->select(
-            DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
-            DB::raw('COUNT(DISTINCT t5.id) AS total_uploaded'),
-            DB::raw('SUM(CASE WHEN t6.review_status = "Approved" THEN 1 ELSE 0 END) AS approved'),
-            DB::raw('SUM(CASE WHEN t6.review_status = "Rejected" THEN 1 ELSE 0 END) AS rejected'),
-            DB::raw('SUM(CASE WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN 1 ELSE 0 END) AS pending')
-        )
-        ->first();
+        $counts = DB::table('police_users AS t4')
+            ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
+            ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
+            ->where('t4.district_id', $user['district_id'])
+            ->select(
+                DB::raw('COUNT(DISTINCT t4.id) AS total_police'),
+                DB::raw('COUNT(DISTINCT t5.id) AS total_uploaded'),
+                DB::raw('SUM(CASE WHEN t6.review_status = "Approved" THEN 1 ELSE 0 END) AS approved'),
+                DB::raw('SUM(CASE WHEN t6.review_status = "Rejected" THEN 1 ELSE 0 END) AS rejected'),
+                DB::raw('SUM(CASE WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN 1 ELSE 0 END) AS pending')
+            )
+            ->first();
 
-    $stats = [
-        'title' => 'Reward',
-        'total_police' => $counts->total_police,
-        'total_uploaded' => $counts->total_uploaded,
-        'approved' => $counts->approved,
-        'rejected' => $counts->rejected,
-        'pending' => $counts->pending
-    ];
+        $stats = [
+            'title' => 'Reward',
+            'total_police' => $counts->total_police,
+            'total_uploaded' => $counts->total_uploaded,
+            'approved' => $counts->approved,
+            'rejected' => $counts->rejected,
+            'pending' => $counts->pending
+        ];
 
-    return view('cards.rewards_cards', ['stats' => $stats]);
-}
+        return view('cards.rewards_cards', ['stats' => $stats]);
+    }
 
 
     public function aproveReward($rewardId)
@@ -380,83 +380,106 @@ public function reward_cards()
         }
     }
 
-public function search(Request $request)
-{
-    try {
-        $user = Session::get('user');
-        if (!$user) {
-            return response()->json(['status' => 'error', 'message' => 'Session expired.'], 401);
+    public function search(Request $request)
+    {
+        try {
+            $user = Session::get('user');
+            if (!$user) {
+                return response()->json(['status' => 'error', 'message' => 'Session expired.'], 401);
+            }
+
+            $perPage = 10;
+            $keyword = $request->get('keyword');
+            $designation = $request->get('designation');
+
+            $query = DB::table('police_users AS t4')
+                ->leftJoin('districts AS t2', 't4.district_id', '=', 't2.id')
+                ->leftJoin('states AS t1', 't2.state_id', '=', 't1.id')
+                ->leftJoin('cities AS t3', 't4.city_id', '=', 't3.id')
+                ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
+                ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
+                ->select(
+                    't1.state_name',
+                    't2.district_name',
+                    't3.city_name',
+                    't4.id AS police_user_id',
+                    't4.police_name',
+                    't4.buckle_number',
+                    't4.designation_type AS role',
+                    't5.reward_given_date',
+                    't5.reason',
+                    't5.reward_type',
+                    't5.rewards_documents',
+                    't5.id AS reward_id',
+DB::raw('COALESCE(t6.review_status, "Pending") AS reward_status'),
+                    't6.reject_reason',
+                    DB::raw('
+    CASE
+        WHEN t6.review_status = "Approved" THEN "Approved"
+        WHEN t6.review_status = "Rejected" THEN "Rejected"
+        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "Pending"
+        WHEN t5.id IS NULL AND t6.id IS NULL THEN "Not Uploaded"
+        ELSE "Uploaded"
+    END AS salary_status
+')
+                );
+
+            // Role-based filter
+            switch ($user['designation_type']) {
+                case 'Police':
+                    $query->where('t4.id', $user['id']);
+                    break;
+                case 'Station_Head':
+                    $query->where('t4.police_station_id', $user['police_station_id']);
+                    break;
+                case 'Head_Person':
+                case 'Rewards_Department':
+                    $query->where('t4.district_id', $user['district_id']);
+                    break;
+                case 'Admin':
+                    break; // no filter
+                default:
+                    abort(403, 'Unauthorized');
+            }
+
+
+            if (!empty($keyword)) {
+                $query->where(function ($q) use ($keyword) {
+                    $statusMap = [
+                        'approved' => 'approved',
+                        'rejected' => 'rejected',
+                        'pending'  => 'pending',
+                        'uploaded' => 'uploaded',
+                        'all'      => null
+                    ];
+
+                    if (isset($statusMap[strtolower($keyword)]) && strtolower($keyword) != 'all') {
+                        $q->whereRaw('CASE
+                        WHEN t5.id IS NULL AND t6.id IS NULL THEN "pending"
+                        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
+                        ELSE COALESCE(LOWER(t6.review_status), "pending")
+                    END = ?', [$statusMap[strtolower($keyword)]]);
+                    } else {
+                        $q->where('t4.police_name', 'LIKE', "%{$keyword}%")
+                            ->orWhere('t4.buckle_number', 'LIKE', "%{$keyword}%")
+                            ->orWhere('t2.district_name', 'LIKE', "%{$keyword}%")
+                            ->orWhere('t3.city_name', 'LIKE', "%{$keyword}%")
+                            ->orWhere('t1.state_name', 'LIKE', "%{$keyword}%")
+                            ->orWhere('t5.reason', 'LIKE', "%{$keyword}%");
+                    }
+                });
+            }
+
+            if (!empty($designation)) {
+                $query->where('t4.designation_type', $designation);
+            }
+
+            $polices = $query->orderBy('t4.id', 'desc')->paginate($perPage);
+
+            // Return Blade partial
+            return view('rewards.table-rows', compact('polices'))->render();
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
-
-        $perPage = 10;
-        $keyword = $request->get('keyword');
-        $designation = $request->get('designation');
-
-        $query = DB::table('police_users AS t4')
-            ->leftJoin('districts AS t2', 't4.district_id', '=', 't2.id')
-            ->leftJoin('states AS t1', 't2.state_id', '=', 't1.id')
-            ->leftJoin('cities AS t3', 't4.city_id', '=', 't3.id')
-            ->leftJoin('police_rewards AS t5', 't4.id', '=', 't5.police_id')
-            ->leftJoin('reward_reviews AS t6', 't5.id', '=', 't6.reward_id')
-            ->select(
-                't1.state_name',
-                't2.district_name',
-                't3.city_name',
-                't4.id AS police_user_id',
-                't4.police_name',
-                't4.buckle_number',
-                't4.designation_type AS role',
-                't5.reward_given_date',
-                't5.reason',
-                't5.reward_type',
-                't5.rewards_documents',
-                't5.id AS reward_id',
-                DB::raw('COALESCE(t6.review_status, "Pending") AS reward_status'),
-                't6.reject_reason'
-            );
-
-        // Role-based filter
-        switch ($user['designation_type']) {
-            case 'Police':
-                $query->where('t4.id', $user['id']);
-                break;
-            case 'Station_Head':
-                $query->where('t4.police_station_id', $user['police_station_id']);
-                break;
-            case 'Head_Person':
-            case 'Rewards_Department':
-                $query->where('t4.district_id', $user['district_id']);
-                break;
-            case 'Admin':
-                break; // no filter
-            default:
-                abort(403, 'Unauthorized');
-        }
-
-        // Keyword filter
-        if (!empty($keyword)) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('t4.police_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t4.buckle_number', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t2.district_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t3.city_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t1.state_name', 'LIKE', "%{$keyword}%")
-                    ->orWhere('t5.reason', 'LIKE', "%{$keyword}%");
-            });
-        }
-
-        if (!empty($designation)) {
-            $query->where('t4.designation_type', $designation);
-        }
-
-        $polices = $query->orderBy('t4.id', 'desc')->paginate($perPage);
-
-        // Return Blade partial
-        return view('rewards.table-rows', compact('polices'))->render();
-
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
-}
-
 }

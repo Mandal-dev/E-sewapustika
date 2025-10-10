@@ -260,3 +260,15 @@
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     }
 }
+
+/* Default: Desktop / larger screens */
+.app-content {
+    margin: 0 30px;   /* top/bottom = 0, left/right = 10px */
+}
+
+/* Mobile screens: Disable horizontal margin */
+@media (max-width: 768px) {
+    .app-content {
+        margin: 0;   /* no margin at all */
+    }
+}

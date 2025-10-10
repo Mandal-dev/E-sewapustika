@@ -181,16 +181,15 @@ class SalaryIncrementController extends Controller
                     't5.grade_pay',
                     't5.increased_amount',
                     't6.remark',
-                    DB::raw('
+                     DB::raw('
     CASE
-        WHEN t5.id IS NOT NULL AND t7.id IS NULL THEN "uploaded"
-        WHEN t5.id IS  NULL AND t7.id IS NULL THEN "not_uploaded"
+        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
+        WHEN t5.id IS  NULL AND t6.id IS NULL THEN "not_uploaded"
 
         WHEN t6.review_status IS NOT NULL THEN t6.review_status
         ELSE "Pending"
     END AS salary_status
 ')
-
 
 
                 )
@@ -218,28 +217,32 @@ class SalaryIncrementController extends Controller
                     return response()->json(['message' => 'Invalid role.'], 403);
             }
 
-            // 🔹 Search filter
-            // 🔹 Search filter
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $lower = strtolower($search);
 
-                    if ($lower === 'pending') {
-                        // Show increments without a review entry
-                        $q->whereNull('t6.review_status');
-                    } elseif ($lower === 'uploaded') {
-                        // Show increments where salary increment exists but police station is missing
-                        $q->whereNotNull('t5.id')
-                            ->whereNull('t6.id');
-                    } else {
+                    if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $statusMap = [
+                    'approved' => 'approved',
+                    'rejected' => 'rejected',
+                    'pending'  => 'pending',
+                    'uploaded' => 'uploaded',
+                    'all'      => null
+                ];
+
+                if (isset($statusMap[strtolower($search)]) && strtolower($search) != 'all') {
+                    $q->whereRaw('CASE
+                        WHEN t5.id IS NULL AND t6.id IS NULL THEN "pending"
+                        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
+                        ELSE COALESCE(LOWER(t6.review_status), "pending")
+                    END = ?', [$statusMap[strtolower($search)]]);
+                } else {
                         $q->where('t4.police_name', 'like', "%{$search}%")
                             ->orWhere('t4.buckle_number', 'like', "%{$search}%")
                             ->orWhere('t7.name', 'like', "%{$search}%")
                             ->orWhere('t6.review_status', 'like', "%{$search}%")
                             ->orWhere('t2.district_name', 'like', "%{$search}%");
-                    }
-                });
-            }
+                }
+            });
+        }
 
 
             // 🔹 Designation filter

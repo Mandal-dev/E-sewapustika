@@ -101,15 +101,19 @@
 
 <script>
 $(document).ready(function() {
-
     // Auto fade alerts
     setTimeout(() => $('.alert').fadeOut('slow'), 4000);
 
-    // Fetch Rewards via AJAX
-    function fetchRewards() {
-        let keyword = $("#searchKeyword").val();
+    // Fetch Rewards via AJAX - Modified to accept optional status parameter
+    function fetchRewards(status = null) {
+        let keyword = status !== null ? status : $("#searchKeyword").val();
         let designation = $("#searchDesignation").val();
         let isMobile = window.innerWidth < 768;
+
+        // If status is provided via card click, update search input
+        if (status !== null) {
+            $("#searchKeyword").val(keyword);
+        }
 
         $.ajax({
             url: "{{ route('rewards.search') }}",
@@ -133,11 +137,45 @@ $(document).ready(function() {
         });
     }
 
-    // Search triggers
-    $("#searchKeyword").on("keyup", fetchRewards);
-    $("#searchDesignation").on("change", fetchRewards);
-    $("#searchBtn").on("click", fetchRewards);
-    $(window).resize(fetchRewards);
+    // Debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Search triggers - Remove duplicate bindings
+    $("#searchDesignation").on("change", function() {
+        fetchRewards();
+    });
+
+    $("#searchBtn").on("click", function() {
+        fetchRewards();
+    });
+
+    $(window).resize(function() {
+        fetchRewards();
+    });
+
+    // Single keyup event with debounce
+    $('#searchKeyword').on('keyup', debounce(function() {
+        fetchRewards();
+    }, 500));
+
+    // Status card click handler - Fixed
+    $(document).on('click', '.status-filter', function() {
+        let status = $(this).data('status'); // "approved", "rejected", "pending", "all"
+        let keyword = status === 'all' ? '' : status;
+
+        // Call fetchRewards with the status parameter
+        fetchRewards(keyword);
+    });
 
     // Modal open
     window.openModal = function(url) {
