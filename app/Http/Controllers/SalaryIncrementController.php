@@ -72,8 +72,8 @@ class SalaryIncrementController extends Controller
 
                      DB::raw('
     CASE
-        WHEN t5.id IS NOT NULL AND t7.id IS NULL THEN "uploaded"
-        WHEN t5.id IS  NULL AND t7.id IS NULL THEN "not_uploaded"
+        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
+        WHEN t5.id IS  NULL AND t6.id IS NULL THEN "not_uploaded"
 
         WHEN t6.review_status IS NOT NULL THEN t6.review_status
         ELSE "Pending"
@@ -183,14 +183,13 @@ class SalaryIncrementController extends Controller
                     't6.remark',
                      DB::raw('
     CASE
-        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "pending"
+        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
         WHEN t5.id IS  NULL AND t6.id IS NULL THEN "not_uploaded"
 
         WHEN t6.review_status IS NOT NULL THEN t6.review_status
         ELSE "Pending"
     END AS salary_status
 ')
-
 
                 )
                 ->where('t2.is_delete', 'No')
