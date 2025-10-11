@@ -501,6 +501,7 @@ public function search(Request $request)
                       ->orWhere('t6.name', 'like', "%{$keyword}%")
                       ->orWhere('t2.district_name', 'like', "%{$keyword}%")
                       ->orWhere('t3.city_name', 'like', "%{$keyword}%")
+                      ->orWhere('t7.review_status', 'like', "%{$keyword}%")
                       ->orWhere('t1.state_name', 'like', "%{$keyword}%");
                 }
             });
