@@ -230,7 +230,7 @@
                 <div class="modal-content">
                     <div id="sewaPustikaModalBody" class="p-4 text-center">
                         <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">लोड होत आहे...</span>
+                            <span class="visually-hidden">लोड होत आहे........</span>
                         </div>
                     </div>
                 </div>
@@ -251,7 +251,6 @@
         </div>
         </div>
 
-        
     <!-- AJAX + Search + Validation Script -->
     <script>
         $.ajaxSetup({
