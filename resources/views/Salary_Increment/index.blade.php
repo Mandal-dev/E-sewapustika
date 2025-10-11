@@ -251,136 +251,154 @@
         </div>
         </div>
 
-   <script>
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    function openModal(url) {
-        const modalElement = document.getElementById('sewaPustikaModal');
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-
-        $('#sewaPustikaModalBody').html(`
-            <div class="p-5 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">लोड होत आहे...</span>
-                </div>
-            </div>
-        `);
-
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(response) {
-                $('#sewaPustikaModalBody').html(response);
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", error, xhr.responseText);
-                let message = "डेटा लोड करण्यात अडचण आली.";
-                if (xhr.status === 403 && xhr.responseJSON && xhr.responseJSON.error) {
-                    message = xhr.responseJSON.error;
-                }
-                $('#sewaPustikaModalBody').html(`
-                    <div class="p-5 text-danger text-center">${message}</div>
-                `);
+    <!-- AJAX + Search + Validation Script -->
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-    }
 
-    // Present Days Validation (delegated event)
-    $(document).on('click', '#incrementSubmit', function(e) {
-        const presentDays = parseInt($('#present_days').val());
-        if (isNaN(presentDays) || presentDays < 180) {
-            e.preventDefault();
-            alert(
-                "वेतनवाढसाठी उपस्थित दिवस कमीत कमी 180 असणे आवश्यक आहे.\nAttendance is too low for salary increment."
-            );
-            return false;
-        }
-    });
+        function openModal(url) {
+            const modalElement = document.getElementById('sewaPustikaModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
 
-    $(document).ready(function() {
-        setTimeout(() => $('.alert').fadeOut('slow'), 4000);
+            $('#sewaPustikaModalBody').html(`
+                <div class="p-5 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">लोड होत आहे...</span>
+                    </div>
+                </div>
+            `);
 
-        function performSearch(keyword = '', designation = '') {
             $.ajax({
-                url: "{{ route('SalaryIncrement.search') }}",
-                type: "GET",
-                data: {
-                    search: keyword,
-                    designation: designation
-                },
-                success: function(data) {
-                    $('#tableBody').html(data);
+                url: url,
+                type: 'GET',
+                success: function(response) {
+                    $('#sewaPustikaModalBody').html(response);
+
+                    // Add Present Days Validation for modal form
+                    $('#incrementSubmit').click(function(e) {
+                        const presentDays = parseInt($('#present_days').val());
+                        if (isNaN(presentDays) || presentDays < 180) {
+                            e.preventDefault();
+                            alert(
+                                "वेतनवाढसाठी उपस्थित दिवस कमीत कमी 180 असणे आवश्यक आहे.\nAttendance is too low for salary increment."
+                            );
+                            return false;
+                        }
+                    });
                 },
                 error: function(xhr, status, error) {
-                    console.error('Search AJAX error:', error);
+                    console.error("AJAX Error:", error, xhr.responseText);
+                    let message = "डेटा लोड करण्यात अडचण आली.";
+                    if (xhr.status === 403 && xhr.responseJSON && xhr.responseJSON.error) {
+                        message = xhr.responseJSON.error;
+                    }
+                    $('#sewaPustikaModalBody').html(`
+                        <div class="p-5 text-danger text-center">${message}</div>
+                    `);
                 }
             });
         }
 
-        // Search functionality
-        $('#searchInput').on('keyup', function() {
-            performSearch($(this).val(), $('#designationFilter').val());
-        });
+        $(document).ready(function() {
+            setTimeout(() => $('.alert').fadeOut('slow'), 4000);
 
-        $('#searchBtn').on('click', function() {
-            performSearch($('#searchInput').val(), $('#designationFilter').val());
-        });
+            function performSearch() {
+                let search = $('#searchInput').val();
+                let designation = $('#designationFilter').val();
 
-        // Single status filter handler
+                $.ajax({
+                    url: "{{ route('SalaryIncrement.search') }}",
+                    type: "GET",
+                    data: {
+                        search,
+                        designation
+                    },
+                    success: function(data) {
+                        $('#tableBody').html(data);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Search AJAX error:', error);
+                    }
+                });
+            }
+
+            $('#searchInput').on('keyup', performSearch);
+            $('#searchBtn').on('click', performSearch);
+            // Status card click filter
+            $(document).on('click', '.status-filter', function() {
+                const status = $(this).data('status');
+                const keyword = status === 'all' ? '' : status;
+                $('#searchInput').val(keyword);
+                performSearch();
+            });
+        });
+    </script>
+    <!-- jQuery (if not already included) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // AJAX call to load salary increment cards
+            $.ajax({
+                url: "{{ route('salary.increment.cards') }}", // route defined in web.php
+                type: "GET",
+                success: function(response) {
+                    // Inject returned HTML into the div
+                    $('.show-cards').html(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading salary cards:", error);
+                    $('.show-cards').html(
+                        '<p class="text-danger">Unable to load salary increment cards.</p>');
+                }
+            });
+        });
         $(document).on('click', '.status-filter', function() {
-            const status = $(this).data('status');
+            const status = $(this).data('status'); // approved, rejected, uploaded, all
 
-            // Highlight active card
+            // Highlight the active card (optional)
             $('.status-filter').removeClass('active-card');
             $(this).addClass('active-card');
 
-            if (status === 'all') {
-                performSearch('', '');
-            } else {
-                performSearch(status, '');
-            }
+            // Call your search route directly with the status
+            $.ajax({
+                url: "{{ route('SalaryIncrement.search') }}",
+                type: "GET",
+                data: {
+                    keyword: status
+                }, // send the clicked word
+                success: function(data) {
+                    $('#tableBody').html(data); // update table
+                },
+                error: function(xhr, statusText, error) {
+                    console.error('Search AJAX error:', error);
+                }
+            });
         });
 
-        // Load salary increment cards
-        $.ajax({
-            url: "{{ route('salary.increment.cards') }}",
-            type: "GET",
-            success: function(response) {
-                $('.show-cards').html(response);
-            },
-            error: function(xhr, status, error) {
-                console.error("Error loading salary cards:", error);
-                $('.show-cards').html(
-                    '<p class="text-danger">Unable to load salary increment cards.</p>');
-            }
+        $(document).on('click', '.status-badge', function() {
+            const title = $(this).data('title');
+            const label = $(this).data('label');
+            const variable = $(this).data('variable');
+
+            const modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
+            modal.show();
+
+            $('#rejectReasonModalTitle').text(title);
+
+            let color = 'black';
+            if (title.toLowerCase().includes('मंजूर')) color = 'green';
+            else if (title.toLowerCase().includes('नाकारले')) color = 'red';
+            else if (title.toLowerCase().includes('प्रलंबित')) color = 'orange';
+            else if (title.toLowerCase().includes('अपलोड')) color = 'blue';
+
+            $('#rejectReasonModalBody').html(
+                `<p>${label} <span style="color:${color}; font-weight:bold;">${variable}</span></p>`
+            );
         });
-    });
-
-    // Status badge modal
-    $(document).on('click', '.status-badge', function() {
-        const title = $(this).data('title');
-        const label = $(this).data('label');
-        const variable = $(this).data('variable');
-
-        const modal = new bootstrap.Modal(document.getElementById('rejectReasonModal'));
-        modal.show();
-
-        $('#rejectReasonModalTitle').text(title);
-
-        let color = 'black';
-        if (title.toLowerCase().includes('मंजूर')) color = 'green';
-        else if (title.toLowerCase().includes('नाकारले')) color = 'red';
-        else if (title.toLowerCase().includes('प्रलंबित')) color = 'orange';
-        else if (title.toLowerCase().includes('अपलोड')) color = 'blue';
-
-        $('#rejectReasonModalBody').html(
-            `<p>${label} <span style="color:${color}; font-weight:bold;">${variable}</span></p>`
-        );
-    });
-</script>
+    </script>
 @endsection
