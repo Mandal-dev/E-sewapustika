@@ -251,6 +251,7 @@
         </div>
         </div>
 
+        
     <!-- AJAX + Search + Validation Script -->
     <script>
         $.ajaxSetup({
