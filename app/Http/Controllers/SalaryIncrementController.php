@@ -129,144 +129,126 @@ class SalaryIncrementController extends Controller
         }
     }
 
+public function search(Request $request)
+{
+    try {
+        $search = $request->input('search');
+        $designationFilter = $request->input('designation'); // optional
 
-    public function search(Request $request)
-    {
-        try {
-            $search = $request->input('search');
-            $designationFilter = $request->input('designation'); // optional
+        $user = Session::get('user');
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized. Please login.'], 401);
+        }
 
-            $user = Session::get('user');
-            if (!$user) {
-                return response()->json(['message' => 'Unauthorized. Please login.'], 401);
-            }
+        // 🔹 Base query - show all increments
+        $query = DB::table('police_users AS t4')
+            ->join('districts AS t2', 't4.district_id', '=', 't2.id')
+            ->leftJoin('police_stations AS t7', 't4.police_station_id', '=', 't7.id')
+            ->leftJoin('salary_increments AS s', 't4.id', '=', 's.police_id')
+            ->leftJoin('salary_reviews AS r', 's.id', '=', 'r.salary_id')
+            ->select(
+                't2.district_name',
+                't7.name AS police_station_name',
+                't4.id AS police_user_id',
+                't4.police_name',
+                't4.buckle_number',
+                't4.designation_type',
+                's.increment_date',
+                's.increment_type',
+                's.increment_documents',
+                's.id AS salary_increment_id',
+                's.new_salary',
+                's.level',
+                's.grade_pay',
+                's.increased_amount',
+                'r.remark',
+                DB::raw('
+                    CASE
+                        WHEN r.review_status = "approved" THEN "approved"
+                        WHEN r.review_status = "rejected" THEN "rejected"
+                        WHEN s.id IS NOT NULL AND r.id IS NULL THEN "pending"
+                        ELSE "not_uploaded"
+                    END AS salary_status
+                ')
+            )
+            ->where('t2.is_delete', 'No')
+            ->where('t2.status', 'Active');
 
-            // 🔹 Get latest salary increment per police_id
-            $latestIncrement = DB::table('salary_increments')
-                ->select(
-                    'id',
-                    'police_id',
-                    'increment_type',
-                    'increment_documents',
-                    'increment_date',
-                    'new_salary',
-                    'level',
-                    'grade_pay',
-                    'increased_amount'
-                )
-                ->whereRaw('id IN (SELECT MAX(id) FROM salary_increments GROUP BY police_id)');
+        // 🔹 Role-based filter
+        switch ($user['designation_type']) {
+            case 'Police':
+                return response()->json(['message' => 'Access denied.'], 403);
 
-            // 🔹 Base query for police users
-            $query = DB::table('police_users AS t4')
-                ->join('districts AS t2', 't4.district_id', '=', 't2.id')
-                ->leftJoin('police_stations AS t7', 't4.police_station_id', '=', 't7.id')
-                ->leftJoinSub($latestIncrement, 't5', function ($join) {
-                    $join->on('t4.id', '=', 't5.police_id');
-                })
-                ->leftJoin('salary_reviews AS t6', 't5.id', '=', 't6.salary_id')
+            case 'Station_Head':
+                $myStationId = DB::table('police_users')
+                    ->where('id', $user['id'])
+                    ->value('police_station_id');
+                $query->where('t4.police_station_id', $myStationId);
+                break;
 
-                ->select(
-                    't2.district_name',
-                    't7.name AS police_station_name',
-                    't4.id AS police_user_id',
-                    't4.police_name',
-                    't4.buckle_number',
-                    't4.designation_type',
-                    't5.increment_date',
-                    't5.increment_type',
-                    't5.increment_documents',
-                    't5.id AS salary_increment_id',
-                    't5.new_salary',
-                    't5.level',
-                    't5.grade_pay',
-                    't5.increased_amount',
-                    't6.remark',
-                     DB::raw('
-    CASE
-        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
-        WHEN t5.id IS  NULL AND t6.id IS NULL THEN "not_uploaded"
+            case 'Head_Person':
+            case 'Account_Department':
+                $query->where('t4.district_id', $user['district_id']);
+                break;
 
-        WHEN t6.review_status IS NOT NULL THEN t6.review_status
-        ELSE "Pending"
-    END AS salary_status
-')
+            case 'Admin':
+                // no restriction
+                break;
 
+            default:
+                return response()->json(['message' => 'Invalid role.'], 403);
+        }
 
-                )
-                ->where('t2.is_delete', 'No')
-                ->where('t2.status', 'Active');
-
-            // 🔹 Role-based filter
-            switch ($user['designation_type']) {
-                case 'Police':
-                    return response()->json(['message' => 'Access denied.'], 403);
-                case 'Station_Head':
-                    $myStationId = DB::table('police_users')
-                        ->where('id', $user['id'])
-                        ->value('police_station_id');
-                    $query->where('t4.police_station_id', $myStationId);
-                    break;
-                case 'Head_Person':
-                case 'Account_Department':
-                    $query->where('t4.district_id', $user['district_id']);
-                    break;
-                case 'Admin':
-                    // No additional filter
-                    break;
-                default:
-                    return response()->json(['message' => 'Invalid role.'], 403);
-            }
-
-
-                    if (!empty($search)) {
+        // 🔹 Search logic (same status definitions as summary)
+        if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $statusMap = [
                     'approved' => 'approved',
                     'rejected' => 'rejected',
                     'pending'  => 'pending',
-                    'uploaded' => 'uploaded',
+                    'uploaded' => 'pending', // uploaded = increment done but not reviewed
+                    'not_uploaded' => 'not_uploaded',
                     'all'      => null
                 ];
 
                 if (isset($statusMap[strtolower($search)]) && strtolower($search) != 'all') {
-                    $q->whereRaw('CASE
-                        WHEN t5.id IS NULL AND t6.id IS NULL THEN "pending"
-                        WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
-                        ELSE COALESCE(LOWER(t6.review_status), "pending")
-                    END = ?', [$statusMap[strtolower($search)]]);
+                    $q->whereRaw('
+                        CASE
+                            WHEN r.review_status = "approved" THEN "approved"
+                            WHEN r.review_status = "rejected" THEN "rejected"
+                            WHEN s.id IS NOT NULL AND r.id IS NULL THEN "pending"
+                            ELSE "not_uploaded"
+                        END = ?', [$statusMap[strtolower($search)]]);
                 } else {
-                        $q->where('t4.police_name', 'like', "%{$search}%")
-                            ->orWhere('t4.buckle_number', 'like', "%{$search}%")
-                            ->orWhere('t7.name', 'like', "%{$search}%")
-                            ->orWhere('t6.review_status', 'like', "%{$search}%")
-                            ->orWhere('t2.district_name', 'like', "%{$search}%");
+                    $q->where('t4.police_name', 'like', "%{$search}%")
+                        ->orWhere('t4.buckle_number', 'like', "%{$search}%")
+                        ->orWhere('t7.name', 'like', "%{$search}%")
+                        ->orWhere('r.review_status', 'like', "%{$search}%")
+                        ->orWhere('t2.district_name', 'like', "%{$search}%");
                 }
             });
         }
 
-
-            // 🔹 Designation filter
-            if ($designationFilter) {
-                $query->where('t4.designation_type', $designationFilter);
-            }
-
-            // 🔹 Execute query
-            $polices = $query->orderBy('t4.id', 'desc')->get();
-
-            // 🔹 Return view with data
-            return view('Salary_Increment.table_rows', compact('polices'))->render();
-        } catch (\Exception $e) {
-            // Log the error for debugging
-            Log::error('Salary Increment Search Error: ' . $e->getMessage());
-
-            // Return JSON error response
-            return response()->json([
-                'message' => 'An error occurred while searching salary increments.',
-                'error' => $e->getMessage()
-            ], 500);
+        // 🔹 Designation filter
+        if ($designationFilter) {
+            $query->where('t4.designation_type', $designationFilter);
         }
-    }
 
+        // 🔹 Execute query
+        $polices = $query->orderBy('t4.id', 'desc')->get();
+
+        // 🔹 Render results
+        return view('Salary_Increment.table_rows', compact('polices'))->render();
+
+    } catch (\Exception $e) {
+        Log::error('Salary Increment Search Error: ' . $e->getMessage());
+
+        return response()->json([
+            'message' => 'An error occurred while searching salary increments.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 
     public function policeSalaryIncrementAdd($id)
     {
