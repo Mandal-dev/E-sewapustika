@@ -51,7 +51,8 @@
                 </div>
                 <div class="info-item">
                     <span class="material-icons">phone</span>
-                    {{ __('messages.contact') }}: {{ $police->contact ?? __('messages.not_available') }}
+
+                    {{ __('messages.contact') }}: {{ $police->mobile ?? __('messages.not_available') }}
                 </div>
                 <div class="info-item">
                     <span class="label">{{ __('messages.station') }}:</span>

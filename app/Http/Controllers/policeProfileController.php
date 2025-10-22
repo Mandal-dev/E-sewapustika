@@ -12,17 +12,16 @@ class PoliceProfileController extends Controller
 {
     public function index($id)
     {
-        Log::info('policeProfileController@index called', ['user_id' => Session::get('user.id') ?? null, 'police_id' => $id]);
 
         try {
             $user = Session::get('user');
 
             if (!$user) {
-                Log::warning('Access denied: user not logged in...plz login first...');
+
                 return redirect('/')->with('error', 'Please login first.');
             }
 
-            Log::info('User session found', ['user' => $user]);
+
 
             // Base query
             $query = DB::table('police_users AS t4')
@@ -34,7 +33,7 @@ class PoliceProfileController extends Controller
                     't4.id AS police_user_id',
                     't4.police_name',
                     't4.mobile',
-
+                    't4.email',
                     't4.buckle_number',
                     't1.id AS state_id',
                     't1.state_name',
@@ -48,13 +47,12 @@ class PoliceProfileController extends Controller
                 )
                 ->where('t4.is_delete', 'No');
 
-            Log::info('Base query prepared');
+
 
             // Role-based access
             switch ($user['designation_type']) {
                 case 'Police':
                     $query->where('t4.id', $user['id']);
-                    Log::info('Role Police: viewing own profile', ['user_id' => $user['id']]);
                     break;
 
                 case 'Station_Head':
@@ -62,37 +60,27 @@ class PoliceProfileController extends Controller
                         ->where('id', $user['id'])
                         ->value('police_station_id');
                     $query->where('t4.police_station_id', $myStationId);
-                    Log::info('Role Station_Head: viewing station police', ['station_id' => $myStationId]);
                     break;
 
                 case 'Head_Person':
                     $query->where('t4.district_id', $user['district_id']);
-                    Log::info('Role Head_Person: viewing district police', ['district_id' => $user['district_id']]);
                     break;
 
                 case 'Rewards_Department':
                     $query->where('t4.district_id', $user['district_id']);
-                    Log::info('Role Head_Person: viewing district police', ['district_id' => $user['district_id']]);
                     break;
                 case 'Punishment_Department':
                     $query->where('t4.district_id', $user['district_id']);
-                    Log::info('Role Head_Person: viewing district police', ['district_id' => $user['district_id']]);
                     break;
                 case 'Account_Department':
                     $query->where('t4.district_id', $user['district_id']);
-                    Log::info('Role Head_Person: viewing district police', ['district_id' => $user['district_id']]);
                     break;
                 case 'Sewapustika_Department':
                     $query->where('t4.district_id', $user['district_id']);
-                    Log::info('Role Head_Person: viewing district police', ['district_id' => $user['district_id']]);
                     break;
-
                 case 'Admin':
-                    Log::info('Role Admin: viewing all police records');
                     break;
-
                 default:
-                    Log::warning('Unauthorized access attempt', ['user' => $user]);
                     return redirect()->back()->with('error', 'Unauthorized access.');
             }
 
@@ -102,19 +90,12 @@ class PoliceProfileController extends Controller
                 ->first();
 
             if (!$police) {
-                Log::warning('Police record not found or access denied', ['police_id' => $id, 'user' => $user]);
                 return redirect()->back()->with('error', 'Police record not found or access denied.');
             }
 
-            Log::info('Police record fetched successfully', ['police' => $police]);
-
             return view('profile.index', compact('police'));
         } catch (\Exception $e) {
-            Log::error('Error in policeProfileController@index', [
-                'error' => $e->getMessage(),
-                'user' => $user ?? null,
-                'police_id' => $id
-            ]);
+
             return back()->with('error', 'Unable to load profile data.');
         }
     }
@@ -126,7 +107,7 @@ class PoliceProfileController extends Controller
         try {
             return view('police_profile.edit', compact('id'));
         } catch (\Exception $e) {
-            Log::error('Error in policeProfileController@edit: ' . $e->getMessage());
+
             return back()->with('error', 'Unable to load edit form.');
         }
     }
@@ -138,7 +119,7 @@ class PoliceProfileController extends Controller
             // Validate and save the updated data
             return redirect()->route('police_profile.index')->with('success', 'Profile updated successfully.');
         } catch (\Exception $e) {
-            Log::error('Error in policeProfileController@update: ' . $e->getMessage());
+
             return back()->with('error', 'Unable to update profile.');
         }
     }
@@ -181,7 +162,7 @@ class PoliceProfileController extends Controller
 
             return view('profile.single_sewa_pustika', compact('polices'));
         } catch (\Exception $e) {
-            Log::error('Error in policeProfileController@policeSewaPustika: ' . $e->getMessage());
+
             return back()->with('error', 'Unable to fetch Sewa Pustika data.');
         }
     }
@@ -208,7 +189,7 @@ class PoliceProfileController extends Controller
 
             return view('profile.punishment_history', compact('punishments'));
         } catch (\Exception $e) {
-            Log::error('Error in policeProfileController@history: ' . $e->getMessage());
+
             return back()->with('error', 'Unable to load punishment history.');
         }
     }
@@ -237,7 +218,7 @@ class PoliceProfileController extends Controller
 
             return view('profile.reward_history', compact('rewards'));
         } catch (\Exception $e) {
-            Log::error('Error in policeProfileController@historyOfRewards: ' . $e->getMessage());
+
             return back()->with('error', 'Unable to load reward history.');
         }
     }
@@ -316,8 +297,7 @@ class PoliceProfileController extends Controller
 
             return view('profile.salary_increment_history', compact('increments'));
         } catch (\Exception $e) {
-            Log::error('Error in salaryIncrementHistory: ' . $e->getMessage());
-            Log::error($e->getTraceAsString());
+
 
             return view('profile.salary_increment_history')
                 ->with('error', 'Unable to load salary increment history.')
