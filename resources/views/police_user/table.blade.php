@@ -14,6 +14,8 @@
                     <th>{{ __('messages.serial') }}</th>
                     <th>{{ __('messages.officer_name') }}</th>
                     <th>{{ __('messages.buckle_no') }}</th>
+                    <th>Mobile</th>
+
                     <th>{{ __('messages.role') }}</th>
                     <th>{{ __('messages.station') }}</th>
                     <th>{{ __('messages.actions') }}</th> <!-- New column for actions -->
@@ -26,6 +28,8 @@
                         <td>{{ $key + 1 }}</td>
                         <td data-label="Officer Name">{{ $police->police_name ?? 'N/A' }}</td>
                         <td data-label="Buckle no">{{ $police->buckle_number ?? 'N/A' }}</td>
+                        <td data-label="Mobile no">{{ $police->mobile ?? 'N/A' }}</td>
+
                         <td data-label="designation">{{ $police->post ?? 'N/A' }}</td>
                         <td data-label="Station">{{ $police->station_name ?? 'N/A' }}</td>
                         <td class="text-center">
