@@ -255,7 +255,7 @@ public function search(Request $request)
         return view('Salary_Increment.table_rows', compact('polices'))->render();
 
     } catch (\Exception $e) {
-        Log::error('Salary Increment Search Error: ' . $e->getMessage());
+
         return response()->json([
             'message' => 'An error occurred while searching salary increments.',
             'error' => $e->getMessage()
@@ -308,123 +308,104 @@ public function search(Request $request)
     }
 
 
-    public function storeSalaryIncrement(Request $request)
-    {
-        $user = Session::get('user');
+public function storeSalaryIncrement(Request $request)
+{
+    $user = Session::get('user');
 
-        Log::info('Salary Increment Request started', [
-            'user' => $user,
-            'request_data' => $request->all(),
-        ]);
-
-        // Only Head_Person can access
-        if (!$user || $user['designation_type'] !== 'Head_Person') {
-            Log::warning('Unauthorized user attempted to store salary increment', [
-                'user' => $user,
-            ]);
-            return redirect()->back()->with('error', 'आपल्याला वेतनवाढ जोडण्याची परवानगी नाही.');
-        }
-
-        // Ensure police_id belongs to the same district
-        $policeDistrict = DB::table('police_users')
-            ->where('id', $request->police_id)
-            ->value('district_id');
-
-        if ($policeDistrict != $user['district_id']) {
-            Log::warning('User tried to add increment for another district', [
-                'user_district' => $user['district_id'],
-                'police_district' => $policeDistrict,
-                'police_id' => $request->police_id,
-            ]);
-            return redirect()->back()->with('error', 'आपल्याला इतर जिल्ह्यातील अधिकारीसाठी वेतनवाढ जोडण्याची परवानगी नाही.');
-        }
-
-        // Validation
-        $request->validate([
-            'police_id'           => 'required|integer',
-            'district_id'         => 'required|integer',
-            'station_id'          => 'required|integer',
-            'increment_date'      => 'required|date',
-            'increment_type'      => 'required|string',
-            'new_salary'          => 'required|numeric',
-            'level_no'            => 'nullable|string|max:10',
-            'grade_pay'           => 'nullable|string',
-            'increased_amount'    => 'required|numeric',
-            'increment_documents' => 'nullable|file|mimes:pdf|max:5120',
-            'present_days'        => 'required|integer|min:0',
-        ]);
-
-        // Attendance check
-        if ($request->present_days < 180) {
-            Log::warning('Salary increment denied due to low attendance', [
-                'police_id' => $request->police_id,
-                'present_days' => $request->present_days,
-            ]);
-            return redirect()->back()->with('error', 'उपस्थिती 180 दिवसांपेक्षा कमी असल्यामुळे वेतनवाढ मंजूर होऊ शकत नाही.');
-        }
-
-        try {
-            $uniqueFileName = null;
-
-            // Handle file upload
-            if ($request->hasFile('increment_documents')) {
-                $file = $request->file('increment_documents');
-                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension = $file->getClientOriginalExtension();
-                $uniqueFileName = now()->format('Ymd_His') . '_' . Str::slug($originalName) . '.' . $extension;
-
-                $destinationPath = base_path('uploads/salaryincrements');
-                if (!File::exists($destinationPath)) {
-                    File::makeDirectory($destinationPath, 0755, true);
-                }
-
-                $file->move($destinationPath, $uniqueFileName);
-
-                Log::info('File uploaded successfully', [
-                    'file_name' => $uniqueFileName,
-                    'destination_path' => $destinationPath,
-                ]);
-            }
-
-            $level_value = 'L-' . $request->level_no;
-            $grade_value = 'S-' . $request->grade_pay;
-
-            // Insert salary increment
-            $insertData = [
-                'police_id'           => $request->police_id,
-                'district_id'         => $request->district_id,
-                'station_id'          => $request->station_id,
-                'increment_documents' => $uniqueFileName,
-                'increment_date'      => $request->increment_date,
-                'increment_type'      => $request->increment_type,
-                'new_salary'          => $request->new_salary,
-                'level'               => $level_value,
-                'grade_pay'           => $grade_value,
-                'increased_amount'    => $request->increased_amount,
-                'present_days'        => $request->present_days,
-                'created_at'          => now(),
-                'updated_at'          => now(),
-            ];
-
-            DB::table('salary_increments')->insert($insertData);
-
-            Log::info('Salary increment stored successfully', [
-                'inserted_data' => $insertData,
-            ]);
-
-            return redirect()->back()->with('success', 'वेतनवाढ माहिती यशस्वीरित्या जतन झाली.');
-        } catch (\Exception $e) {
-            Log::error('Error storing salary increment', [
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-                'request_data' => $request->all(),
-            ]);
-
-            return redirect()->back()->with('error', 'वेतनवाढ जतन करताना त्रुटी आली: ' . $e->getMessage());
-        }
+    // Only Head_Person can access
+    if (!$user || $user['designation_type'] !== 'Head_Person') {
+        return redirect()->back()->with('error', 'आपल्याला वेतनवाढ जोडण्याची परवानगी नाही.');
     }
 
+    // Ensure police_id belongs to the same district
+    $policeDistrict = DB::table('police_users')
+        ->where('id', $request->police_id)
+        ->value('district_id');
 
+    if ($policeDistrict != $user['district_id']) {
+        return redirect()->back()->with('error', 'आपल्याला इतर जिल्ह्यातील अधिकारीसाठी वेतनवाढ जोडण्याची परवानगी नाही.');
+    }
+
+    // Validation
+    $request->validate([
+        'police_id'           => 'required|integer',
+        'district_id'         => 'required|integer',
+        'station_id'          => 'required|integer',
+        'increment_date'      => 'required|date',
+        'increment_type'      => 'required|string',
+        'new_salary'          => 'required|numeric',
+        'level_no'            => 'nullable|string|max:10',
+        'grade_pay'           => 'nullable|string',
+        'increased_amount'    => 'required|numeric',
+        'increment_documents' => 'nullable|file|mimes:pdf|max:5120',
+        'present_days'        => 'required|integer|min:0',
+    ]);
+
+    // Attendance check
+    if ($request->present_days < 180) {
+        return redirect()->back()->with('error', 'उपस्थिती 180 दिवसांपेक्षा कमी असल्यामुळे वेतनवाढ मंजूर होऊ शकत नाही.');
+    }
+
+    // 🛑 NEW: Punishment-year check ----------------------------
+    $incrementDate = $request->increment_date;
+    $selectedYear = date('Y', strtotime($incrementDate));
+
+    $hasPunishment = DB::table('police_punishments')
+        ->where('police_id', $request->police_id)
+        ->whereYear('punishment_given_date', $selectedYear)
+        ->exists();
+
+    if ($hasPunishment) {
+        return redirect()->back()->with(
+            'error',
+            "सदर पोलीस अधिकाऱ्यास $selectedYear मध्ये शिक्षा देण्यात आली आहे, त्यामुळे वेतनवाढ मंजूर होऊ शकत नाही."
+        );
+    }
+    // ----------------------------------------------------------
+
+    try {
+        $uniqueFileName = null;
+
+        // Handle file upload
+        if ($request->hasFile('increment_documents')) {
+            $file = $request->file('increment_documents');
+            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $uniqueFileName = now()->format('Ymd_His') . '_' . Str::slug($originalName) . '.' . $extension;
+
+            $destinationPath = base_path('uploads/salaryincrements');
+            if (!File::exists($destinationPath)) {
+                File::makeDirectory($destinationPath, 0755, true);
+            }
+
+            $file->move($destinationPath, $uniqueFileName);
+        }
+
+        $level_value = 'L-' . $request->level_no;
+        $grade_value = 'S-' . $request->grade_pay;
+
+        // Insert salary increment
+        DB::table('salary_increments')->insert([
+            'police_id'           => $request->police_id,
+            'district_id'         => $request->district_id,
+            'station_id'          => $request->station_id,
+            'increment_documents' => $uniqueFileName,
+            'increment_date'      => $request->increment_date,
+            'increment_type'      => $request->increment_type,
+            'new_salary'          => $request->new_salary,
+            'level'               => $level_value,
+            'grade_pay'           => $grade_value,
+            'increased_amount'    => $request->increased_amount,
+            'present_days'        => $request->present_days,
+            'created_at'          => now(),
+            'updated_at'          => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'वेतनवाढ माहिती यशस्वीरित्या जतन झाली.');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'वेतनवाढ जतन करताना त्रुटी आली: ' . $e->getMessage());
+    }
+}
 
     public function view($filename)
     {
@@ -448,24 +429,14 @@ public function search(Request $request)
         $levelId = $request->get('level_no');   // from dropdown
         $stageId = $request->get('grade_pay');  // from dropdown
 
-        // Log incoming request
-        Log::info('Salary API called', [
-            'level_no'  => $levelId,
-            'grade_pay' => $stageId,
-            'all_input' => $request->all()
-        ]);
+
 
         $salary = DB::table('pay_matrix')
             ->where('level_id', $levelId)
             ->where('stage_id', $stageId)
             ->value('amount');
 
-        // Log query result
-        Log::info('Salary fetched from DB', [
-            'level_id' => $levelId,
-            'stage_id' => $stageId,
-            'salary'   => $salary
-        ]);
+
 
         return response()->json(['salary' => $salary]);
     }
@@ -572,7 +543,7 @@ public function search(Request $request)
             DB::table('salary_reviews')->insert($data);
             return redirect()->back()->with('success', 'Salary increment review stored successfully.');
         } catch (\Exception $e) {
-            Log::error('Salary Review Error: ' . $e->getMessage());
+
             return redirect()->back()->with('error', 'Failed to store salary increment review.');
         }
     }
