@@ -14,6 +14,7 @@ use App\Http\Controllers\LoginUserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PayMatrixImportController;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\PoliceAttendanceController;
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -77,6 +78,14 @@ Route::middleware(['setlang'])->group(function () {
     });
 
 
+
+Route::prefix('attendance')->group(function() {
+    Route::get('/', [PoliceAttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('/create', [PoliceAttendanceController::class, 'create'])->name('attendance.create');
+    Route::post('/store', [PoliceAttendanceController::class, 'store'])->name('attendance.store');
+});
+
+
     Route::get('/show_all_SalaryIncrement', [SalaryIncrementController::class, 'index'])->name('salary_increment.index');
 
     Route::get('/show_all_punishments', [punishmentsController::class, 'index'])->name('punishments.index');
@@ -89,7 +98,6 @@ Route::middleware(['setlang'])->group(function () {
     Route::get('/states/by-country/{countryId}', [MainController::class, 'getStates']);
     Route::get('/districts/by-state/{stateId}', [MainController::class, 'getDistricts']);
     Route::get('/cities/by-district/{districtId}', [MainController::class, 'getCities']);
-
 
 
 
@@ -187,12 +195,24 @@ Route::post('/sewapustika/approve', [SewaPustikaController::class, 'storeAprove'
         ->name('sewa.pustika.cards');
     Route::get('/dashboard-cards', [MainController::class, 'dashboard_cards'])
         ->name('dashboard.cards');
+
+
+ Route::get('/attendance/calendar', [PoliceAttendanceController::class, 'calendar'])->name('attendance.calendar');
+    Route::get('/attendance/events', [PoliceAttendanceController::class, 'getAttendanceEvents'])->name('attendance.events');
+    Route::post('/attendance/check-in', [PoliceAttendanceController::class, 'checkIn'])->name('attendance.checkin');
+    Route::post('/attendance/mark', [PoliceAttendanceController::class, 'markAttendance'])->name('attendance.mark');
+
+
+Route::post('/attendance/checkout', [PoliceAttendanceController::class, 'checkout'])->name('attendance.checkout');
+
 });
 
 Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp.resend');
 
 Route::get('/', [LoginUserController::class, 'showLoginPage'])->name('login.page');
-Route::post('/login', [LoginUserController::class, 'login'])->name('login.user');
+Route::get('/login', [LoginUserController::class, 'showLoginPage']);
+
+Route::post('/loginuser', [LoginUserController::class, 'login'])->name('login.user');
 
 Route::get('/otp', [LoginUserController::class, 'showOtpPage'])->name('otp.page'); //
 Route::post('/verify-otp', [LoginUserController::class, 'verifyOtp'])->name('login.verifyOtp');
