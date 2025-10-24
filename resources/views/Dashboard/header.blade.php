@@ -115,9 +115,6 @@
                         <a href="{{ route('rewards.index') }}" class="nav-item submenu-item"><i
                                 class="fas fa-trophy"></i>
                             बक्षीस</a>
-
-                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-comment"></i> पुरस्काराची स्थिती</a>
                     @endif
 
                     @if ($designation === 'Rewards_Department')
@@ -143,7 +140,8 @@
                             <i class="fas fa-chart-line"></i> वेतनवाढ
                         </a>
                     @endif
-
+                    <a href="{{ route('attendance.index') }}" class="nav-item submenu-item"><i
+                            class="fas fa-comment"></i>हजेरी</a>
                 </div>
             </div>
         </nav>
