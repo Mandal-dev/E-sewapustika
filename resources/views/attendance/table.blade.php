@@ -16,23 +16,26 @@
 @endphp
 
 <div class="app-content">
+<!-- Flash Messages -->
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert" style="background-color:#d4edda; color:#155724; font-weight:500;">
+        <i class="fas fa-check-circle me-2"></i>
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
-    <!-- Flash Messages -->
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Success:</strong> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error:</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+@if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert" style="background-color:#f8d7da; color:#721c24; font-weight:500;">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 
     <!-- Mark Attendance Button -->
-    @if (in_array($designation, ['Admin', 'Station_Head', 'Head_Person']))
+    @if (in_array($designation, ['Admin', 'Station_Head', 'Head_Person','Police']))
         <div class="mb-3">
             <a href="{{ route('attendance.create') }}" class="btn btn-primary">Mark Attendance</a>
         </div>
@@ -56,12 +59,9 @@
                         <th>#</th>
                         <th>Police Name</th>
                         <th>Station</th>
-                        <th>District</th>
-                        <th>Taluka</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Shift</th>
-                        <th>Remarks</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,12 +70,11 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $att->police_name ?? '-' }}</td>
                             <td>{{ $att->station_name ?? '-' }}</td>
-                            <td>{{ $att->district_name ?? '-' }}</td>
-                            <td>{{ $att->taluka ?? '-' }}</td>
+
                             <td>{{ $att->status }}</td>
                             <td>{{ \Carbon\Carbon::parse($att->attendance_date)->format('d-m-Y') }}</td>
-                            <td>{{ $att->shift ?? '-' }}</td>
-                            <td>{{ $att->remarks ?? '-' }}</td>
+                            <td>button view</td>
+
                         </tr>
                     @empty
                         <tr>
