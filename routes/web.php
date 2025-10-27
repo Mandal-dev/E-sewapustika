@@ -109,8 +109,8 @@ Route::middleware(['check.login','setlang'])->group(function () {
     //punishments
 
     Route::get('punishment/{id}', [punishmentsController::class, 'policePunishmentAdd'])->name('punishment.add');
-    Route::post('/punishments/store', [PunishmentsController::class, 'store'])->name('punishments.store');
-    Route::get('/punishments/view/{filename}', [PunishmentsController::class, 'view'])->name('punishments.view');
+    Route::post('/punishments/store', [punishmentsController::class, 'store'])->name('punishments.store');
+    Route::get('/punishments/view/{filename}', [punishmentsController::class, 'view'])->name('punishments.view');
     Route::get('/punishments/history/{id}', [PoliceProfileController::class, 'punishmentHistory']);
 
     //rewards
@@ -149,8 +149,7 @@ Route::middleware(['check.login','setlang'])->group(function () {
     Route::get('/police-users/template', [PoliceUsersController::class, 'downloadTemplate'])->name('police-users.template');
 
 
-    Route::get('/police-users/template', [PoliceUsersController::class, 'downloadTemplate'])
-        ->name('police-users.template');
+
 
     // ✅ Import Police Users via Excel
     Route::post('/police-users/import', [PoliceUsersController::class, 'import'])
@@ -234,3 +233,8 @@ Route::post('/set-language', function (Request $request) {
 
     return redirect()->back();
 })->name('set-language');
+
+Route::fallback(function () {
+    return redirect('/');
+});
+
