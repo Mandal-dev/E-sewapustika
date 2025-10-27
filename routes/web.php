@@ -29,7 +29,7 @@ use Illuminate\Http\Request;
 
 Route::get('/dasboard', [MainController::class, 'Dashboard'])->name('dashboard')->middleware('check.login')->middleware('setlang');
 
-Route::middleware(['setlang'])->group(function () {
+Route::middleware(['check.login','setlang'])->group(function () {
     Route::prefix('districts')->group(function () {
         Route::get('/', [DistrictsController::class, 'index'])->name('districts.index');
         Route::get('/create', [DistrictsController::class, 'create'])->name('districts.create');
@@ -79,11 +79,11 @@ Route::middleware(['setlang'])->group(function () {
 
 
 
-Route::prefix('attendance')->group(function() {
-    Route::get('/', [PoliceAttendanceController::class, 'index'])->name('attendance.index');
-    Route::get('/create', [PoliceAttendanceController::class, 'create'])->name('attendance.create');
-    Route::post('/store', [PoliceAttendanceController::class, 'store'])->name('attendance.store');
-});
+    Route::prefix('attendance')->group(function () {
+        Route::get('/', [PoliceAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/create', [PoliceAttendanceController::class, 'create'])->name('attendance.create');
+        Route::post('/store', [PoliceAttendanceController::class, 'store'])->name('attendance.store');
+    });
 
 
     Route::get('/show_all_SalaryIncrement', [SalaryIncrementController::class, 'index'])->name('salary_increment.index');
@@ -170,7 +170,7 @@ Route::prefix('attendance')->group(function() {
     Route::post('/reward-review/cards', [rewardsController::class, 'reward_cards'])->name('reward.cards');
     Route::get('/salary-approval/{id}', [SalaryIncrementController::class, 'show'])
         ->name('salary.approval.show');
-         Route::get('/sewapustika-approval/{id}', [SewaPustikaController::class, 'show'])
+    Route::get('/sewapustika-approval/{id}', [SewaPustikaController::class, 'show'])
         ->name('sewapustika.approval.show');
     Route::post('/salary-increment/approve', [SalaryIncrementController::class, 'approveSalaryIncrementStore'])
         ->name('salary.increment.approve');
@@ -186,8 +186,8 @@ Route::prefix('attendance')->group(function() {
     // Store punishment approval/rejection
     Route::post('/punishments/approve', [punishmentsController::class, 'approvePunishmentStore'])
         ->name('punishments.approve.store');
-Route::post('/sewapustika/approve', [SewaPustikaController::class, 'storeAprove'])
-    ->name('sewapustika.approve.store');
+    Route::post('/sewapustika/approve', [SewaPustikaController::class, 'storeAprove'])
+        ->name('sewapustika.approve.store');
 
     Route::post('/punishments/card', [punishmentsController::class, 'punishment_cards'])->name('punishments.cards');
 
@@ -197,13 +197,12 @@ Route::post('/sewapustika/approve', [SewaPustikaController::class, 'storeAprove'
         ->name('dashboard.cards');
 
 
- Route::get('/attendance/calendar', [PoliceAttendanceController::class, 'calendar'])->name('attendance.calendar');
+    Route::get('/attendance/calendar', [PoliceAttendanceController::class, 'calendar'])->name('attendance.calendar');
     Route::get('/attendance/events', [PoliceAttendanceController::class, 'getAttendanceEvents'])->name('attendance.events');
     Route::post('/attendance/check-in', [PoliceAttendanceController::class, 'checkIn'])->name('attendance.checkin');
     Route::post('/attendance/mark', [PoliceAttendanceController::class, 'markAttendance'])->name('attendance.mark');
     Route::get('/attendance/single/{id}', [PoliceAttendanceController::class, 'singleAttendance'])->name('attendance.show');
-
-
+    Route::post('/attendance/manual-mark', [PoliceAttendanceController::class, 'manualMark'])->name('attendance.manualMark');
 });
 
 Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp.resend');
