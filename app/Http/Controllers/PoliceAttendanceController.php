@@ -12,53 +12,54 @@ class PoliceAttendanceController extends Controller
     // Show attendance page
 
     // Fetch attendance table based on role
-    public function index()
-    {
-        try {
-            $user = Session::get('user');
-            if (!$user) return redirect('/');
+public function index()
+{
+    try {
+        $user = Session::get('user');
+        if (!$user) return redirect('/');
 
-            $userId = $user['id'];
-            $attendance = collect();
+        $userId = $user['id'];
+        $attendance = collect();
 
-            // Role-based access
-            if ($user['designation_type'] === 'Police') {
-                return view('attendance.create', ['userId' => $userId]);
-            } elseif ($user['designation_type'] === 'Station_Head') {
-                // All police under same station
-                $myStationId = DB::table('police_users')->where('id', $userId)->value('police_station_id');
-
-                $attendance = DB::table('police_attendance AS pa')
-                    ->join('police_users AS u', 'pa.police_user_id', '=', 'u.id')
-                    ->leftJoin('police_stations AS s', 'pa.police_station_id', '=', 's.id')
-                    ->where('u.police_station_id', $myStationId)
-                    ->select('pa.*', 'u.police_name', 's.name AS station_name')
-                    ->orderBy('pa.attendance_date', 'desc')
-                    ->get();
-            } elseif ($user['designation_type'] === 'Head_Person') {
-                // All police in the same district
-                $attendance = DB::table('police_attendance AS pa')
-                    ->join('police_users AS u', 'pa.police_user_id', '=', 'u.id')
-                    ->leftJoin('police_stations AS s', 'pa.police_station_id', '=', 's.id')
-                    ->where('u.district_id', $user['district_id'])
-                    ->select('pa.*', 'u.police_name', 's.name AS station_name')
-                    ->orderBy('pa.attendance_date', 'desc')
-                    ->get();
-            } elseif ($user['designation_type'] === 'Admin') {
-                // All attendance system-wide
-                $attendance = DB::table('police_attendance AS pa')
-                    ->join('police_users AS u', 'pa.police_user_id', '=', 'u.id')
-                    ->leftJoin('police_stations AS s', 'pa.police_station_id', '=', 's.id')
-                    ->select('pa.*', 'u.police_name', 's.name AS station_name')
-                    ->orderBy('pa.attendance_date', 'desc')
-                    ->get();
-            }
-
-            return view('attendance.table', compact('attendance'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
+        // Role-based access
+        if ($user['designation_type'] === 'Police') {
+            return view('attendance.create', ['userId' => $userId]);
         }
+
+        // Base query for attendance data
+        $query = DB::table('police_attendance AS pa')
+            ->join('police_users AS u', 'pa.police_user_id', '=', 'u.id')
+            ->leftJoin('police_stations AS s', 'pa.police_station_id', '=', 's.id')
+            ->select(
+                'u.id',
+                'pa.police_user_id',
+                'pa.police_station_id',
+                'pa.attendance_date',
+                'pa.status',
+                'u.police_name',
+                'u.designation_type',
+                's.name AS station_name'
+            )
+
+            ->orderBy('pa.attendance_date', 'desc');
+
+        if ($user['designation_type'] === 'Station_Head') {
+            // All police under same station
+            $myStationId = DB::table('police_users')->where('id', $userId)->value('police_station_id');
+            $attendance = $query->where('u.police_station_id', $myStationId)->get();
+        } elseif ($user['designation_type'] === 'Head_Person') {
+            // All police in the same district
+            $attendance = $query->where('u.district_id', $user['district_id'])->get();
+        } elseif ($user['designation_type'] === 'Admin') {
+            // All attendance system-wide
+            $attendance = $query->get();
+        }
+
+        return view('attendance.table', compact('attendance'));
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Something went wrong. Please try again later.');
     }
+}
 
     // Show form to create attendance
     public function create()
@@ -194,75 +195,74 @@ class PoliceAttendanceController extends Controller
         return view('attendance.calendar', compact('user'));
     }
 
-    // Fetch attendance data for calendar
-    public function getAttendanceEvents(Request $request)
-    {
+// Fetch attendance data for calendar
+public function getAttendanceEvents(Request $request)
+{
+    try {
         $user = Session::get('user');
+        if (!$user) {
+            return response()->json(['error' => 'User not logged in'], 401);
+        }
 
         $month = $request->get('month'); // 'YYYY-MM'
+        $singleUserId = $request->get('singleUserId'); // optional for admin
+
+        // Determine which user's data to show
+        $userId = $singleUserId ?? $user['id'];
+
+        // Determine date range for the month
         $start = $month . '-01';
         $end = date("Y-m-t", strtotime($start));
 
+        // Fetch attendance records for that user in that month
         $attendances = DB::table('police_attendance')
-            ->where('police_user_id', $user['id'])
+            ->where('police_user_id', $userId)
             ->whereBetween('attendance_date', [$start, $end])
             ->get();
 
+        // Prepare events for the calendar
         $events = [];
-
         foreach ($attendances as $att) {
-            if ($att->status == 'Present') {
-                $events[] = [
-                    'title' => 'Present',
-                    'start' => $att->attendance_date,
-                    'color' => 'green',
-                ];
-            } else {
-                $events[] = [
-                    'title' => $att->status,
-                    'start' => $att->attendance_date,
-                    'color' => 'red',
-                ];
-            }
+            // Assign different colors for each status
+            $color = match ($att->status) {
+                'Present' => 'green',
+                'Leave'   => '#ffb703', // yellowish-orange
+                'Absent'  => 'red',
+                default   => '#6c757d', // gray for undefined
+            };
+
+            $events[] = [
+                'title' => $att->status,
+                'start' => $att->attendance_date,
+                'color' => $color,
+            ];
         }
 
         return response()->json($events);
-    }
 
-    public function checkout(Request $request)
-    {
-        $userId = auth()->id();
-        $today = now()->toDateString();
-
-        $attendance = DB::table('police_attendance')
-            ->where('police_user_id', $userId)
-            ->where('attendance_date', $today)
-            ->first();
-
-        if (!$attendance || !$attendance->checkin_time) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You have not checked in today!'
-            ]);
-        }
-
-        if ($attendance->checkout_time) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You already checked out today!'
-            ]);
-        }
-
-        DB::table('police_attendance')
-            ->where('id', $attendance->id)
-            ->update([
-                'checkout_time' => now()->format('H:i:s'),
-                'updated_at' => now(),
-            ]);
-
+    } catch (\Exception $e) {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Checked out successfully at ' . now()->format('H:i:s'),
-        ]);
+            'error' => 'Failed to load attendance data.',
+            'message' => $e->getMessage() // Optional for debugging
+        ], 500);
     }
+}
+
+
+public function singleAttendance($singleUserId)
+{
+    $attendance = DB::table('police_attendance AS pa')
+        ->join('police_users AS u', 'pa.police_user_id', '=', 'u.id')
+        ->leftJoin('police_stations AS s', 'pa.police_station_id', '=', 's.id')
+        ->where('pa.police_user_id', $singleUserId)
+        ->select('pa.*', 'u.police_name', 's.name AS station_name')
+        ->first();
+
+    if (!$attendance) {
+        return redirect()->back()->with('error', 'Attendance record not found.');
+    }
+
+    return view('attendance.create', compact('attendance', 'singleUserId'));
+}
+
 }

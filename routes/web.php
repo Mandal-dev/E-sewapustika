@@ -201,9 +201,8 @@ Route::post('/sewapustika/approve', [SewaPustikaController::class, 'storeAprove'
     Route::get('/attendance/events', [PoliceAttendanceController::class, 'getAttendanceEvents'])->name('attendance.events');
     Route::post('/attendance/check-in', [PoliceAttendanceController::class, 'checkIn'])->name('attendance.checkin');
     Route::post('/attendance/mark', [PoliceAttendanceController::class, 'markAttendance'])->name('attendance.mark');
+    Route::get('/attendance/single/{id}', [PoliceAttendanceController::class, 'singleAttendance'])->name('attendance.show');
 
-
-Route::post('/attendance/checkout', [PoliceAttendanceController::class, 'checkout'])->name('attendance.checkout');
 
 });
 
