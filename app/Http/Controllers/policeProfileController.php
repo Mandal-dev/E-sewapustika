@@ -286,7 +286,9 @@ class PoliceProfileController extends Controller
                 case 'Admin':
                     // Admin can access all
                     break;
-
+                case 'Account_Department':
+                    $query->where('pu.district_id', $user['district_id']);
+                    break;
                 default:
                     return view('profile.salary_increment_history')
                         ->with('error', 'Unauthorized role access.')
