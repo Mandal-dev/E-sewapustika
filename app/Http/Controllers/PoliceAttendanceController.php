@@ -265,4 +265,47 @@ public function singleAttendance($singleUserId)
     return view('attendance.create', compact('attendance', 'singleUserId'));
 }
 
+
+public function manualMark(Request $request)
+{
+    try {
+        $user = Session::get('user');
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'User not logged in.']);
+        }
+
+        $userId = $request->input('user_id') ?? $user['id'];
+        $date = $request->input('date');
+        $status = $request->input('status');
+
+        // Prevent marking future dates
+        if (strtotime($date) > strtotime(date('Y-m-d'))) {
+            return response()->json(['status' => 'error', 'message' => 'You cannot mark future attendance.']);
+        }
+
+        // Check if already marked
+        $exists = DB::table('police_attendance')
+            ->where('police_user_id', $userId)
+            ->whereDate('attendance_date', $date)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['status' => 'error', 'message' => 'Attendance already marked for this date.']);
+        }
+
+        // Insert attendance record
+        DB::table('police_attendance')->insert([
+            'police_user_id' => $userId,
+            'attendance_date' => $date,
+            'status' => $status,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => "Marked as $status for $date"]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => 'Something went wrong.']);
+    }
+}
+
 }
