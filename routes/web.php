@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PayMatrixImportController;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\PoliceAttendanceController;
+
 use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
@@ -234,7 +235,20 @@ Route::post('/set-language', function (Request $request) {
     return redirect()->back();
 })->name('set-language');
 
+
+
 Route::fallback(function () {
-    return redirect('/');
+    $user = Session::get('user');
+
+    if ($user) {
+        $previous = url()->previous();
+        if ($previous && $previous !== url()->current()) {
+            return redirect()->back()->with('error', 'Page not found.');
+        }
+        return redirect()->route('dashboard')->with('error', 'Page not found.');
+    } else {
+        return redirect()->route('login.page');
+    }
 });
+
 
