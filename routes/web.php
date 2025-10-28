@@ -204,6 +204,11 @@ Route::middleware(['check.login','setlang'])->group(function () {
     Route::get('/attendance/single/{id}', [PoliceAttendanceController::class, 'singleAttendance'])->name('attendance.show');
     Route::post('/attendance/manual-mark', [PoliceAttendanceController::class, 'manualMark'])->name('attendance.manualMark');
     Route::get('/attendance/check-status', [PoliceAttendanceController::class, 'checkStatus'])->name('attendance.checkStatus');
+    Route::post('/attendance/checkout', [PoliceAttendanceController::class, 'checkOut'])
+    ->name('attendance.checkout');
+    Route::get('/attendance/status', [PoliceAttendanceController::class, 'checkinCheckOutStatus'])
+    ->name('attendance.status');
+
 
 });
 
