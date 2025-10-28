@@ -203,6 +203,8 @@ Route::middleware(['check.login','setlang'])->group(function () {
     Route::post('/attendance/mark', [PoliceAttendanceController::class, 'markAttendance'])->name('attendance.mark');
     Route::get('/attendance/single/{id}', [PoliceAttendanceController::class, 'singleAttendance'])->name('attendance.show');
     Route::post('/attendance/manual-mark', [PoliceAttendanceController::class, 'manualMark'])->name('attendance.manualMark');
+    Route::get('/attendance/check-status', [PoliceAttendanceController::class, 'checkStatus'])->name('attendance.checkStatus');
+
 });
 
 Route::post('/resend-otp', [LoginUserController::class, 'resendOtp'])->name('otp.resend');
