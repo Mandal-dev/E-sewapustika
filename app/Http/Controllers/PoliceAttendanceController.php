@@ -70,8 +70,6 @@ public function index()
     // Show form to create attendance
     public function create()
     {
-
-
         return view('attendance.create');
     }
 
@@ -113,49 +111,31 @@ public function index()
 
 public function checkIn(Request $request)
 {
-    $logData = []; // Collect all logs to return in JSON
-
     try {
-        $logData[] = '===== CHECK-IN REQUEST STARTED =====';
-        $logData['request_data'] = $request->all();
-
-        // Get user from session
+        // ✅ Get user from session
         $user = Session::get('user');
-        $logData['session_user'] = $user;
-
         if (!$user) {
-            $logData[] = 'Check-in failed: User not logged in';
             return response()->json([
                 'status' => 'error',
-                'message' => 'User not logged in',
-                'logs' => $logData
+                'message' => 'User not logged in'
             ]);
         }
 
-        // Use Indian timezone (Asia/Kolkata)
+        // ✅ Use Indian timezone
         $now = Carbon::now('Asia/Kolkata');
         $today = $now->toDateString();
         $currentTime = $now->format('H:i:s');
 
-        $logData['current_time'] = [
-            'date' => $today,
-            'time' => $currentTime
-        ];
-
-        // ✅ Check if attendance is already marked
+        // ✅ Check if already checked in today
         $existingAttendance = DB::table('police_attendance')
             ->where('police_user_id', $user['id'])
             ->where('attendance_date', $today)
             ->first();
 
         if ($existingAttendance) {
-            $logData['existing_record'] = (array) $existingAttendance;
-            $logData[] = 'Check-in blocked: Attendance already exists';
-
             return response()->json([
                 'status' => 'error',
-                'message' => 'Attendance for today is already marked',
-                'logs' => $logData
+                'message' => 'Attendance for today is already marked'
             ]);
         }
 
@@ -165,18 +145,14 @@ public function checkIn(Request $request)
             ->select('district_id', 'police_station_id')
             ->first();
 
-        $logData['police_data'] = $policeData;
-
         if (!$policeData || !$policeData->district_id || !$policeData->police_station_id) {
-            $logData[] = 'Missing district or police station info';
             return response()->json([
                 'status' => 'error',
-                'message' => 'User data incomplete',
-                'logs' => $logData
+                'message' => 'User data incomplete'
             ]);
         }
 
-        // ✅ Prepare insert data
+        // ✅ Prepare and insert attendance record
         $insertData = [
             'police_user_id'    => $user['id'],
             'police_station_id' => $policeData->police_station_id,
@@ -188,41 +164,31 @@ public function checkIn(Request $request)
             'updated_at'        => $now,
         ];
 
-        // ✅ Insert attendance record
-        $inserted = DB::table('police_attendance')->insertGetId($insertData);
-        $logData['inserted_data'] = $insertData;
-        $logData['insert_id'] = $inserted;
+        $insertedId = DB::table('police_attendance')->insertGetId($insertData);
 
-        // ✅ Store session data
+        // ✅ Store session check-in info
         Session::put('check_in', $currentTime);
-        $logData['session_update'] = ['check_in' => $currentTime];
 
-        $logData[] = '===== CHECK-IN REQUEST COMPLETED SUCCESSFULLY =====';
-
+        // ✅ Return success
         return response()->json([
             'status' => 'success',
             'message' => "Checked in successfully at {$currentTime}",
             'data' => [
-                'attendance_id' => $inserted,
+                'attendance_id' => $insertedId,
                 'user_id' => $user['id'],
                 'date' => $today,
                 'time' => $currentTime,
-            ],
-            'logs' => $logData
+            ]
         ]);
 
     } catch (\Exception $e) {
-        $logData[] = '===== CHECK-IN ERROR =====';
-        $logData['error_message'] = $e->getMessage();
-        $logData['trace'] = $e->getTraceAsString();
-
         return response()->json([
             'status' => 'error',
             'message' => 'Something went wrong: ' . $e->getMessage(),
-            'logs' => $logData
         ]);
     }
 }
+
 
     // Mark attendance for a specific date
     public function markAttendance(Request $request)
@@ -414,18 +380,21 @@ public function checkStatus(Request $request)
     $attendance = DB::table('police_attendance')
         ->where('police_user_id', $userId)
         ->whereDate('attendance_date', $date)
-        ->select('status')
+        ->select('status', 'checkin_time', 'checkout_time')
         ->first();
 
     if ($attendance) {
         return response()->json([
             'status' => 'marked',
-            'attendance_status' => $attendance->status
+            'attendance_status' => $attendance->status,
+            'checkin_time' => $attendance->checkin_time,
+            'checkout_time' => $attendance->checkout_time,
         ]);
     } else {
         return response()->json(['status' => 'not_marked']);
     }
 }
+
 
 public function checkOut(Request $request)
 {
