@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class PoliceAttendanceController extends Controller
 {
@@ -33,6 +35,7 @@ public function index()
             ->select(
                 'u.id',
                 'pa.police_user_id',
+                'pa.checkin_time',
                 'pa.police_station_id',
                 'pa.attendance_date',
                 'pa.status',
@@ -265,46 +268,100 @@ public function singleAttendance($singleUserId)
     return view('attendance.create', compact('attendance', 'singleUserId'));
 }
 
+ public function manualMark(Request $request)
+    {
+        try {
+            $sessionUser = Session::get('user');
 
-public function manualMark(Request $request)
+            if (!$sessionUser) {
+                Log::warning('Manual Attendance: User not logged in');
+                return response()->json(['status' => 'error', 'message' => 'User not logged in']);
+            }
+
+            $userId = $request->input('user_id') ?? $sessionUser['id'];
+            $date = $request->input('date');
+            $status = $request->input('status');
+
+            // Prevent future attendance
+            if (strtotime($date) > strtotime(date('Y-m-d'))) {
+                return response()->json(['status' => 'error', 'message' => 'Cannot mark future attendance']);
+            }
+
+            // Fetch user data
+            $policeData = DB::table('police_users')
+                ->where('id', $userId)
+                ->select('district_id', 'police_station_id')
+                ->first();
+
+            if (!$policeData || !$policeData->district_id || !$policeData->police_station_id) {
+                return response()->json(['status' => 'error', 'message' => 'User data incomplete']);
+            }
+
+            // Check if attendance already exists
+            $existing = DB::table('police_attendance')
+                ->where('police_user_id', $userId)
+                ->whereDate('attendance_date', $date)
+                ->first();
+
+            if ($existing) {
+                // ✅ UPDATE logic
+                DB::table('police_attendance')
+                    ->where('id', $existing->id)
+                    ->update([
+                        'status' => $status,
+                        'updated_at' => now(),
+                    ]);
+
+                Log::info("Manual Attendance Updated: user_id={$userId}, date={$date}, status={$status}");
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Attendance updated to $status for $date",
+                ]);
+            } else {
+                // ✅ INSERT logic
+                $attendanceData = [
+                    'police_user_id'    => $userId,
+                    'police_station_id' => $policeData->police_station_id,
+                    'district_id'       => $policeData->district_id,
+                    'attendance_date'   => $date,
+                    'status'            => $status,
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ];
+
+                $insertId = DB::table('police_attendance')->insertGetId($attendanceData);
+
+                Log::info("Manual Attendance Inserted: user_id={$userId}, date={$date}, status={$status}");
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => "Attendance marked as $status for $date",
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Manual Attendance Error: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong']);
+        }
+    }
+public function checkStatus(Request $request)
 {
-    try {
-        $user = Session::get('user');
-        if (!$user) {
-            return response()->json(['status' => 'error', 'message' => 'User not logged in.']);
-        }
+    $userId = $request->input('user_id');
+    $date = $request->input('date');
 
-        $userId = $request->input('user_id') ?? $user['id'];
-        $date = $request->input('date');
-        $status = $request->input('status');
+    $attendance = DB::table('police_attendance')
+        ->where('police_user_id', $userId)
+        ->whereDate('attendance_date', $date)
+        ->select('status')
+        ->first();
 
-        // Prevent marking future dates
-        if (strtotime($date) > strtotime(date('Y-m-d'))) {
-            return response()->json(['status' => 'error', 'message' => 'You cannot mark future attendance.']);
-        }
-
-        // Check if already marked
-        $exists = DB::table('police_attendance')
-            ->where('police_user_id', $userId)
-            ->whereDate('attendance_date', $date)
-            ->exists();
-
-        if ($exists) {
-            return response()->json(['status' => 'error', 'message' => 'Attendance already marked for this date.']);
-        }
-
-        // Insert attendance record
-        DB::table('police_attendance')->insert([
-            'police_user_id' => $userId,
-            'attendance_date' => $date,
-            'status' => $status,
-            'created_at' => now(),
-            'updated_at' => now(),
+    if ($attendance) {
+        return response()->json([
+            'status' => 'marked',
+            'attendance_status' => $attendance->status
         ]);
-
-        return response()->json(['status' => 'success', 'message' => "Marked as $status for $date"]);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => 'Something went wrong.']);
+    } else {
+        return response()->json(['status' => 'not_marked']);
     }
 }
 
