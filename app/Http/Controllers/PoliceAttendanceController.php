@@ -56,6 +56,18 @@ public function index()
         } elseif ($user['designation_type'] === 'Head_Person') {
             // All police in the same district
             $attendance = $query->where('u.district_id', $user['district_id'])->get();
+        }elseif ($user['designation_type'] === 'Punishment_Department') {
+            // All police in the same district
+            $attendance = $query->where('u.district_id', $user['district_id'])->get();
+        }elseif ($user['designation_type'] === 'Rewards_Department') {
+            // All police in the same district
+            $attendance = $query->where('u.district_id', $user['district_id'])->get();
+        }elseif ($user['designation_type'] === 'Account_Department') {
+            // All police in the same district
+            $attendance = $query->where('u.district_id', $user['district_id'])->get();
+        }elseif ($user['designation_type'] === 'Sewapustika_Department') {
+            // All police in the same district
+            $attendance = $query->where('u.district_id', $user['district_id'])->get();
         } elseif ($user['designation_type'] === 'Admin') {
             // All attendance system-wide
             $attendance = $query->get();
@@ -302,16 +314,25 @@ public function manualMark(Request $request)
             return response()->json(['status' => 'error', 'message' => 'User not logged in']);
         }
 
+        // ✅ Allow only Head_Person to mark manual attendance
+        if ($sessionUser['designation_type'] !== 'Head_Person') {
+            Log::warning("Manual Attendance Denied: user_id={$sessionUser['id']} is not Head_Person");
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are not authorized to mark manual attendance',
+            ]);
+        }
+
         $userId = $request->input('user_id') ?? $sessionUser['id'];
         $date = $request->input('date');
         $status = $request->input('status');
 
-        // Prevent future attendance
+        // ✅ Prevent marking future dates
         if (strtotime($date) > strtotime(date('Y-m-d'))) {
             return response()->json(['status' => 'error', 'message' => 'Cannot mark future attendance']);
         }
 
-        // Fetch user data
+        // ✅ Fetch user data
         $policeData = DB::table('police_users')
             ->where('id', $userId)
             ->select('district_id', 'police_station_id')
@@ -321,17 +342,17 @@ public function manualMark(Request $request)
             return response()->json(['status' => 'error', 'message' => 'User data incomplete']);
         }
 
-        // Current Indian Time
+        // ✅ Current Indian Time
         $currentTime = Carbon::now('Asia/Kolkata');
 
-        // Check if attendance already exists
+        // ✅ Check if attendance already exists
         $existing = DB::table('police_attendance')
             ->where('police_user_id', $userId)
             ->whereDate('attendance_date', $date)
             ->first();
 
         if ($existing) {
-            // ✅ UPDATE logic
+            // Update existing record
             DB::table('police_attendance')
                 ->where('id', $existing->id)
                 ->update([
@@ -346,7 +367,7 @@ public function manualMark(Request $request)
                 'message' => "Attendance updated to $status for $date",
             ]);
         } else {
-            // ✅ INSERT logic
+            // Insert new record
             $attendanceData = [
                 'police_user_id'    => $userId,
                 'police_station_id' => $policeData->police_station_id,
@@ -357,7 +378,7 @@ public function manualMark(Request $request)
                 'updated_at'        => $currentTime,
             ];
 
-            $insertId = DB::table('police_attendance')->insertGetId($attendanceData);
+            DB::table('police_attendance')->insertGetId($attendanceData);
 
             Log::info("Manual Attendance Inserted: user_id={$userId}, date={$date}, status={$status}");
 
@@ -371,6 +392,7 @@ public function manualMark(Request $request)
         return response()->json(['status' => 'error', 'message' => 'Something went wrong']);
     }
 }
+
 
 public function checkStatus(Request $request)
 {
