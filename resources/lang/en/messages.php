@@ -346,4 +346,10 @@ return [
 'update' => 'Update',
 'select_increment_type' => 'Select Increment Type',
 'attendance_error' => 'Present days must be at least 180 to be eligible for increment.',
+'attendance' => 'Attendance',
+    'manage_masters' => 'Manage Masters',
+    'district_management' => 'District Management',
+    'city_management' => 'City Management',
+    'station_management' => 'Station Management',
+    'police_user_management' => 'Police User Management',
 ];

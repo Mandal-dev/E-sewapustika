@@ -357,5 +357,10 @@ return [
     'download_template'  => 'टेम्पलेट डाउनलोड',
 'select_increment_type' => 'वाढ प्रकार निवडा',
  'attendance_error' => 'वाढीसाठी उपस्थित दिवस किमान १८० असणे आवश्यक आहे.',
-
+'attendance' => 'हजेरी',
+    'manage_masters' => 'मास्टर व्यवस्थापन',
+    'district_management' => 'जिल्हा व्यवस्थापन',
+    'city_management' => 'शहर व्यवस्थापन',
+    'station_management' => 'विभाग/स्टेशन व्यवस्थापन',
+    'police_user_management' => 'पोलीस वापरकर्ता व्यवस्थापन',
 ];
