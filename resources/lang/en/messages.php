@@ -343,6 +343,7 @@ return [
     'add_officer'        => 'Add Officer',
     'add_police'         => 'Add Police',
     'download_template'  => 'Download Template',
-
-
+'update' => 'Update',
+'select_increment_type' => 'Select Increment Type',
+'attendance_error' => 'Present days must be at least 180 to be eligible for increment.',
 ];

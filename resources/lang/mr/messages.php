@@ -25,6 +25,7 @@ return [
     'document'    => 'कागदपत्र',
     'no_document' => 'नाही',
     'download'    => 'डाउनलोड करा',
+'update' => 'सुधार करा',
 
 
 
@@ -354,5 +355,7 @@ return [
     'add_officer'        => 'अधिकारी जोडा',
     'add_police'         => 'पोलीस जोडा',
     'download_template'  => 'टेम्पलेट डाउनलोड',
+'select_increment_type' => 'वाढ प्रकार निवडा',
+ 'attendance_error' => 'वाढीसाठी उपस्थित दिवस किमान १८० असणे आवश्यक आहे.',
 
 ];

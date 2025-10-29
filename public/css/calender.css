@@ -37,12 +37,11 @@ h3 {
 ----------------------------------------*/
 .content-card {
     background: var(--card-bg);
-    border-radius: 1rem;
+    border-radius: 5rem;
     padding: 20px 25px;
-    box-shadow: 0 3px 10px var(--shadow-color);
+    border: 0.1px solid #8f8a8a;
     display: flex;
     flex-direction: column;
-    gap: 20px;
     transition: all 0.2s ease-in-out;
 }
 
@@ -270,13 +269,14 @@ h3 {
        /* ------------------------
            CALENDAR STYLING FIXES
         ---------------------------*/
-        .calendar-container {
-            margin-top: 20px;
-            border-radius: 12px;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
+     .calendar-container {
+
+    border-radius: 12px;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid hwb(0 67% 31%); /* ✅ Soft light gray border instead of shadow */
+}
+
 
         .calendar-days, .calendar-dates {
             display: grid;
