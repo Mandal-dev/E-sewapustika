@@ -1,23 +1,25 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 @php
     $designation = Session::get('user.designation_type');
 @endphp
+
 <!-- ================= Desktop Table ================= -->
 <div class="table-responsive d-none d-md-block" style="max-height:400px; overflow-y:auto; padding:10px;">
     <table class="table table-bordered align-middle my-rounded-table">
         <thead class="table-light">
             <tr>
-                <th>क्रमांक</th>
-                <th>अधिकाऱ्याचे नाव</th>
-                <th>बकल क्रमांक</th>
-                <th>पद</th>
-                <th>बक्षीस दिनांक</th>
-                <th>बक्षिसांचे प्रकार</th>
-                <th>बक्षिसांचे कारण</th>
-                <th>कागदपत्र</th>
-                <th>स्थिती</th>
-                <th>Action</th>
+                <th>{{ __('messages.serial_no') }}</th>
+                <th>{{ __('messages.police_name') }}</th>
+                <th>{{ __('messages.buckle_number') }}</th>
+                <th>{{ __('messages.role') }}</th>
+                <th>{{ __('messages.reward_date') }}</th>
+                <th>{{ __('messages.reward_type') }}</th>
+                <th>{{ __('messages.reason') }}</th>
+                <th>{{ __('messages.document') }}</th>
+                <th>{{ __('messages.status') }}</th>
+                <th>{{ __('messages.action') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -27,42 +29,40 @@
                     <td>{{ $reward->police_name ?? '--' }}</td>
                     <td>{{ $reward->buckle_number ?? '--' }}</td>
                     <td>{{ $reward->role ?? '--' }}</td>
-                    <td>{{ $reward->reward_given_date ? \Carbon\Carbon::parse($reward->reward_given_date)->format('d-m-Y') : '--' }}
-                    </td>
+                    <td>{{ $reward->reward_given_date ? \Carbon\Carbon::parse($reward->reward_given_date)->format('d-m-Y') : '--' }}</td>
                     <td>{{ $reward->reward_type ?? '--' }}</td>
                     <td>{{ $reward->reason ?? '--' }}</td>
                     <td>
                         @if ($reward->rewards_documents)
                             <a href="{{ route('rewards.view', $reward->rewards_documents) }}" target="_blank"
                                 class="btn btn-sm btn-danger">
-                                <i class="fas fa-file-pdf"></i> पहा
+                                <i class="fas fa-file-pdf"></i> {{ __('messages.view') }}
                             </a>
                         @else
-                            <span class="text-muted">नाही</span>
+                            <span class="text-muted">{{ __('messages.not_available') }}</span>
                         @endif
                     </td>
                     <td>
                         @if (strtolower($reward->reward_status) === 'approved')
-                            <span class="badge bg-success">मंजूर</span>
+                            <span class="badge bg-success">{{ __('messages.approved') }}</span>
                         @elseif(strtolower($reward->reward_status) === 'rejected')
-                            <span class="badge bg-danger">नाकारले</span>
+                            <span class="badge bg-danger">{{ __('messages.rejected') }}</span>
                         @else
-                            <span class="badge bg-warning text-dark">प्रलंबित</span>
+                            <span class="badge bg-warning text-dark">{{ __('messages.pending') }}</span>
                         @endif
                     </td>
                     <td>
                         @if ($designation === 'Head_Person' || $designation === 'Rewards_Department')
                             <button class="btn btn-primary btn-sm"
                                 onclick="openModal('{{ route('rewards.add', $reward->police_user_id ?? 0) }}')">
-                                <i class="fas fa-plus"></i> बक्षीस जोडा
+                                <i class="fas fa-plus"></i> {{ __('messages.add_reward') }}
                             </button>
                         @endif
-
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9" class="text-center text-muted">कोणतीही नोंद सापडली नाही</td>
+                    <td colspan="10" class="text-center text-muted">{{ __('messages.no_record_found') }}</td>
                 </tr>
             @endforelse
         </tbody>
@@ -77,56 +77,59 @@
             <div class="card-header d-flex justify-content-between align-items-center"
                 style="background-color: #e9f5ff; border-radius: 0.75rem 0.75rem 0 0; font-weight: 600;">
                 <span>#{{ $index + 1 }} - {{ $reward->police_name ?? '--' }}</span>
-                <button class="btn btn-primary btn-sm"
-                    onclick="openModal('{{ route('rewards.add', $reward->police_user_id) }}')" title="Add Reward"
-                    style="padding: 4px 8px; border-radius: 50%;">
-                    <i class="fas fa-plus"></i>
-                </button>
+                @if ($designation === 'Head_Person' || $designation === 'Rewards_Department')
+                    <button class="btn btn-primary btn-sm"
+                        onclick="openModal('{{ route('rewards.add', $reward->police_user_id) }}')"
+                        title="{{ __('messages.add_reward') }}"
+                        style="padding: 4px 8px; border-radius: 50%;">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                @endif
             </div>
 
             <!-- Card Body -->
             <div class="card-body p-3">
                 <div class="row mb-2">
-                    <div class="col-6"><strong>बकल क्रमांक:</strong> {{ $reward->buckle_number ?? '--' }}</div>
-                    <div class="col-6"><strong>पद:</strong> {{ $reward->role ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.buckle_number') }}:</strong> {{ $reward->buckle_number ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.role') }}:</strong> {{ $reward->role ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6"><strong>बक्षीस दिनांक:</strong>
+                    <div class="col-6"><strong>{{ __('messages.reward_date') }}:</strong>
                         {{ $reward->reward_given_date ? \Carbon\Carbon::parse($reward->reward_given_date)->format('d-m-Y') : '--' }}
                     </div>
-                    <div class="col-6"><strong>प्रकार:</strong> {{ $reward->reward_type ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.reward_type') }}:</strong> {{ $reward->reward_type ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-12"><strong>कारण:</strong> {{ $reward->reason ?? '--' }}</div>
+                    <div class="col-12"><strong>{{ __('messages.reason') }}:</strong> {{ $reward->reason ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-12">
-                        <strong>कागदपत्र:</strong>
+                        <strong>{{ __('messages.document') }}:</strong>
                         @if ($reward->rewards_documents)
                             <a href="{{ route('rewards.view', $reward->rewards_documents) }}" target="_blank"
                                 class="btn btn-sm btn-danger py-0 px-2">
-                                <i class="fas fa-file-pdf"></i> पहा
+                                <i class="fas fa-file-pdf"></i> {{ __('messages.view') }}
                             </a>
                         @else
-                            <span class="text-muted">नाही</span>
+                            <span class="text-muted">{{ __('messages.not_available') }}</span>
                         @endif
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <strong>स्थिती:</strong>
+                        <strong>{{ __('messages.status') }}:</strong>
                         @if (strtolower($reward->reward_status) === 'approved')
-                            <span class="badge bg-success">मंजूर</span>
+                            <span class="badge bg-success">{{ __('messages.approved') }}</span>
                         @elseif(strtolower($reward->reward_status) === 'rejected')
-                            <span class="badge bg-danger">नाकारले</span>
+                            <span class="badge bg-danger">{{ __('messages.rejected') }}</span>
                         @else
-                            <span class="badge bg-warning text-dark">प्रलंबित</span>
+                            <span class="badge bg-warning text-dark">{{ __('messages.pending') }}</span>
                         @endif
                     </div>
                 </div>
             </div>
         </div>
     @empty
-        <p class="text-center text-muted">कोणतीही नोंद सापडली नाही</p>
+        <p class="text-center text-muted">{{ __('messages.no_record_found') }}</p>
     @endforelse
 </div>

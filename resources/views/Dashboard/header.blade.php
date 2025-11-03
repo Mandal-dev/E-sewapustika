@@ -76,73 +76,83 @@
                 <div class="nav-group">
                     <div class="nav-group-header">
                         <i class="fas fa-users"></i>
-                        <span>Manage Masters</span>
+                        <span>{{ __('messages.manage_masters') }}</span>
                         <i class="fas fa-chevron-down arrow"></i>
                     </div>
                     <div class="nav-submenu">
                         @if (in_array($designation, ['Admin']))
                             <a href="{{ route('districts.index') }}" class="nav-item submenu-item">
-                                <i class="fas fa-map-marker-alt"></i> जिल्हा व्यवस्थापन
+                                <i class="fas fa-map-marker-alt"></i> {{ __('messages.district_management') }}
                             </a>
                             <a href="{{ route('city.index') }}" class="nav-item submenu-item">
-                                <i class="fas fa-city"></i> शहर व्यवस्थापन
+                                <i class="fas fa-city"></i> {{ __('messages.city_management') }}
                             </a>
                         @endif
                         <a href="{{ route('station.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-building"></i> विभाग
+                            <i class="fas fa-building"></i> {{ __('messages.station_management') }}
                         </a>
                         <a href="{{ route('police.list.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-user-shield"></i> पोलीस वापरकर्ता व्यवस्थापन
+                            <i class="fas fa-user-shield"></i> {{ __('messages.police_user_management') }}
                         </a>
                     </div>
                 </div>
+
             @endif
 
             <div class="nav-group">
                 <div class="nav-group-header">
                     <i class="fas fa-clipboard-list"></i>
-                    <span>Police Information</span>
+                    <span>{{ __('messages.police_information') }}</span>
                     <i class="fas fa-chevron-down arrow"></i>
                 </div>
                 <div class="nav-submenu">
-                    @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
-                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-book"></i> सेवा पुस्तिका</a>
-                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-chart-line"></i> वेतनवाढ</a>
-                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-exclamation-triangle"></i> शिक्षा</a>
-                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item"><i
-                                class="fas fa-trophy"></i>
-                            बक्षीस</a>
+                    @if (in_array($designation, ['Admin', 'Head_Person', 'Police','Leave_Department']))
+                        <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-book"></i> {{ __('messages.sewa_pustika') }}
+                        </a>
+
+                        <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-chart-line"></i> {{ __('messages.salary_increment') }}
+                        </a>
+
+                        <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-exclamation-triangle"></i> {{ __('messages.punishment') }}
+                        </a>
+
+                        <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
+                            <i class="fas fa-trophy"></i> {{ __('messages.reward') }}
+                        </a>
                     @endif
 
                     @if ($designation === 'Rewards_Department')
                         <a href="{{ route('rewards.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-trophy"></i> बक्षीस
+                            <i class="fas fa-trophy"></i> {{ __('messages.reward') }}
                         </a>
                     @endif
 
                     @if ($designation === 'Sewapustika_Department')
                         <a href="{{ route('sewa_pustika.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-book"></i> सेवा पुस्तिका
+                            <i class="fas fa-book"></i> {{ __('messages.sewa_pustika') }}
                         </a>
                     @endif
 
                     @if ($designation === 'Punishment_Department')
                         <a href="{{ route('punishments.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-exclamation-triangle"></i> शिक्षा
+                            <i class="fas fa-exclamation-triangle"></i> {{ __('messages.punishment') }}
                         </a>
                     @endif
 
                     @if ($designation === 'Account_Department')
                         <a href="{{ route('salary_increment.index') }}" class="nav-item submenu-item">
-                            <i class="fas fa-chart-line"></i> वेतनवाढ
+                            <i class="fas fa-chart-line"></i> {{ __('messages.salary_increment') }}
                         </a>
                     @endif
-                    <a href="{{ route('attendance.index') }}" class="nav-item submenu-item"><i
-                            class="fas fa-comment"></i>हजेरी</a>
+
+                    <a href="{{ route('attendance.index') }}" class="nav-item submenu-item">
+                        <i class="fas fa-comment"></i> {{ __('messages.attendance') }}
+                    </a>
                 </div>
+
             </div>
         </nav>
     </aside>

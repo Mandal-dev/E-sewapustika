@@ -25,7 +25,7 @@ return [
     'document'    => 'कागदपत्र',
     'no_document' => 'नाही',
     'download'    => 'डाउनलोड करा',
-'update' => 'सुधार करा',
+    'update' => 'सुधार करा',
 
 
 
@@ -355,9 +355,9 @@ return [
     'add_officer'        => 'अधिकारी जोडा',
     'add_police'         => 'पोलीस जोडा',
     'download_template'  => 'टेम्पलेट डाउनलोड',
-'select_increment_type' => 'वाढ प्रकार निवडा',
- 'attendance_error' => 'वाढीसाठी उपस्थित दिवस किमान १८० असणे आवश्यक आहे.',
-'attendance' => 'हजेरी',
+    'select_increment_type' => 'वाढ प्रकार निवडा',
+    'attendance_error' => 'वाढीसाठी उपस्थित दिवस किमान १८० असणे आवश्यक आहे.',
+    'attendance' => 'हजेरी',
     'manage_masters' => 'मास्टर व्यवस्थापन',
     'district_management' => 'जिल्हा व्यवस्थापन',
     'city_management' => 'शहर व्यवस्थापन',

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
@@ -70,7 +70,9 @@ class punishmentsController extends Controller
                 case 'Police':
                     $query->where('t4.id', $user['id']);
                     break;
-
+                case 'Leave_Department':
+                    $query->where('t4.id', $user['id']);
+                    break;
                 case 'Station_Head':
                     $myStationId = DB::table('police_users')
                         ->where('id', $user['id'])
@@ -79,7 +81,10 @@ class punishmentsController extends Controller
                     break;
 
                 case 'Head_Person':
+                    $query->where('t4.district_id', $user['district_id']);
+                    break;
                 case 'Punishment_Department':
+
                     $query->where('t4.district_id', $user['district_id']);
                     break;
 
@@ -151,10 +156,6 @@ class punishmentsController extends Controller
             return redirect()->back()->with('error', 'आपल्याकडे शिक्षण जतन करण्याची परवानगी नाही.');
         }
 
-        Log::info('Punishment store method hit');
-
-        // Log input data (excluding file)
-        Log::info('Request input:', $request->except(['punishment_documents']));
 
         // Validation
         $request->validate([
@@ -180,7 +181,7 @@ class punishmentsController extends Controller
             }
 
             $file->move($destinationPath, $uniqueFileName);
-            Log::info('Punishment PDF stored at: ' . $destinationPath . '/' . $uniqueFileName);
+
 
             DB::table('police_punishments')->insert([
                 'police_id'             => $request->police_id,
@@ -196,9 +197,7 @@ class punishmentsController extends Controller
 
             return redirect()->back()->with('success', 'शिक्षा दस्तऐवज यशस्वीरित्या अपलोड केला गेला.');
         } catch (\Exception $e) {
-            Log::error('Error storing Punishment Document', [
-                'error' => $e->getMessage(),
-            ]);
+
 
             return redirect()->back()->with('error', 'शिक्षा जतन करताना त्रुटी आली: ' . $e->getMessage());
         }
@@ -221,7 +220,7 @@ class punishmentsController extends Controller
             'Content-Type' => $mime ?? 'application/pdf'
         ]);
     }
-public function search(Request $request)
+    public function search(Request $request)
     {
         try {
             $user = Session::get('user');
@@ -277,9 +276,9 @@ public function search(Request $request)
                         END = ?', [$statusMap[strtolower($keyword)]]);
                     } else {
                         $q->where('t4.police_name', 'like', "%{$keyword}%")
-                          ->orWhere('t4.buckle_number', 'like', "%{$keyword}%")
-                          ->orWhere('t5.reason', 'like', "%{$keyword}%")
-                          ->orWhere('t5.punishment_type', 'like', "%{$keyword}%");
+                            ->orWhere('t4.buckle_number', 'like', "%{$keyword}%")
+                            ->orWhere('t5.reason', 'like', "%{$keyword}%")
+                            ->orWhere('t5.punishment_type', 'like', "%{$keyword}%");
                     }
                 });
             }
@@ -290,11 +289,18 @@ public function search(Request $request)
                     $query->where('t4.id', $user['id']);
                     break;
 
+                case 'Leave_Department':
+                    $query->where('t4.id', $user['id']);
+                    break;
+
                 case 'Station_Head':
                     $query->where('t4.police_station_id', $user['police_station_id']);
                     break;
 
                 case 'Head_Person':
+                    $query->where('t4.district_id', $user['district_id']);
+                    break;
+
                 case 'Punishment_Department':
                     $query->where('t4.district_id', $user['district_id']);
                     break;
@@ -314,7 +320,7 @@ public function search(Request $request)
             // Return Blade partial
             return view('Punishments.table', compact('polices'));
         } catch (\Exception $e) {
-            Log::error('Punishment search error', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Something went wrong: ' . $e->getMessage()
@@ -383,72 +389,59 @@ public function search(Request $request)
     /**
      * Store punishment approval
      */
-public function approvePunishmentStore(Request $request)
-{
-    Log::info('--- Punishment Approval Request Started ---');
+    public function approvePunishmentStore(Request $request)
+    {
 
-    // ✅ Get logged-in user from Session
-    $user = Session::get('user');
-    Log::info('Session User:', [$user]);
 
-    if (!$user) {
-        Log::warning('Unauthenticated request, no user found in session.');
-        return redirect()->back()->with('error', 'Unauthenticated. Please login.');
+        // ✅ Get logged-in user from Session
+        $user = Session::get('user');
+
+
+        if (!$user) {
+
+            return redirect()->back()->with('error', 'Unauthenticated. Please login.');
+        }
+
+        if ($user['designation_type'] !== 'Head_Person') {
+
+            return redirect()->back()->with('error', 'Access denied. Only Head_Person can approve/reject.');
+        }
+
+        // ✅ Validate input
+        try {
+            $validated = $request->validate([
+                'punishment_id' => 'required|integer|exists:police_punishments,id',
+                'status'        => 'required|in:Approved,Rejected',
+                'remark'        => 'nullable|string|max:255', // remark is optional now
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            throw $ve; // rethrow so Laravel shows validation errors
+        }
+
+        try {
+            // ✅ Prepare insert data
+            $data = [
+                'punishment_id' => $request->punishment_id,
+                'reviewed_by'   => $user['id'] ?? auth()->id(),
+                'review_status' => strtolower($request->status), // enum requires lowercase
+                'remark'        => $request->remark, // single field now
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ];
+
+
+            // ✅ Insert into punishment_reviews
+            DB::table('punishment_reviews')->insert($data);
+
+            return redirect()->back()->with('success', 'Punishment review stored successfully.');
+        } catch (\Exception $e) {
+
+            return redirect()->back()->with(
+                'error',
+                'Failed to store punishment review: ' . $e->getMessage()
+            );
+        }
     }
-
-    if ($user['designation_type'] !== 'Head_Person') {
-        Log::warning('Access denied for user ID ' . ($user['id'] ?? 'N/A') . '. Designation: ' . $user['designation_type']);
-        return redirect()->back()->with('error', 'Access denied. Only Head_Person can approve/reject.');
-    }
-
-    // ✅ Log request data before validation
-    Log::info('Incoming Request Data:', $request->all());
-
-    // ✅ Validate input
-    try {
-        $validated = $request->validate([
-            'punishment_id' => 'required|integer|exists:police_punishments,id',
-            'status'        => 'required|in:Approved,Rejected',
-            'remark'        => 'nullable|string|max:255', // remark is optional now
-        ]);
-        Log::info('Validation Passed:', $validated);
-    } catch (\Illuminate\Validation\ValidationException $ve) {
-        Log::error('Validation Failed:', $ve->errors());
-        throw $ve; // rethrow so Laravel shows validation errors
-    }
-
-    try {
-        // ✅ Prepare insert data
-        $data = [
-            'punishment_id' => $request->punishment_id,
-            'reviewed_by'   => $user['id'] ?? auth()->id(),
-            'review_status' => strtolower($request->status), // enum requires lowercase
-            'remark'        => $request->remark, // single field now
-            'created_at'    => now(),
-            'updated_at'    => now(),
-        ];
-
-        Log::info('Prepared Insert Data:', $data);
-
-        // ✅ Insert into punishment_reviews
-        DB::table('punishment_reviews')->insert($data);
-        Log::info('Insert Successful for punishment_id: ' . $request->punishment_id);
-
-        Log::info('--- Punishment Approval Request Completed ---');
-        return redirect()->back()->with('success', 'Punishment review stored successfully.');
-
-    } catch (\Exception $e) {
-        // Log error and return message
-        Log::error('Punishment Review Error: ' . $e->getMessage(), [
-            'trace' => $e->getTraceAsString()
-        ]);
-
-        return redirect()->back()->with(
-            'error',
-            'Failed to store punishment review: ' . $e->getMessage()
-        );
-    }
-}
 
 
 

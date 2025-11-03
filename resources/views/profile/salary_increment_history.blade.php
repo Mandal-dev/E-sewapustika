@@ -16,20 +16,20 @@
     <table class="table table-bordered align-middle my-rounded-table">
         <thead class="table-light">
             <tr>
-                <th>क्रमांक</th>
-                <th>Department</th>
-                <th>नाव</th>
-                <th>बकल क्रमांक</th>
-                <th>वेतनवाढ दिनांक</th>
-                <th>Present Days</th>
-                <th>वेतनवाढ प्रकार</th>
-                <th>Level</th>
-                <th>ग्रेड पेमेण्ट</th>
-                <th>नवीन वेतन</th>
-                <th>वाढलेली रक्कम</th>
-                <th>कागदपत्र</th>
+                <th>{{ __('messages.serial_no') }}</th>
+                <th>{{ __('messages.department') }}</th>
+                <th>{{ __('messages.police_name') }}</th>
+                <th>{{ __('messages.buckle_number') }}</th>
+                <th>{{ __('messages.increment_date') }}</th>
+                <th>{{ __('messages.present_days') }}</th>
+                <th>{{ __('messages.increment_type') }}</th>
+                <th>{{ __('messages.level') }}</th>
+                <th>{{ __('messages.grade_pay') }}</th>
+                <th>{{ __('messages.new_salary') }}</th>
+                <th>{{ __('messages.increased_amount') }}</th>
+                <th>{{ __('messages.document') }}</th>
                 @if ($designation === 'Head_Person')
-                    <th>Action</th>
+                    <th>{{ __('messages.action') }}</th>
                 @endif
             </tr>
         </thead>
@@ -50,15 +50,15 @@
                     <td class="text-center">
                         @if ($item->increment_documents)
                             <a href="{{ route('salary_increment.view', $item->increment_documents) }}" target="_blank" class="btn btn-sm btn-danger">
-                                <i class="fas fa-file-pdf"></i> पहा
+                                <i class="fas fa-file-pdf"></i> {{ __('messages.view') }}
                             </a>
                         @else
-                            <span class="text-muted">नाही</span>
+                            <span class="text-muted">{{ __('messages.not_available') }}</span>
                         @endif
                     </td>
                     @if ($designation === 'Head_Person' || $designation === 'Account_Department')
                         <td class="text-center">
-                            <button class="btn btn-primary btn-sm" onclick="openModal('{{ route('salary_increment.add', $item->police_user_id) }}')" title="Add Increment" style="padding: 6px 10px; border-radius: 50%;">
+                            <button class="btn btn-primary btn-sm" onclick="openModal('{{ route('salary_increment.add', $item->police_user_id) }}')" title="{{ __('messages.add_increment') }}" style="padding: 6px 10px; border-radius: 50%;">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </td>
@@ -66,8 +66,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="14" class="text-center text-muted">कोणतीही नोंद सापडली नाही</td>
-
+                    <td colspan="14" class="text-center text-muted">{{ __('messages.no_record_found') }}</td>
                 </tr>
             @endforelse
         </tbody>
@@ -81,8 +80,8 @@
             <!-- Card Header -->
             <div class="card-header d-flex justify-content-between align-items-center" style="background: rgb(233, 245, 255); border-radius: 0.75rem 0.75rem 0 0;">
                 <span><strong>#{{ $index + 1 }} - {{ $item->police_name ?? '--' }}</strong></span>
-                 @if ($designation === 'Head_Person' || $designation === 'Account_Department')
-                    <button class="btn btn-primary btn-sm" onclick="openModal('{{ route('salary_increment.add', $item->police_user_id) }}')" title="Add Increment" style="padding: 4px 8px; border-radius: 50%;">
+                @if ($designation === 'Head_Person' || $designation === 'Account_Department')
+                    <button class="btn btn-primary btn-sm" onclick="openModal('{{ route('salary_increment.add', $item->police_user_id) }}')" title="{{ __('messages.add_increment') }}" style="padding: 4px 8px; border-radius: 50%;">
                         <i class="fas fa-plus"></i>
                     </button>
                 @endif
@@ -91,40 +90,40 @@
             <!-- Card Body -->
             <div class="card-body p-3">
                 <div class="row mb-2">
-                    <div class="col-6"><strong>Department:</strong> {{ $item->station_name ?? '--' }}</div>
-                    <div class="col-6"><strong>बकल क्रमांक:</strong> {{ $item->buckle_number ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.department') }}:</strong> {{ $item->station_name ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.buckle_number') }}:</strong> {{ $item->buckle_number ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6"><strong>वेतनवाढ दिनांक:</strong> {{ $item->increment_date ? \Carbon\Carbon::parse($item->increment_date)->format('d-m-Y') : '--' }}</div>
-                    <div class="col-6"><strong>Present Days:</strong> {{ $item->present_days ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.increment_date') }}:</strong> {{ $item->increment_date ? \Carbon\Carbon::parse($item->increment_date)->format('d-m-Y') : '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.present_days') }}:</strong> {{ $item->present_days ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6"><strong>वेतनवाढ प्रकार:</strong> {{ $item->increment_type ?? '--' }}</div>
-                    <div class="col-6"><strong>Level:</strong> {{ $item->level ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.increment_type') }}:</strong> {{ $item->increment_type ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.level') }}:</strong> {{ $item->level ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6"><strong>ग्रेड पेमेण्ट:</strong> {{ $item->grade_pay ?? '--' }}</div>
-                    <div class="col-6"><strong>नवीन वेतन:</strong> {{ $item->new_salary ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.grade_pay') }}:</strong> {{ $item->grade_pay ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.new_salary') }}:</strong> {{ $item->new_salary ?? '--' }}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-6"><strong>वाढलेली रक्कम:</strong> {{ $item->increased_amount ?? '--' }}</div>
-                    <div class="col-6"><strong>कारण:</strong> {{ $item->reason ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.increased_amount') }}:</strong> {{ $item->increased_amount ?? '--' }}</div>
+                    <div class="col-6"><strong>{{ __('messages.reason') }}:</strong> {{ $item->reason ?? '--' }}</div>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <strong>कागदपत्र:</strong>
+                        <strong>{{ __('messages.document') }}:</strong>
                         @if ($item->increment_documents)
                             <a href="{{ route('salary_increment.view', $item->increment_documents) }}" target="_blank" class="btn btn-sm btn-danger">
-                                <i class="fas fa-file-pdf"></i> पहा
+                                <i class="fas fa-file-pdf"></i> {{ __('messages.view') }}
                             </a>
                         @else
-                            <span class="text-muted">नाही</span>
+                            <span class="text-muted">{{ __('messages.not_available') }}</span>
                         @endif
                     </div>
                 </div>
             </div>
         </div>
     @empty
-        <p class="text-center text-muted">कोणतीही नोंद सापडली नाही</p>
+        <p class="text-center text-muted">{{ __('messages.no_record_found') }}</p>
     @endforelse
 </div>

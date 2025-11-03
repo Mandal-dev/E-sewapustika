@@ -264,6 +264,6 @@
         });
     }
 
-    initBootstrapModalWithId('#rewardApprovalModal');
+
 })();
 </script>

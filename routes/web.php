@@ -30,7 +30,7 @@ use Illuminate\Http\Request;
 
 Route::get('/dasboard', [MainController::class, 'Dashboard'])->name('dashboard')->middleware('check.login')->middleware('setlang');
 
-Route::middleware(['check.login','setlang'])->group(function () {
+Route::middleware(['check.login', 'setlang'])->group(function () {
     Route::prefix('districts')->group(function () {
         Route::get('/', [DistrictsController::class, 'index'])->name('districts.index');
         Route::get('/create', [DistrictsController::class, 'create'])->name('districts.create');
@@ -205,9 +205,12 @@ Route::middleware(['check.login','setlang'])->group(function () {
     Route::post('/attendance/manual-mark', [PoliceAttendanceController::class, 'manualMark'])->name('attendance.manualMark');
     Route::get('/attendance/check-status', [PoliceAttendanceController::class, 'checkStatus'])->name('attendance.checkStatus');
     Route::post('/attendance/checkout', [PoliceAttendanceController::class, 'checkOut'])
-    ->name('attendance.checkout');
+        ->name('attendance.checkout');
     Route::get('/attendance/status', [PoliceAttendanceController::class, 'checkinCheckOutStatus'])
-    ->name('attendance.status');
+        ->name('attendance.status');
+    Route::get('/check-leave-track/{userid}', [PoliceAttendanceController::class, 'checkLeavetrack'])->name('check.leave.track');
+    Route::get('/attendance/search', [PoliceAttendanceController::class, 'search'])->name('attendance.search');
+
 
 
 });
@@ -257,5 +260,3 @@ Route::fallback(function () {
         return redirect()->route('login.page');
     }
 });
-
-

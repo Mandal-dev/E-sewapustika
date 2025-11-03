@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+
 
 class LoginUserController extends Controller
 {
@@ -88,15 +88,6 @@ public function login(Request $request)
 
         $result = $response->json();
 
-        // -------------------
-        // Log SMS status (without exposing OTP)
-        // -------------------
-        Log::info('SMS sent', [
-            'mobile'   => $mobile,
-            'status'   => $result['status'] ?? 'unknown',
-            'uniqueid' => $result['data'][0]['uniqueid'] ?? null,
-            'ip'       => $request->ip(),
-        ]);
 
         // -------------------
         // Save SMS log in DB
@@ -117,7 +108,7 @@ public function login(Request $request)
         }
 
     } catch (\Exception $e) {
-        Log::error('SMS API Exception: ' . $e->getMessage());
+
         return back()->withErrors(['mobile' => 'SMS sending failed. Please try again later.']);
     }
 
@@ -269,11 +260,6 @@ public function resendOtp(Request $request)
 
         $result = $response->json();
 
-        Log::info('Resend OTP SMS Response:', [
-            'mobile'   => $mobile,
-            'status'   => $result['status'] ?? 'unknown',
-            'uniqueid' => $result['data'][0]['uniqueid'] ?? null,
-        ]);
 
         // -------------------
         // Save SMS log in DB
@@ -289,7 +275,7 @@ public function resendOtp(Request $request)
         ]);
 
     } catch (\Exception $e) {
-        Log::error('Resend OTP SMS Exception: ' . $e->getMessage());
+        return back()->withErrors(['mobile' => 'SMS sending failed. Please try again later.']);
     }
 
     return redirect()->route('otp.page')

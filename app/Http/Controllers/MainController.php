@@ -45,6 +45,33 @@ class MainController extends Controller
                 }
 
                 return view('profile.index', compact('police'));
+            } elseif ($user['designation_type'] === 'Leave_Department') {
+
+                $police = DB::table('police_users AS t4')
+                    ->join('districts AS t2', 't4.district_id', '=', 't2.id')
+                    ->join('states AS t1', 't2.state_id', '=', 't1.id')
+                    ->join('cities AS t3', 't4.city_id', '=', 't3.id')
+                    ->select(
+                        't4.id AS police_user_id',
+                        't4.police_name',
+                        't4.buckle_number',
+                        't1.id AS state_id',
+                        't1.state_name',
+                        't2.id AS district_id',
+                        't2.district_name',
+                        't3.id AS city_id',
+                        't3.city_name',
+                        't3.status AS city_status'
+                    )
+                    ->where('t4.is_delete', 'No')
+                    ->where('t4.id', $user['id'])
+                    ->first();
+
+                if (!$police) {
+                    return back()->with('error', 'Police profile not found.');
+                }
+
+                return view('profile.index', compact('police'));
             }
 
             // ========================= STATION HEAD =========================
@@ -112,7 +139,7 @@ class MainController extends Controller
             } elseif ($user['designation_type'] === 'Rewards_Department') {
                 return redirect()->route('rewards.index');
             }
-//hello
+            //hello
             // ========================= ADMIN / OTHERS =========================
             else {
                 $total_police = DB::table('police_users')->count();
@@ -146,7 +173,7 @@ class MainController extends Controller
     {
         $user = Session::get('user');
         if (!$user) {
-            return redirect('/login')->with('error', 'Session expired. Please login again.');
+            return redirect('/')->with('error', 'Session expired. Please login again.');
         }
 
         $districtId = $user['district_id'];

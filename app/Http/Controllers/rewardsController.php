@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -68,7 +67,9 @@ class rewardsController extends Controller
                 case 'Police':
                     $query->where('t4.id', $user['id']);
                     break;
-
+                case 'Leave_Department':
+                    $query->where('t4.id', $user['id']);
+                    break;
                 case 'Station_Head':
                     $myStationId = DB::table('police_users')
                         ->where('id', $user['id'])
@@ -217,7 +218,9 @@ class rewardsController extends Controller
             case 'Police':
                 $query->where('t4.id', $user['id']);
                 break;
-
+            case 'Leave_Department':
+                $query->where('t4.id', $user['id']);
+                break;
             case 'Station_Head':
                 $myStationId = DB::table('police_users')
                     ->where('id', $user['id'])
@@ -250,10 +253,7 @@ class rewardsController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('Reward store method hit');
 
-        // Log input data (excluding file)
-        Log::info('Request input:', $request->except(['rewards_documents']));
 
         // Validation
         $request->validate([
@@ -281,7 +281,7 @@ class rewardsController extends Controller
             }
 
             $file->move($destinationPath, $uniqueFileName);
-            Log::info('Reward PDF stored at: ' . $destinationPath . '/' . $uniqueFileName);
+
 
             // Insert into DB
             DB::table('police_rewards')->insert([
@@ -298,9 +298,7 @@ class rewardsController extends Controller
 
             return redirect()->back()->with('success', 'बक्षीस दस्तऐवज यशस्वीरित्या अपलोड केला गेला.');
         } catch (\Exception $e) {
-            Log::error('Error storing Reward Document', [
-                'error' => $e->getMessage(),
-            ]);
+
 
             return redirect()->back()->with('error', 'बक्षीस जतन करताना त्रुटी आली: ' . $e->getMessage());
         }
@@ -366,16 +364,11 @@ class rewardsController extends Controller
             'created_at'    => now(),
         ];
 
-        // Log for debugging
-        Log::info('Reward Review Data: ', $data);
-
         try {
             $id = DB::table('reward_reviews')->insertGetId($data);
-            Log::info('Reward Review Inserted ID: ' . $id);
 
             return redirect()->back()->with('success', 'Reward review stored successfully.');
         } catch (\Exception $e) {
-            Log::error('Reward Review Error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to store reward review.');
         }
     }
@@ -411,7 +404,7 @@ class rewardsController extends Controller
                     't5.reward_type',
                     't5.rewards_documents',
                     't5.id AS reward_id',
-DB::raw('COALESCE(t6.review_status, "Pending") AS reward_status'),
+                    DB::raw('COALESCE(t6.review_status, "Pending") AS reward_status'),
                     't6.reject_reason',
                     DB::raw('
     CASE
@@ -427,6 +420,9 @@ DB::raw('COALESCE(t6.review_status, "Pending") AS reward_status'),
             // Role-based filter
             switch ($user['designation_type']) {
                 case 'Police':
+                    $query->where('t4.id', $user['id']);
+                    break;
+                case 'Leave_Department':
                     $query->where('t4.id', $user['id']);
                     break;
                 case 'Station_Head':

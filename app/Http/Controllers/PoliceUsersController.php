@@ -101,7 +101,7 @@ class PoliceUsersController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('Police store request received', $request->all());
+
 
         $validator = Validator::make($request->all(), [
             'police_name'      => 'required|string|max:150',
@@ -125,9 +125,7 @@ class PoliceUsersController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Log::warning('Police store validation failed', [
-                'errors' => $validator->errors()->toArray()
-            ]);
+
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -158,18 +156,13 @@ class PoliceUsersController extends Controller
                 'deleted_at'       => null,
             ];
 
-            Log::info('Police store validated data ready to insert', $data);
 
             DB::table('police_users')->insert($data);
 
-            Log::info('Police store success: record inserted', ['police_name' => $request->police_name]);
+
 
             return redirect()->back()->with('success', 'Registration successful!');
         } catch (Exception $e) {
-            Log::error('Police store exception', [
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString()
-            ]);
 
             return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage())->withInput();
         }
@@ -416,7 +409,7 @@ class PoliceUsersController extends Controller
 
     public function update(Request $request, $id)
     {
-        Log::info('Police update request received', $request->all());
+
 
         $validator = Validator::make($request->all(), [
             'police_name'      => 'required|string|max:150',
@@ -440,9 +433,7 @@ class PoliceUsersController extends Controller
         ]);
 
         if ($validator->fails()) {
-            Log::warning('Police update validation failed', [
-                'errors' => $validator->errors()->toArray()
-            ]);
+
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -471,14 +462,10 @@ class PoliceUsersController extends Controller
 
             DB::table('police_users')->where('id', $id)->update($data);
 
-            Log::info('Police update success', ['id' => $id]);
+
 
             return redirect()->route('police.list.index')->with('success', 'Police record updated successfully!');
         } catch (Exception $e) {
-            Log::error('Police update exception', [
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString()
-            ]);
 
             return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage())->withInput();
         }

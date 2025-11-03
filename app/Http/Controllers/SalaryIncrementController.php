@@ -70,7 +70,7 @@ class SalaryIncrementController extends Controller
 
                     't6.remark',
 
-                     DB::raw('
+                    DB::raw('
     CASE
         WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "uploaded"
         WHEN t5.id IS  NULL AND t6.id IS NULL THEN "not_uploaded"
@@ -88,7 +88,9 @@ class SalaryIncrementController extends Controller
                 case 'Police':
                     $query->where('t4.id', $user['id']);
                     break;
-
+                case 'Leave_Department':
+                    $query->where('t4.id', $user['id']);
+                    break;
                 case 'Station_Head':
                     $myStationId = DB::table('police_users')
                         ->where('id', $user['id'])
@@ -130,57 +132,57 @@ class SalaryIncrementController extends Controller
     }
 
 
-public function search(Request $request)
-{
-    try {
-        $search = $request->input('search');
-        $designationFilter = $request->input('designation'); // optional
+    public function search(Request $request)
+    {
+        try {
+            $search = $request->input('search');
+            $designationFilter = $request->input('designation'); // optional
 
-        $user = Session::get('user');
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized. Please login.'], 401);
-        }
+            $user = Session::get('user');
+            if (!$user) {
+                return response()->json(['message' => 'Unauthorized. Please login.'], 401);
+            }
 
-        // 🔹 Get latest salary increment per police_id
-        $latestIncrement = DB::table('salary_increments')
-            ->select(
-                'id',
-                'police_id',
-                'increment_type',
-                'increment_documents',
-                'increment_date',
-                'new_salary',
-                'level',
-                'grade_pay',
-                'increased_amount'
-            )
-            ->whereRaw('id IN (SELECT MAX(id) FROM salary_increments GROUP BY police_id)');
+            // 🔹 Get latest salary increment per police_id
+            $latestIncrement = DB::table('salary_increments')
+                ->select(
+                    'id',
+                    'police_id',
+                    'increment_type',
+                    'increment_documents',
+                    'increment_date',
+                    'new_salary',
+                    'level',
+                    'grade_pay',
+                    'increased_amount'
+                )
+                ->whereRaw('id IN (SELECT MAX(id) FROM salary_increments GROUP BY police_id)');
 
-        // 🔹 Base query for police users
-        $query = DB::table('police_users AS t4')
-            ->join('districts AS t2', 't4.district_id', '=', 't2.id')
-            ->leftJoin('police_stations AS t7', 't4.police_station_id', '=', 't7.id')
-            ->leftJoinSub($latestIncrement, 't5', function ($join) {
-                $join->on('t4.id', '=', 't5.police_id');
-            })
-            ->leftJoin('salary_reviews AS t6', 't5.id', '=', 't6.salary_id')
-            ->select(
-                't2.district_name',
-                't7.name AS police_station_name',
-                't4.id AS police_user_id',
-                't4.police_name',
-                't4.buckle_number',
-                't4.designation_type',
-                't5.increment_date',
-                't5.increment_type',
-                't5.increment_documents',
-                't5.id AS salary_increment_id',
-                't5.new_salary',
-                't5.level',
-                't5.grade_pay',
-                't5.increased_amount',
-                't6.remark',
-                DB::raw('
+            // 🔹 Base query for police users
+            $query = DB::table('police_users AS t4')
+                ->join('districts AS t2', 't4.district_id', '=', 't2.id')
+                ->leftJoin('police_stations AS t7', 't4.police_station_id', '=', 't7.id')
+                ->leftJoinSub($latestIncrement, 't5', function ($join) {
+                    $join->on('t4.id', '=', 't5.police_id');
+                })
+                ->leftJoin('salary_reviews AS t6', 't5.id', '=', 't6.salary_id')
+                ->select(
+                    't2.district_name',
+                    't7.name AS police_station_name',
+                    't4.id AS police_user_id',
+                    't4.police_name',
+                    't4.buckle_number',
+                    't4.designation_type',
+                    't5.increment_date',
+                    't5.increment_type',
+                    't5.increment_documents',
+                    't5.id AS salary_increment_id',
+                    't5.new_salary',
+                    't5.level',
+                    't5.grade_pay',
+                    't5.increased_amount',
+                    't6.remark',
+                    DB::raw('
                     CASE
                         WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "pending"
                         WHEN t5.id IS NULL AND t6.id IS NULL THEN "not_uploaded"
@@ -188,44 +190,44 @@ public function search(Request $request)
                         ELSE "not_uploaded"
                     END AS salary_status
                 ')
-            )
-            ->where('t2.is_delete', 'No')
-            ->where('t2.status', 'Active');
+                )
+                ->where('t2.is_delete', 'No')
+                ->where('t2.status', 'Active');
 
-        // 🔹 Role-based filter
-        switch ($user['designation_type']) {
-            case 'Police':
-                return response()->json(['message' => 'Access denied.'], 403);
-            case 'Station_Head':
-                $myStationId = DB::table('police_users')
-                    ->where('id', $user['id'])
-                    ->value('police_station_id');
-                $query->where('t4.police_station_id', $myStationId);
-                break;
-            case 'Head_Person':
-            case 'Account_Department':
-                $query->where('t4.district_id', $user['district_id']);
-                break;
-            case 'Admin':
-                // No restriction
-                break;
-            default:
-                return response()->json(['message' => 'Invalid role.'], 403);
-        }
+            // 🔹 Role-based filter
+            switch ($user['designation_type']) {
+                case 'Police':
+                    return response()->json(['message' => 'Access denied.'], 403);
+                case 'Station_Head':
+                    $myStationId = DB::table('police_users')
+                        ->where('id', $user['id'])
+                        ->value('police_station_id');
+                    $query->where('t4.police_station_id', $myStationId);
+                    break;
+                case 'Head_Person':
+                case 'Account_Department':
+                    $query->where('t4.district_id', $user['district_id']);
+                    break;
+                case 'Admin':
+                    // No restriction
+                    break;
+                default:
+                    return response()->json(['message' => 'Invalid role.'], 403);
+            }
 
-        // 🔹 Search filter
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $statusMap = [
-                    'approved' => 'approved',
-                    'rejected' => 'rejected',
-                    'pending'  => 'pending',
-                    'uploaded' => 'pending', // ✅ uploaded = pending
-                    'all'      => null
-                ];
+            // 🔹 Search filter
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $statusMap = [
+                        'approved' => 'approved',
+                        'rejected' => 'rejected',
+                        'pending'  => 'pending',
+                        'uploaded' => 'pending', // ✅ uploaded = pending
+                        'all'      => null
+                    ];
 
-                if (isset($statusMap[strtolower($search)]) && strtolower($search) != 'all') {
-                    $q->whereRaw('
+                    if (isset($statusMap[strtolower($search)]) && strtolower($search) != 'all') {
+                        $q->whereRaw('
                         CASE
                             WHEN t5.id IS NOT NULL AND t6.id IS NULL THEN "pending"
                             WHEN t5.id IS NULL AND t6.id IS NULL THEN "not_uploaded"
@@ -233,35 +235,34 @@ public function search(Request $request)
                             ELSE "not_uploaded"
                         END = ?
                     ', [$statusMap[strtolower($search)]]);
-                } else {
-                    $q->where('t4.police_name', 'like', "%{$search}%")
-                        ->orWhere('t4.buckle_number', 'like', "%{$search}%")
-                        ->orWhere('t7.name', 'like', "%{$search}%")
-                        ->orWhere('t6.review_status', 'like', "%{$search}%")
-                        ->orWhere('t2.district_name', 'like', "%{$search}%");
-                }
-            });
+                    } else {
+                        $q->where('t4.police_name', 'like', "%{$search}%")
+                            ->orWhere('t4.buckle_number', 'like', "%{$search}%")
+                            ->orWhere('t7.name', 'like', "%{$search}%")
+                            ->orWhere('t6.review_status', 'like', "%{$search}%")
+                            ->orWhere('t2.district_name', 'like', "%{$search}%");
+                    }
+                });
+            }
+
+            // 🔹 Designation filter
+            if ($designationFilter) {
+                $query->where('t4.designation_type', $designationFilter);
+            }
+
+            // 🔹 Execute query
+            $polices = $query->orderBy('t4.id', 'desc')->get();
+
+            // 🔹 Return rendered view
+            return view('Salary_Increment.table_rows', compact('polices'))->render();
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => 'An error occurred while searching salary increments.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // 🔹 Designation filter
-        if ($designationFilter) {
-            $query->where('t4.designation_type', $designationFilter);
-        }
-
-        // 🔹 Execute query
-        $polices = $query->orderBy('t4.id', 'desc')->get();
-
-        // 🔹 Return rendered view
-        return view('Salary_Increment.table_rows', compact('polices'))->render();
-
-    } catch (\Exception $e) {
-
-        return response()->json([
-            'message' => 'An error occurred while searching salary increments.',
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
 
 
 
@@ -308,104 +309,104 @@ public function search(Request $request)
     }
 
 
-public function storeSalaryIncrement(Request $request)
-{
-    $user = Session::get('user');
+    public function storeSalaryIncrement(Request $request)
+    {
+        $user = Session::get('user');
 
-    // Only Head_Person can access
-    if (!$user || $user['designation_type'] !== 'Head_Person') {
-        return redirect()->back()->with('error', 'आपल्याला वेतनवाढ जोडण्याची परवानगी नाही.');
-    }
-
-    // Ensure police_id belongs to the same district
-    $policeDistrict = DB::table('police_users')
-        ->where('id', $request->police_id)
-        ->value('district_id');
-
-    if ($policeDistrict != $user['district_id']) {
-        return redirect()->back()->with('error', 'आपल्याला इतर जिल्ह्यातील अधिकारीसाठी वेतनवाढ जोडण्याची परवानगी नाही.');
-    }
-
-    // Validation
-    $request->validate([
-        'police_id'           => 'required|integer',
-        'district_id'         => 'required|integer',
-        'station_id'          => 'required|integer',
-        'increment_date'      => 'required|date',
-        'increment_type'      => 'required|string',
-        'new_salary'          => 'required|numeric',
-        'level_no'            => 'nullable|string|max:10',
-        'grade_pay'           => 'nullable|string',
-        'increased_amount'    => 'required|numeric',
-        'increment_documents' => 'nullable|file|mimes:pdf|max:5120',
-        'present_days'        => 'required|integer|min:0',
-    ]);
-
-    // Attendance check
-    if ($request->present_days < 180) {
-        return redirect()->back()->with('error', 'उपस्थिती 180 दिवसांपेक्षा कमी असल्यामुळे वेतनवाढ मंजूर होऊ शकत नाही.');
-    }
-
-    // 🛑 NEW: Punishment-year check ----------------------------
-    $incrementDate = $request->increment_date;
-    $selectedYear = date('Y', strtotime($incrementDate));
-
-    $hasPunishment = DB::table('police_punishments')
-        ->where('police_id', $request->police_id)
-        ->whereYear('punishment_given_date', $selectedYear)
-        ->exists();
-
-    if ($hasPunishment) {
-        return redirect()->back()->with(
-            'error',
-            "सदर पोलीस अधिकाऱ्यास $selectedYear मध्ये शिक्षा देण्यात आली आहे, त्यामुळे वेतनवाढ मंजूर होऊ शकत नाही."
-        );
-    }
-    // ----------------------------------------------------------
-
-    try {
-        $uniqueFileName = null;
-
-        // Handle file upload
-        if ($request->hasFile('increment_documents')) {
-            $file = $request->file('increment_documents');
-            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $file->getClientOriginalExtension();
-            $uniqueFileName = now()->format('Ymd_His') . '_' . Str::slug($originalName) . '.' . $extension;
-
-            $destinationPath = base_path('uploads/salaryincrements');
-            if (!File::exists($destinationPath)) {
-                File::makeDirectory($destinationPath, 0755, true);
-            }
-
-            $file->move($destinationPath, $uniqueFileName);
+        // Only Head_Person can access
+        if (!$user || $user['designation_type'] !== 'Head_Person') {
+            return redirect()->back()->with('error', 'आपल्याला वेतनवाढ जोडण्याची परवानगी नाही.');
         }
 
-        $level_value = 'L-' . $request->level_no;
-        $grade_value = 'S-' . $request->grade_pay;
+        // Ensure police_id belongs to the same district
+        $policeDistrict = DB::table('police_users')
+            ->where('id', $request->police_id)
+            ->value('district_id');
 
-        // Insert salary increment
-        DB::table('salary_increments')->insert([
-            'police_id'           => $request->police_id,
-            'district_id'         => $request->district_id,
-            'station_id'          => $request->station_id,
-            'increment_documents' => $uniqueFileName,
-            'increment_date'      => $request->increment_date,
-            'increment_type'      => $request->increment_type,
-            'new_salary'          => $request->new_salary,
-            'level'               => $level_value,
-            'grade_pay'           => $grade_value,
-            'increased_amount'    => $request->increased_amount,
-            'present_days'        => $request->present_days,
-            'created_at'          => now(),
-            'updated_at'          => now(),
+        if ($policeDistrict != $user['district_id']) {
+            return redirect()->back()->with('error', 'आपल्याला इतर जिल्ह्यातील अधिकारीसाठी वेतनवाढ जोडण्याची परवानगी नाही.');
+        }
+
+        // Validation
+        $request->validate([
+            'police_id'           => 'required|integer',
+            'district_id'         => 'required|integer',
+            'station_id'          => 'required|integer',
+            'increment_date'      => 'required|date',
+            'increment_type'      => 'required|string',
+            'new_salary'          => 'required|numeric',
+            'level_no'            => 'nullable|string|max:10',
+            'grade_pay'           => 'nullable|string',
+            'increased_amount'    => 'required|numeric',
+            'increment_documents' => 'nullable|file|mimes:pdf|max:5120',
+            'present_days'        => 'required|integer|min:0',
         ]);
 
-        return redirect()->back()->with('success', 'वेतनवाढ माहिती यशस्वीरित्या जतन झाली.');
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'वेतनवाढ जतन करताना त्रुटी आली: ' . $e->getMessage());
+        // Attendance check
+        if ($request->present_days < 180) {
+            return redirect()->back()->with('error', 'उपस्थिती 180 दिवसांपेक्षा कमी असल्यामुळे वेतनवाढ मंजूर होऊ शकत नाही.');
+        }
+
+        // 🛑 NEW: Punishment-year check ----------------------------
+        $incrementDate = $request->increment_date;
+        $selectedYear = date('Y', strtotime($incrementDate));
+
+        $hasPunishment = DB::table('police_punishments')
+            ->where('police_id', $request->police_id)
+            ->whereYear('punishment_given_date', $selectedYear)
+            ->exists();
+
+        if ($hasPunishment) {
+            return redirect()->back()->with(
+                'error',
+                "सदर पोलीस अधिकाऱ्यास $selectedYear मध्ये शिक्षा देण्यात आली आहे, त्यामुळे वेतनवाढ मंजूर होऊ शकत नाही."
+            );
+        }
+        // ----------------------------------------------------------
+
+        try {
+            $uniqueFileName = null;
+
+            // Handle file upload
+            if ($request->hasFile('increment_documents')) {
+                $file = $request->file('increment_documents');
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $uniqueFileName = now()->format('Ymd_His') . '_' . Str::slug($originalName) . '.' . $extension;
+
+                $destinationPath = base_path('uploads/salaryincrements');
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true);
+                }
+
+                $file->move($destinationPath, $uniqueFileName);
+            }
+
+            $level_value = 'L-' . $request->level_no;
+            $grade_value = 'S-' . $request->grade_pay;
+
+            // Insert salary increment
+            DB::table('salary_increments')->insert([
+                'police_id'           => $request->police_id,
+                'district_id'         => $request->district_id,
+                'station_id'          => $request->station_id,
+                'increment_documents' => $uniqueFileName,
+                'increment_date'      => $request->increment_date,
+                'increment_type'      => $request->increment_type,
+                'new_salary'          => $request->new_salary,
+                'level'               => $level_value,
+                'grade_pay'           => $grade_value,
+                'increased_amount'    => $request->increased_amount,
+                'present_days'        => $request->present_days,
+                'created_at'          => now(),
+                'updated_at'          => now(),
+            ]);
+
+            return redirect()->back()->with('success', 'वेतनवाढ माहिती यशस्वीरित्या जतन झाली.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'वेतनवाढ जतन करताना त्रुटी आली: ' . $e->getMessage());
+        }
     }
-}
 
     public function view($filename)
     {
