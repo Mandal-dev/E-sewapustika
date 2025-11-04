@@ -62,9 +62,19 @@
 </div>
 
 <script>
-    // Live search on keyup
-    $(document).on('keyup', '#searchInput', function () {
-        let search = $(this).val();
+    // Debounce function: delays execution until user stops typing
+    function debounce(func, delay) {
+        let timeout;
+        return function () {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), delay);
+        };
+    }
+
+    // Perform AJAX search
+    function performSearch() {
+        let search = $('#searchInput').val();
 
         $.ajax({
             url: "{{ route('attendance.search') }}",
@@ -80,7 +90,10 @@
                 $('#attendanceTableContainer').html('<div class="text-center text-danger py-3">Error loading data.</div>');
             }
         });
-    });
+    }
+
+    // Attach keyup listener with debounce (50 ms)
+    $(document).on('keyup', '#searchInput', debounce(performSearch, 500));
 
     // Handle pagination via AJAX
     $(document).on('click', '.pagination a', function (e) {

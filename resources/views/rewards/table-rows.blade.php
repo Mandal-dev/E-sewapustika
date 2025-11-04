@@ -47,8 +47,6 @@
                 </span>
             @endif
 
-
-
         </td>
 
         <td class="text-center">

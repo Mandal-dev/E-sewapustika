@@ -84,7 +84,7 @@ class PoliceProfileController extends Controller
                     return redirect()->back()->with('error', 'Unauthorized access.');
             }
 
-            // Fetch single record
+            // Fetch single recordsingleAttendancesingleAttendance
             $police = $query->where('t4.id', $id)
                 ->orderBy('t4.id', 'desc')
                 ->first();

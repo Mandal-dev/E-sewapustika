@@ -68,9 +68,6 @@
                 <span class="db material-icons" style="color:white">grid_view</span> {{ __('messages.dashboard') }}
             </a>
 
-            @php
-                $designation = Session::get('user.designation_type');
-            @endphp
 
             @if (in_array($designation, ['Admin', 'Head_Person']))
                 <div class="nav-group">

@@ -77,7 +77,7 @@
     <!-- Tabs -->
     <div class="tabs-container mt-4 card">
         <div class="tab-nav tabs">
-            @if (in_array($designation, ['Admin', 'Head_Person', 'Police']))
+            @if (in_array($designation, ['Admin', 'Head_Person', 'Police', 'Leave_Department']))
                 <button class="tab-button" data-tab="sewa_pustika">{{ __('messages.sewa_pustika') }}</button>
                 <button class="tab-button" data-tab="vetanwadh">{{ __('messages.vetanwadh') }}</button>
                 <button class="tab-button" data-tab="bakshish">{{ __('messages.bakshish') }}</button>

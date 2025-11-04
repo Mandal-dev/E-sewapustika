@@ -216,9 +216,7 @@
 
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div class="text-muted small">
-                    {{ __('messages.showing') }} {{ $polices->firstItem() }} {{ __('messages.to') }} {{ $polices->lastItem() }}
-                    {{ __('messages.of') }} {{ $polices->total() }} {{ __('messages.records') }}
-                    ({{ __('messages.page') }} {{ $polices->currentPage() }} {{ __('messages.of') }} {{ $polices->lastPage() }})
+
                 </div>
                 <div class="custom-pagination">
                     {!! $polices->links('pagination::bootstrap-5') !!}

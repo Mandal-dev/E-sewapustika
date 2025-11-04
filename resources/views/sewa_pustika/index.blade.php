@@ -197,7 +197,7 @@ $(document).ready(function() {
     });
 
     // Event bindings
-    $('#searchKeyword').on('input', debounce(performSearch, 500));
+    $('#searchKeyword').on('input', debounce(performSearch, 5000));
     $('#searchDesignation').change(performSearch);
     $('#searchButton').click(performSearch);
 
