@@ -1,7 +1,7 @@
 @extends('login.login')
 
 @section('data')
-<div class="d-flex align-items-center justify-content-center w-100 w-md-50 bg-gradient p-4">
+<div class="d-flex align-items-center div_main justify-content-center w-100 w-md-50 bg-gradient p-4">
     <!-- White Card -->
     <div class="bg-white rounded-4 shadow-lg position-relative p-5" style="width: 600px; height: 470px;">
 
