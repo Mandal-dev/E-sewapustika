@@ -75,7 +75,7 @@
         }
 
         .div_main {
-            margin-top: 150px !important;
+            margin-top: 80px !important;
         }
     </style>
 </head>
